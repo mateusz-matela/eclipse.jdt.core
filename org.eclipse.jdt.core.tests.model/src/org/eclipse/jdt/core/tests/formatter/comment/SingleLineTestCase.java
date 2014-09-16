@@ -80,8 +80,8 @@ public class SingleLineTestCase extends CommentTestCase {
 	}
 
 	public void testCommentDelimiter2() {
-		String expected = PREFIX + "test" + DELIMITER + DELIMITER ;
-		assertEquals(expected, testFormat(PREFIX + "test " + DELIMITER + DELIMITER + DELIMITER)); //$NON-NLS-1$ //$NON-NLS-2$
+		String expected = PREFIX + "test" + DELIMITER + DELIMITER + DELIMITER;
+		assertEquals(expected, testFormat(PREFIX + "\ttest " + DELIMITER + DELIMITER + DELIMITER));
 	}
 
 	public void testCommentNls1() {
