@@ -93,7 +93,7 @@ public class MultiLineTestCase extends CommentTestCase {
 	}
 
 	public void testNoChange1() {
-		String content= PREFIX + DELIMITER + POSTFIX;
+		String content= "/*" + DELIMITER + POSTFIX;
 		assertEquals(content, testFormat(content));
 	}
 

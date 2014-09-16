@@ -20,10 +20,6 @@ public class SingleLineTestCase extends CommentTestCase {
 
 	protected static final String PREFIX= "// "; //$NON-NLS-1$
 
-	static {
-//		TESTS_NAMES = new String[] { "test109581" } ;
-	}
-
 	public static Test suite() {
 		return buildTestSuite(SingleLineTestCase.class);
 	}
@@ -38,24 +34,18 @@ public class SingleLineTestCase extends CommentTestCase {
 
 	public void testClearBlankLines1() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "5"); //$NON-NLS-1$
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_BLOCK_COMMENT, DefaultCodeFormatterConstants.FALSE);
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_JAVADOC_COMMENT, DefaultCodeFormatterConstants.FALSE);
 		String expected = PREFIX + "test" + DELIMITER + PREFIX + "test" + DELIMITER + "//"+ DELIMITER + PREFIX + "test";
 		assertEquals(expected, testFormat("//test\ttest" + DELIMITER + "//" + DELIMITER + "//\t\ttest")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 	}
 
 	public void testClearBlankLines2() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "5"); //$NON-NLS-1$
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_BLOCK_COMMENT, DefaultCodeFormatterConstants.FALSE);
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_JAVADOC_COMMENT, DefaultCodeFormatterConstants.FALSE);
 		String expected = PREFIX + "test" + DELIMITER + PREFIX + "test" + DELIMITER + "//" + DELIMITER + PREFIX + "test";
 		assertEquals(expected, testFormat("//test\t\ttest" + DELIMITER + PREFIX + DELIMITER + "//\t\ttest")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	public void testClearBlankLines3() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "5"); //$NON-NLS-1$
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_BLOCK_COMMENT, DefaultCodeFormatterConstants.FALSE);
-		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_JAVADOC_COMMENT, DefaultCodeFormatterConstants.FALSE);
 		String expected = PREFIX + "test" + DELIMITER + PREFIX + "test" + DELIMITER + "//"+ DELIMITER + PREFIX + "test" + DELIMITER + PREFIX + "test";
 		assertEquals(expected, testFormat("//test\ttest" + DELIMITER + "//" + DELIMITER + PREFIX + "test\ttest")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 	}
@@ -85,27 +75,29 @@ public class SingleLineTestCase extends CommentTestCase {
 	}
 
 	public void testCommentNls1() {
-		assertEquals("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$", testFormat("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$")); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("// $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$",
+				testFormat("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$"));
 	}
 
 	public void testCommentNls2() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "1"); //$NON-NLS-1$
-		assertEquals("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$", testFormat("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$")); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("// $NON-NLS-1$" + DELIMITER + "// //$NON-NLS-2$" + DELIMITER + "// //$NON-NLS-3$",
+				testFormat("//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$"));
 	}
 
 	public void testCommentNls3() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "5"); //$NON-NLS-1$
-		assertEquals("//$NON-NLS-1", testFormat("//$NON-NLS-1")); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("// $NON-NLS-1", testFormat("//$NON-NLS-1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void testCommentNls4() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "5"); //$NON-NLS-1$
-		assertEquals("//$NON-NLS-4", testFormat("//$NON-NLS-4")); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("// $NON-NLS-4", testFormat("//$NON-NLS-4")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void testCommentNls5() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "-2"); //$NON-NLS-1$
-		assertEquals("//$NON-NLS-15$", testFormat("//$NON-NLS-15$")); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("// $NON-NLS-15$", testFormat("//$NON-NLS-15$")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void testCommentSpace1() {
@@ -230,8 +222,12 @@ public class SingleLineTestCase extends CommentTestCase {
 	}
 
 	public void testNoChange1() {
-		String content= PREFIX;
+		String content= "//";
 		assertEquals(content, testFormat(content));
+	}
+
+	public void testEmptyComment() {
+		assertEquals("//", testFormat(PREFIX));
 	}
 
 	public void testNoFormat1() {
@@ -240,9 +236,10 @@ public class SingleLineTestCase extends CommentTestCase {
 		String content = PREFIX + "test test";
 		assertEquals(content, testFormat(content));
 	}
-	public void _test109581() {
+
+	public void test109581() {
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT_LINE_COMMENT, DefaultCodeFormatterConstants.TRUE);
 		String content= "//// some comment ////";
-		assertEquals(content + DELIMITER, testFormat(content));
+		assertEquals(content, testFormat(content));
 	}
 }
