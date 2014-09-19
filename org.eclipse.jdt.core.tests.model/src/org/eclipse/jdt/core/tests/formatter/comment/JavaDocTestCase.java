@@ -155,8 +155,8 @@ public class JavaDocTestCase extends MultiLineTestCase {
 				" * public Object[] getChildren(Object parentElement) {\n" +
 				" * 	if (parentElement instanceof MovingBox) {\n" +
 				" * 		MovingBox box = (MovingBox) parentElement;\n" +
-				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(), box\n" +
-				" * 				.getGames().toArray());\n" +
+				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(),\n" +
+				" * 				box.getGames().toArray());\n" +
 				" * 	}\n" +
 				" * 	return EMPTY_ARRAY;\n" +
 				" * }\n" +
@@ -185,8 +185,8 @@ public class JavaDocTestCase extends MultiLineTestCase {
 				" * public Object[] getChildren(Object parentElement) {\n" +
 				" * 	if (parentElement instanceof MovingBox) {\n" +
 				" * 		MovingBox box = (MovingBox) parentElement;\n" +
-				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(), box\n" +
-				" * 				.getGames().toArray());\n" +
+				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(),\n" +
+				" * 				box.getGames().toArray());\n" +
 				" * 	}\n" +
 				" * 	return EMPTY_ARRAY;\n" +
 				" * }\n" +
@@ -215,8 +215,8 @@ public class JavaDocTestCase extends MultiLineTestCase {
 				" * public Object[] getChildren(Object parentElement) {\n" +
 				" * 	if (parentElement instanceof MovingBox) {\n" +
 				" * 		MovingBox box = (MovingBox) parentElement;\n" +
-				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(), box\n" +
-				" * 				.getGames().toArray());\n" +
+				" * 		return concat(box.getBoxes().toArray(), box.getBooks().toArray(),\n" +
+				" * 				box.getGames().toArray());\n" +
 				" * 	}\n" +
 				" * 	return EMPTY_ARRAY;\n" +
 				" * }\n" +
