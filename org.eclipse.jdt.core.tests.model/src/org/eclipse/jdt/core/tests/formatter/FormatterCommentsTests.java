@@ -775,13 +775,25 @@ public void testLineComments03() throws JavaModelException {
 	formatUnit("comments.line", "X03.java");
 }
 public void testLineComments04() throws JavaModelException {
+	this.formatterPrefs.join_lines_in_comments = false;
 	formatUnit("comments.line", "X04.java");
 }
+public void testLineComments04b() throws JavaModelException {
+	formatUnit("comments.line", "X04b.java");
+}
 public void testLineComments05() throws JavaModelException {
+	this.formatterPrefs.join_lines_in_comments = false;
 	formatUnit("comments.line", "X05.java");
 }
+public void testLineComments05b() throws JavaModelException {
+	formatUnit("comments.line", "X05b.java");
+}
 public void testLineComments06() throws JavaModelException {
+	this.formatterPrefs.join_lines_in_comments = false;
 	formatUnit("comments.line", "X06.java");
+}
+public void testLineComments06b() throws JavaModelException {
+	formatUnit("comments.line", "X06b.java");
 }
 public void testLineComments07() throws JavaModelException {
 	String source =
