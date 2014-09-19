@@ -270,7 +270,7 @@ public class JavaDocTestCase extends MultiLineTestCase {
 		String prefix= "public class Test {" + DELIMITER + "    "; //$NON-NLS-1$ //$NON-NLS-2$
 		String content= PREFIX + DELIMITER + "\t\t" + INFIX + "test test" + DELIMITER + "        " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		String postfix= DELIMITER + "}"; //$NON-NLS-1$
-		String expected= PREFIX + DELIMITER + "      " + INFIX + "test test" + DELIMITER + "      " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+		String expected= PREFIX + DELIMITER + "    " + INFIX + "test test" + DELIMITER + "    " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, JavaCore.SPACE);
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, "3"); //$NON-NLS-1$
 		assertEquals(prefix + expected + postfix, testFormat(prefix + content + postfix, prefix.length(), content.length()));
@@ -280,7 +280,7 @@ public class JavaDocTestCase extends MultiLineTestCase {
 		String prefix= "public class Test {" + DELIMITER + "  \t  "; //$NON-NLS-1$ //$NON-NLS-2$
 		String content= PREFIX + DELIMITER + "\t\t" + INFIX + "test test" + DELIMITER + "        " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		String postfix= DELIMITER + "}"; //$NON-NLS-1$
-		String expected= PREFIX + DELIMITER + "      " + INFIX + "test test" + DELIMITER + "      " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+		String expected= PREFIX + DELIMITER + "     " + INFIX + "test test" + DELIMITER + "     " + POSTFIX;  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, JavaCore.SPACE);
 		setUserOption(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, "3"); //$NON-NLS-1$
 		assertEquals(prefix + expected + postfix, testFormat(prefix + content + postfix, prefix.length(), content.length()));
