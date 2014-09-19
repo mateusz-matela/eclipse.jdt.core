@@ -24,7 +24,7 @@ public class MultiLineTestCase extends CommentTestCase {
 
 	protected static final String INFIX= " * "; //$NON-NLS-1$
 	protected static final String POSTFIX= " */"; //$NON-NLS-1$
-	protected static final String PREFIX= "/* "; //$NON-NLS-1$
+	private static final String PREFIX= "/* "; //$NON-NLS-1$
 
 	public static Test suite() {
 		return buildTestSuite(MultiLineTestCase.class);

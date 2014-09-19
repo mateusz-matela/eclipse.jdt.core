@@ -23,6 +23,8 @@ import org.eclipse.text.edits.TextEdit;
 
 public class JavaDocTestCase extends MultiLineTestCase {
 
+	private static final String PREFIX = "/**";
+
 	static {
 //		TESTS_NAMES = new String[] { "test109636_2" } ;
 	}
