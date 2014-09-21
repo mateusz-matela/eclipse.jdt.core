@@ -940,12 +940,12 @@ public class JavaDocTestCase extends MultiLineTestCase {
 				"/**" + DELIMITER +
 				" * <pre>" + DELIMITER +
 				" * setLeadingComment(\"/&#42; traditional comment &#42;/\"); // correct" + DELIMITER +
-				" * setLeadingComment(\"missing comment delimiters\");  // wrong" + DELIMITER +
-				" * setLeadingComment(\"/&#42; unterminated traditional comment \");  // wrong" + DELIMITER +
-				" * setLeadingComment(\"/&#42; broken\\n traditional comment &#42;/\");  // correct" + DELIMITER +
-				" * setLeadingComment(\"// end-of-line comment\\n\");  // correct" + DELIMITER +
-				" * setLeadingComment(\"// end-of-line comment without line terminator\");  // correct" + DELIMITER +
-				" * setLeadingComment(\"// broken\\n end-of-line comment\\n\");  // wrong" + DELIMITER +
+				" * setLeadingComment(\"missing comment delimiters\"); // wrong" + DELIMITER +
+				" * setLeadingComment(\"/&#42; unterminated traditional comment \"); // wrong" + DELIMITER +
+				" * setLeadingComment(\"/&#42; broken\\n traditional comment &#42;/\"); // correct" + DELIMITER +
+				" * setLeadingComment(\"// end-of-line comment\\n\"); // correct" + DELIMITER +
+				" * setLeadingComment(\"// end-of-line comment without line terminator\"); // correct" + DELIMITER +
+				" * setLeadingComment(\"// broken\\n end-of-line comment\\n\"); // wrong" + DELIMITER +
 				" * </pre>" + DELIMITER +
 				" */";
 		String result=testFormat(input, options);
