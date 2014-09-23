@@ -1,9 +1,14 @@
 package test.html.pre;
 
-interface X07 {
+interface X02 {
 	/**
 	 * The following is some sample code which illustrates source formatting
 	 * within javadoc comments:
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * 
 	 * <pre>
 	 * 
@@ -13,6 +18,9 @@ interface X07 {
 	 * }
 	 * 
 	 * </pre>
+	 * 
+	 *
+	 * 
 	 * 
 	 * Descriptions of parameters and return values are best appended at end of
 	 * the javadoc comment.

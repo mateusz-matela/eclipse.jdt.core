@@ -420,7 +420,11 @@ public void testHtmlPre02() throws JavaModelException {
 	// Difference with old formatter:
 	// 1) Blank lines inside the <pre> tag are now preserved
 	// 		see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=231845
+	this.formatterPrefs.number_of_empty_lines_to_preserve = 4;
 	formatUnit("html.pre", "X02.java");
+}
+public void testHtmlPre02b() throws JavaModelException {
+	formatUnit("html.pre", "X02b.java");	
 }
 public void testHtmlPre03() throws JavaModelException {
 	formatUnit("html.pre", "X03.java");
