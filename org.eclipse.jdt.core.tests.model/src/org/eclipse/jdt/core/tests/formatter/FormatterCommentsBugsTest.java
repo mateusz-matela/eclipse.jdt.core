@@ -4209,7 +4209,7 @@ public void testBug260011_02() throws JavaModelException {
 		"	 *      some text\n" + 
 		"	 *           to be styled\n" + 
 		"	 *                 a certain way\n" + 
-		"	 * \n" + 
+		"	 *      \n" + 
 		"	 * </pre>\n" + 
 		"	 * \n" + 
 		"	 * end of comment\n" + 
