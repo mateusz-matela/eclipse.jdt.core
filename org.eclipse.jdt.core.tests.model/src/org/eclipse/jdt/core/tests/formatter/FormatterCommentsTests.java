@@ -1051,13 +1051,11 @@ public void testWkspEclipse11c() throws JavaModelException {
 public void testWkspEclipse12() throws JavaModelException {
 	// Difference with old formatter:
 	// 1) fixed wrong max length with immutable tags
-	// TODO the string is now put on 2 lines
 	formatUnit("wksp.eclipse", "X12.java");
 }
 public void testWkspEclipse12b() throws JavaModelException {
 	// Difference with old formatter:
 	// 1) fixed wrong max length with immutable tags
-	// TODO the string is now put on 2 lines
 	formatUnit("wksp.eclipse", "X12b.java");
 }
 public void testWkspEclipse13() throws JavaModelException {
