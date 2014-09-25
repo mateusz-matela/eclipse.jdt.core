@@ -1013,8 +1013,6 @@ public void testWkspEclipse05() throws JavaModelException {
 	formatUnit("wksp.eclipse", "X05.java");
 }
 public void testWkspEclipse06() throws JavaModelException {
-	// Difference with old formatter:
-	// 1) fixed invalid description indentation when param ref is invalid
 	formatUnit("wksp.eclipse", "X06.java");
 }
 public void testWkspEclipse07() throws JavaModelException {
@@ -1161,10 +1159,6 @@ public void testWkspEclipse28d() throws JavaModelException {
 	formatUnit("wksp.eclipse", "X28d.java");
 }
 public void testWkspEclipse29() throws JavaModelException {
-	// Difference with old formatter:
-	// 1) Consider any tag as normal root tag when syntax is invalid
-	// 2) Split line just after the identifier when name syntax is invalid
-	// TODO verify that these 2 new rules are OK
 	formatUnit("wksp.eclipse", "X29.java");
 }
 public void testWkspEclipse30() throws JavaModelException {
