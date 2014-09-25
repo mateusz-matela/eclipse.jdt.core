@@ -4173,8 +4173,8 @@ public void testBug260011_01() throws JavaModelException {
 		"	/**\n" + 
 		"	 * some comment text here\n" + 
 		"	 * <ul style=\"font-variant:small-caps;\">\n" + 
-		"	 * <li style=\"font-variant:small-caps;\">\n" + 
-		"	 * some text to be styled a certain way</li>\n" + 
+		"	 * <li style=\"font-variant:small-caps;\">some text to be styled a certain way" + 
+		"	 * </li>\n" + 
 		"	 * </ul>\n" + 
 		"	 * end of comment\n" + 
 		"	 */\n" + 
