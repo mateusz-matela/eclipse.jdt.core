@@ -4257,8 +4257,8 @@ public void testBug260011_04() throws JavaModelException {
 		"public class Test {\n" + 
 		"\n" + 
 		"	/**\n" + 
-		"	 * The list of variable declaration fragments (element type:\n" + 
-		"	 * <code VariableDeclarationFragment</code>). Defaults to an empty list.\n" + 
+		"	 * The list of variable declaration fragments (element type: <code\n" + 
+		"	 * VariableDeclarationFragment</code>). Defaults to an empty list.\n" + 
 		"	 */\n" + 
 		"	int field;\n" + 
 		"}\n"
@@ -4325,8 +4325,7 @@ public void testBug260011_06() throws JavaModelException {
 		"	 *                <ul>\n" + 
 		"	 *                <li>Failure communicating with the VM. The\n" + 
 		"	 *                DebugException\'s status code contains the underlying\n" + 
-		"	 *                exception responsible for the failure.</li>\n" + 
-		"	 *                </ul\n" + 
+		"	 *                exception responsible for the failure.</li> </ul\n" + 
 		"	 */\n" + 
 		"	public int getLength();\n" + 
 		"}\n"
@@ -4435,9 +4434,8 @@ public void testBug260011_10() throws JavaModelException {
 		"public interface Test {\n" + 
 		"\n" + 
 		"	/**\n" + 
-		"	 * Creates and opens a dialog to edit the given template.\n" + 
-		"	 * <p\n" + 
-		"	 * Subclasses may override this method to provide a custom dialog.\n" + 
+		"	 * Creates and opens a dialog to edit the given template. <p Subclasses my\n" + 
+		"	 * override this method to provide a custom dialog.\n" + 
 		"	 * </p>\n" + 
 		"	 */\n" + 
 		"	void foo();\n" + 
@@ -4463,8 +4461,7 @@ public void testBug260011_11() throws JavaModelException {
 		"	 * <p>\n" + 
 		"	 * Binary property IDS_Trinary_Operator (new).\n" + 
 		"	 * </p>\n" + 
-		"	 * <p\n" + 
-		"	 * ?For programmatic determination of Ideographic Description Sequences.\n" + 
+		"	 * <p?For programmatic determination of Ideographic Description Sequences.\n" + 
 		"	 * </p>\n" + 
 		"	 * \n" + 
 		"	 * @stable ICU 2.6\n" + 
