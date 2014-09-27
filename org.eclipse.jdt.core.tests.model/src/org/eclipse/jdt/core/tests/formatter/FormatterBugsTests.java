@@ -4384,8 +4384,7 @@ public void testBug293300_wksp2_08c() {
 		"			switch (x) {\n" + 
 		"\n" + 
 		"			}\n" + 
-		"		}\n" + 
-		"		/** end while */\n" + 
+		"		} /** end while */\n" + 
 		"\n" + 
 		"		// fill in output parameter\n" + 
 		"		if (x > 10)\n" + 
