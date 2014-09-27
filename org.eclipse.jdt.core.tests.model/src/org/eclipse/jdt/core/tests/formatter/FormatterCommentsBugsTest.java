@@ -2316,7 +2316,7 @@ public void testBug236406_CDB1() {
 		"void foo3() {\n" +
 		"	/*        statement Block		comment    	    */\n" + 
 		"	System.out.println();\n" + 
-		"}",
+		"}\n",
 		CodeFormatter.K_CLASS_BODY_DECLARATIONS
 	);
 }
@@ -2344,7 +2344,7 @@ public void testBug236406_CDB2() {
 		"void foo3() {\n" + 
 		"	/* statement Block comment */\n" + 
 		"	System.out.println();\n" + 
-		"}",
+		"}\n",
 		CodeFormatter.K_CLASS_BODY_DECLARATIONS | CodeFormatter.F_INCLUDE_COMMENTS
 	);
 }
@@ -2395,7 +2395,7 @@ public void testBug236406_ST1() {
 		"{\n" + 
 		"	/*        indented Block		comment    	    */\n" + 
 		"	System.out.println();\n" + 
-		"}",
+		"}\n",
 		CodeFormatter.K_STATEMENTS
 	);
 }
@@ -2418,7 +2418,7 @@ public void testBug236406_ST2() {
 		"{\n" + 
 		"	/* indented Block comment */\n" + 
 		"	System.out.println();\n" + 
-		"}",
+		"}\n",
 		CodeFormatter.K_STATEMENTS | CodeFormatter.F_INCLUDE_COMMENTS
 	);
 }

@@ -6077,7 +6077,7 @@ public void testBug309706b() {
 		"	if (true) {\n" + 
 		"		System.out.println(\"bla\");\n" + 
 		"	}\n" + 
-		"}",
+		"}\n",
 		CodeFormatter.K_CLASS_BODY_DECLARATIONS
 	);
 }
