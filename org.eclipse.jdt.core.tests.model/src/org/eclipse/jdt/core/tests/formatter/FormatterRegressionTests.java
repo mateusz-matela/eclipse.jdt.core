@@ -12939,7 +12939,8 @@ public void testBug379793() throws Exception {
 		"  void jbtnJDBCTest_actionPerformed(final ActionEvent e) {\n" + 
 		"    if ((driverClasses != null) && (JDBCURL != null)) {\n" + 
 		"      if (test == true) {\n" + 
-		"        try (final Connection connection = DriverManager.getConnection(JDBCURL);) {\n" + 
+		"        try (\n" +
+		"          final Connection connection = DriverManager.getConnection(JDBCURL);) {\n" + 
 		"          test = (connection != null);\n" + 
 		"          if (test == true) {\n" + 
 		"            jTextArea1.setText(\"The test was completeted successfully!\");\n" + 
