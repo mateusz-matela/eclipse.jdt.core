@@ -9,7 +9,7 @@ public class Parser
 			TypeIds {
 	protected ProblemReporter			problemReporter;
 	protected CompilerOptions			options;
-	public int							firstToken;															// handle for multiple parsing goals
+	public int							firstToken;																// handle for multiple parsing goals
 	public int							lastAct;																//handle for multiple parsing goals
 	protected ReferenceContext			referenceContext;
 	public int							currentToken;
@@ -19,14 +19,14 @@ public class Parser
 	protected RecoveredElement			currentElement;
 	public static boolean				VERBOSE_RECOVERY			= false;
 	protected boolean					restartRecovery;
-	protected int						listLength;															// for recovering some incomplete list (interfaces, throws or parameters)
+	protected int						listLength;																// for recovering some incomplete list (interfaces, throws or parameters)
 	protected boolean					hasError;
 	protected boolean					hasReportedError;
-	public static boolean				fineErrorDiagnose			= true;									//TODO remove the static modifier when new diagnose is ready
+	public static boolean				fineErrorDiagnose			= true;										//TODO remove the static modifier when new diagnose is ready
 	public boolean						reportSyntaxErrorIsRequired	= true;
 	public boolean						reportOnlyOneSyntaxError	= false;
 	protected int						recoveredStaticInitializerStart;
-	protected int						lastIgnoredToken, nextIgnoredToken;									// comment
+	protected int						lastIgnoredToken, nextIgnoredToken;										// comment
 	protected int						lastErrorEndPosition;
 	protected boolean					ignoreNextOpeningBrace;
 	//internal data for the automat 
