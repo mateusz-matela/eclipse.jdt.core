@@ -1155,8 +1155,9 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 	public void test096() {
 		DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getEclipse21Settings());
 		preferences.tab_char = DefaultCodeFormatterOptions.TAB;
+		preferences.join_lines_in_comments = false;
 		DefaultCodeFormatter codeFormatter = new DefaultCodeFormatter(preferences);
-		runTest(codeFormatter, "test096", "A.java", CodeFormatter.K_CLASS_BODY_DECLARATIONS);//$NON-NLS-1$ //$NON-NLS-2$
+		runTest(codeFormatter, "test096", "A.java", CodeFormatter.K_CLASS_BODY_DECLARATIONS + CodeFormatter.F_INCLUDE_COMMENTS);//$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	// bug 34897
@@ -4240,8 +4241,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"}";
 		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r\n" +
 				"	/*\r\n" +
-				"	\r\n" +
-				"	 */\r\n" +
+				"		\r\n" +
+				"	*/\r\n" +
 				"}";
 		runTest(source, expectedResult, codeFormatter, CodeFormatter.K_CLASS_BODY_DECLARATIONS, 0, false, 0, -1);
 	}
@@ -4257,8 +4258,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"}";
 		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r\n" +
 				"	/*\r\n" +
-				"	\r\n" +
-				"	 */\r\n" +
+				"		\r\n" +
+				"	*/\r\n" +
 				"}";
 		runTest(source, expectedResult, codeFormatter, CodeFormatter.K_CLASS_BODY_DECLARATIONS, 0, false, 0, -1);
 	}
@@ -4275,8 +4276,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"}";
 		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\n" +
 				"	/*\n" +
-				"	\n" +
-				"	 */\n" +
+				"		\n" +
+				"	*/\n" +
 				"}";
 		runTest(source, expectedResult, codeFormatter, CodeFormatter.K_CLASS_BODY_DECLARATIONS, 0, false, 0, -1);
 	}
@@ -4293,8 +4294,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"}";
 		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r" +
 				"	/*\r" +
-				"	\r" +
-				"	 */\r" +
+				"		\r" +
+				"	*/\r" +
 				"}";
 		runTest(source, expectedResult, codeFormatter, CodeFormatter.K_CLASS_BODY_DECLARATIONS, 0, false, 0, -1);
 	}
