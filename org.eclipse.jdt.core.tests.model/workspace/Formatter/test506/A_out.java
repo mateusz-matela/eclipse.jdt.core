@@ -76,10 +76,10 @@ class Pair<A, B> {
 
 public class A {
 	public static void main(String[] args) {
-		Seq<String> strs = new Seq<String>("a", new Seq<String>("b",
-				new Seq<String>()));
-		Seq<Number> nums = new Seq<Number>(new Integer(1), new Seq<Number>(
-				new Double(1.5), new Seq<Number>()));
+		Seq<String> strs = new Seq<String>("a",
+				new Seq<String>("b", new Seq<String>()));
+		Seq<Number> nums = new Seq<Number>(new Integer(1),
+				new Seq<Number>(new Double(1.5), new Seq<Number>()));
 		Seq<String>.Zipper<Number> zipper = strs.new Zipper<Number>();
 		Seq<Pair<String, Number>> combined = zipper.zip(nums);
 		System.out.println(combined);

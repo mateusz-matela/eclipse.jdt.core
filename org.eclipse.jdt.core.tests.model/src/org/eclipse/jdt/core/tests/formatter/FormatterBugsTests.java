@@ -967,9 +967,8 @@ public void testBug059891_wksp1_03() throws JavaModelException {
 		"public class X03 {\n" + 
 		"\n" + 
 		"	protected void foo() {\n" + 
-		"		printTargets(project, subNames, null,\n" + 
-		"				InternalAntMessages\n" + 
-		"						.getString(\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
+		"		printTargets(project, subNames, null, InternalAntMessages\n" + 
+		"				.getString(\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1112,8 +1111,7 @@ public void testBug059891_wksp1_09() throws JavaModelException {
 		"public class X09 {\n" + 
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			String secondFileName = secondDirectoryAbsolutePath\n" + 
-		"					+ File.separator\n" + 
+		"			String secondFileName = secondDirectoryAbsolutePath + File.separator\n" + 
 		"					+ currentFile\n" + 
 		"							.substring(firstDirectoryAbsolutePath.length() + 1);\n" + 
 		"		}\n" + 
@@ -1138,9 +1136,8 @@ public void testBug059891_wksp1_10() throws JavaModelException {
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
 		"			if (true) {\n" + 
-		"				throw new BuildException(\n" + 
-		"						InternalAntMessages\n" + 
-		"								.getString(\"InternalAntRunner.Could_not_load_the_version_information._10\")); //$NON-NLS-1$\n" + 
+		"				throw new BuildException(InternalAntMessages.getString(\n" + 
+		"						\"InternalAntRunner.Could_not_load_the_version_information._10\")); //$NON-NLS-1$\n" + 
 		"			}\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -1158,9 +1155,8 @@ public void testBug059891_wksp1_11() throws JavaModelException {
 	formatSource(source,
 		"public class X11 {\n" + 
 		"	private void antFileNotFound() {\n" + 
-		"		reportError(\n" + 
-		"				AntLaunchConfigurationMessages\n" + 
-		"						.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$	\n" + 
+		"		reportError(AntLaunchConfigurationMessages\n" + 
+		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$	\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1180,8 +1176,8 @@ public void testBug059891_wksp1_12() throws JavaModelException {
 		"public class X12 {\n" + 
 		"	void foo() {\n" + 
 		"		if (this.fTests.size() == 0) {\n" + 
-		"			this.addTest(TestSuite\n" +
-		"					.warning(\"No tests found in \" + theClass.getName())); //$NON-NLS-1$\n" + 
+		"			this.addTest(TestSuite.warning(\n" +
+		"					\"No tests found in \" + theClass.getName())); //$NON-NLS-1$\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -6834,7 +6830,8 @@ public void testBug313524_164093_02() throws JavaModelException {
 		"        someIdentifier(someArg).someMethodName()\n" + 
 		"                               .someMethodName(foo,\n" + 
 		"                                       bar)\n" + 
-		"                               .otherMethod(arg0, arg1);\n" + 
+		"                               .otherMethod(arg0,\n" + 
+		"                                       arg1);\n" + 
 		"    }\n" + 
 		"}\n"
 	);
@@ -6858,8 +6855,7 @@ public void testBug313524_203588() throws JavaModelException {
 		"	public void a() {\n" + 
 		"		if (true) {\n" + 
 		"			allocation.add(idx_ta + 1, Double.valueOf(allocation.get(idx_ta)\n" + 
-		"					.doubleValue()\n" + 
-		"					+ q));\n" + 
+		"					.doubleValue() + q));\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -6904,18 +6900,16 @@ public void testBug313524_wksp1_02() throws JavaModelException {
 		"public class X02 {\n" + 
 		"	private void parseBuildFile(Project project) {\n" + 
 		"		if (!buildFile.exists()) {\n" + 
-		"			throw new BuildException(\n" + 
-		"					MessageFormat\n" + 
-		"							.format(InternalAntMessages\n" + 
-		"									.getString(\"InternalAntRunner.Buildfile__{0}_does_not_exist_!_1\"), //$NON-NLS-1$\n" + 
-		"									new String[] { buildFile.getAbsolutePath() }));\n" + 
+		"			throw new BuildException(MessageFormat.format(InternalAntMessages\n" + 
+		"					.getString(\n" + 
+		"							\"InternalAntRunner.Buildfile__{0}_does_not_exist_!_1\"), //$NON-NLS-1$\n" + 
+		"					new String[] { buildFile.getAbsolutePath() }));\n" + 
 		"		}\n" + 
 		"		if (!buildFile.isFile()) {\n" + 
-		"			throw new BuildException(\n" + 
-		"					MessageFormat\n" + 
-		"							.format(InternalAntMessages\n" + 
-		"									.getString(\"InternalAntRunner.Buildfile__{0}_is_not_a_file_1\"), //$NON-NLS-1$\n" + 
-		"									new String[] { buildFile.getAbsolutePath() }));\n" + 
+		"			throw new BuildException(MessageFormat.format(InternalAntMessages\n" + 
+		"					.getString(\n" + 
+		"							\"InternalAntRunner.Buildfile__{0}_is_not_a_file_1\"), //$NON-NLS-1$\n" + 
+		"					new String[] { buildFile.getAbsolutePath() }));\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -7082,10 +7076,9 @@ public void testBug313524_wksp1_09() throws JavaModelException {
 		"public class X09 {\n" + 
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			String secondFileName = secondDirectoryAbsolutePath\n" + 
-		"					+ File.separator\n" + 
-		"					+ currentFile\n" + 
-		"							.substring(firstDirectoryAbsolutePath.length() + 1);\n" + 
+		"			String secondFileName = secondDirectoryAbsolutePath + File.separator\n" + 
+		"					+ currentFile.substring(firstDirectoryAbsolutePath.length()\n" + 
+		"							+ 1);\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -7109,9 +7102,8 @@ public void testBug313524_wksp1_10() throws JavaModelException {
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
 		"			if (true) {\n" + 
-		"				throw new BuildException(\n" + 
-		"						InternalAntMessages\n" + 
-		"								.getString(\"InternalAntRunner.Could_not_load_the_version_information._10\")); //$NON-NLS-1$\n" + 
+		"				throw new BuildException(InternalAntMessages.getString(\n" + 
+		"						\"InternalAntRunner.Could_not_load_the_version_information._10\")); //$NON-NLS-1$\n" + 
 		"			}\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -7726,9 +7718,9 @@ public void testBug330313_regression_187b() {
 		"\n" + 
 		"	private String createC42PDFCommandLine(String documentName) {\n" + 
 		"		return (Registry.getConvertToolPath() + File.separator\n" + 
-		"				+ Registry.getConvertToolName() + (\" -o \" + _workingDir\n" + 
-		"				+ File.separator + documentName + (\" -l \" + _workingDir\n" + 
-		"				+ File.separator + _fileList)));\n" + 
+		"				+ Registry.getConvertToolName()\n" + 
+		"				+ (\" -o \" + _workingDir + File.separator + documentName\n" + 
+		"						+ (\" -l \" + _workingDir + File.separator + _fileList)));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8279,16 +8271,17 @@ public void testBug330313_wksp1_12() {
 		"		Document doc = new Document(string);\n" + 
 		"		try {\n" + 
 		"			if (positions != null) {\n" + 
-		"				doc.addPositionUpdater(new DefaultPositionUpdater(POS_CATEGORY) {\n" + 
-		"					protected boolean notDeleted() {\n" + 
-		"						if (fOffset < fPosition.offset\n" + 
-		"								&& (fPosition.offset + fPosition.length < fOffset\n" + 
-		"										+ fLength)) {\n" + 
-		"							return false;\n" + 
-		"						}\n" + 
-		"						return true;\n" + 
-		"					}\n" + 
-		"				});\n" + 
+		"				doc.addPositionUpdater(\n" + 
+		"						new DefaultPositionUpdater(POS_CATEGORY) {\n" + 
+		"							protected boolean notDeleted() {\n" + 
+		"								if (fOffset < fPosition.offset\n" + 
+		"										&& (fPosition.offset + fPosition.length\n" + 
+		"												< fOffset + fLength)) {\n" + 
+		"									return false;\n" + 
+		"								}\n" + 
+		"								return true;\n" + 
+		"							}\n" + 
+		"						});\n" + 
 		"			}\n" + 
 		"		} catch (BadPositionCategoryException cannotHappen) {\n" + 
 		"			// can not happen: category is correctly set up\n" + 
@@ -8373,8 +8366,8 @@ public void testBug330313_wksp1_13() {
 		"\n" + 
 		"	public boolean isEmptyDelta() {\n" + 
 		"		return (this.getType() == AbstractDataTreeNode.T_NO_DATA_DELTA_NODE\n" + 
-		"				&& this.getNamesOfChildren().length == 0 && this\n" + 
-		"					.getNamesOfDeletedChildren().length == 0);\n" + 
+		"				&& this.getNamesOfChildren().length == 0\n" + 
+		"				&& this.getNamesOfDeletedChildren().length == 0);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8398,8 +8391,8 @@ public void testBug330313_wksp1_13_njl() {
 		"\n" + 
 		"	public boolean isEmptyDelta() {\n" + 
 		"		return (this.getType() == AbstractDataTreeNode.T_NO_DATA_DELTA_NODE\n" + 
-		"				&& this.getNamesOfChildren().length == 0 && this\n" + 
-		"					.getNamesOfDeletedChildren().length == 0);\n" + 
+		"				&& this.getNamesOfChildren().length == 0\n" + 
+		"				&& this.getNamesOfDeletedChildren().length == 0);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8765,8 +8758,8 @@ public void testBug330313_wksp1_21_njl() {
 		"\n" + 
 		"public class X21 {\n" + 
 		"	public boolean isAvailable() {\n" + 
-		"		return !(getViewer() == null || getViewer().getControl() == null || getViewer()\n" + 
-		"				.getControl().isDisposed());\n" + 
+		"		return !(getViewer() == null || getViewer().getControl() == null\n" + 
+		"				|| getViewer().getControl().isDisposed());\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8996,8 +8989,8 @@ public void testBug330313_wksp1_29_njl() {
 		"public class X29 {\n" + 
 		"\n" + 
 		"	boolean foo() {\n" + 
-		"		return (pack != null && otherpack != null && isSamePackage(pack,\n" + 
-		"				otherpack));\n" + 
+		"		return (pack != null && otherpack != null\n" + 
+		"				&& isSamePackage(pack, otherpack));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -9055,8 +9048,8 @@ public void testBug330313_wksp1_31_njl() {
 		"			switch (i) {\n" + 
 		"			case 0:\n" + 
 		"				if (!((offset == (hashable.length - 1)) && !has95\n" + 
-		"						&& hasOneOf(meta63, hashable, offset - 2, 2) && !hasOneOf(\n" + 
-		"							meta64, hashable, offset - 4, 2)))\n" + 
+		"						&& hasOneOf(meta63, hashable, offset - 2, 2)\n" + 
+		"						&& !hasOneOf(meta64, hashable, offset - 4, 2)))\n" + 
 		"					buffer.append(\'R\');\n" + 
 		"				break;\n" + 
 		"			}\n" + 
@@ -9083,8 +9076,8 @@ public void testBug330313_wksp1_32_njl() {
 		"public class X32 {\n" + 
 		"	public boolean equals(Object object) {\n" + 
 		"		TextAttribute a = (TextAttribute) object;\n" + 
-		"		return (a.style == style && equals(a.foreground, foreground) && equals(\n" + 
-		"				a.background, background));\n" + 
+		"		return (a.style == style && equals(a.foreground, foreground)\n" + 
+		"				&& equals(a.background, background));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -9112,9 +9105,8 @@ public void testBug330313_wksp1_33() {
 		"\n" + 
 		"public class X33 {\n" + 
 		"	void foo() {\n" + 
-		"		if (inMetaTag\n" + 
-		"				&& (t1.image.equalsIgnoreCase(\"name\") || t1.image\n" + 
-		"						.equalsIgnoreCase(\"HTTP-EQUIV\")) && t2 != null) {\n" + 
+		"		if (inMetaTag && (t1.image.equalsIgnoreCase(\"name\")\n" + 
+		"				|| t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")) && t2 != null) {\n" + 
 		"			currentMetaTag = t2.image.toLowerCase();\n" + 
 		"		}\n" + 
 		"	}\n" + 

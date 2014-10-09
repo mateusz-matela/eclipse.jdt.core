@@ -91,25 +91,24 @@ public final class DirectoryComparator {
             }
         }
         if (secondFiles.length != files.length) {
-            final String errorMessage = "Different number of jars files:\n"
+            final String errorMessage = "Different number of jars files:"
                     + "\t" + secondFiles.length + " in "
-                    + secondDirectoryAbsolutePath + "\n" + "\t" + files.length
-                    + " in " + firstDirectoryAbsolutePath + "\n";
+                    + secondDirectoryAbsolutePath + "" + "\t" + files.length
+                    + " in " + firstDirectoryAbsolutePath + "";
             logError(errorMessage);
         }
         for (int i = 0, max = files.length; i < max; i++) {
             String currentFile = files[i].getAbsolutePath();
             String firstFileName = currentFile;
             // extract the second file name
-            String secondFileName = secondDirectoryAbsolutePath
-                    + File.separator
+            String secondFileName = secondDirectoryAbsolutePath + File.separator
                     + currentFile
                             .substring(firstDirectoryAbsolutePath.length() + 1);
             if (new File(secondFileName).exists()) {
                 if (firstFileName.toLowerCase().endsWith(".jar")) {
-                    new JarFileComparator(new String[] { firstFileName,
-                            secondFileName, resultFile.getAbsolutePath() })
-                            .compare();
+                    new JarFileComparator(
+                            new String[] { firstFileName, secondFileName,
+                                    resultFile.getAbsolutePath() }).compare();
                 } else {
                     // do a binary compare byte per byte
                     File firstFile = new File(firstFileName);
@@ -118,7 +117,7 @@ public final class DirectoryComparator {
                     byte[] contentsFile2 = getBytes(secondFile);
                     if (!equals(contentsFile1, contentsFile2)) {
                         logError("DIFFERENT CONTENTS: " + firstFile.getName()
-                                + "\n");
+                                + "");
                     }
                 }
             } else {
@@ -157,8 +156,8 @@ public final class DirectoryComparator {
             int amountRead = -1;
             FileInputStream stream = new FileInputStream(file);
             do {
-                int amountRequested = Math.max(stream.available(),
-                        DEFAULT_READING_SIZE); // read at least 8K
+                int amountRequested = Math
+                        .max(stream.available(), DEFAULT_READING_SIZE); // read at least 8K
 
                 // resize contents if needed
                 if (contentsLength + amountRequested > contents.length) {
@@ -168,8 +167,8 @@ public final class DirectoryComparator {
                 }
 
                 // read as many bytes as possible
-                amountRead = stream.read(contents, contentsLength,
-                        amountRequested);
+                amountRead = stream
+                        .read(contents, contentsLength, amountRequested);
 
                 if (amountRead > 0) {
                     // remember length of contents
@@ -194,8 +193,8 @@ public final class DirectoryComparator {
     private void logError(String message) {
         try {
             if (this.writer == null) {
-                this.writer = new BufferedWriter(new FileWriter(
-                        this.resultFile, true));
+                this.writer = new BufferedWriter(
+                        new FileWriter(this.resultFile, true));
             }
             writer.write(message);
         } catch (IOException e) {
