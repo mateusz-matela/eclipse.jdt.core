@@ -950,11 +950,8 @@ public void testBlockComments13() throws JavaModelException {
 		"public class X13 {\n" + 
 		"\n" + 
 		"	protected void handleWarningToken(String token, boolean isEnabling) {\n" + 
-		"		if (token.equals(\"pkgDefaultMethod___\")\n" + 
-		"				|| token.equals(\"packageDefaultMethod___\")/*\n" + 
-		"															 * _backward_\n" + 
-		"															 * _compatible_\n" + 
-		"															 */ ) {\n" + 
+		"		if (token.equals(\"pkgDefaultMethod___\") || token.equals(\n" + 
+		"				\"packageDefaultMethod___\")/* _backward_ _compatible_ */ ) {\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
