@@ -3637,9 +3637,9 @@ public void testBug241687() throws JavaModelException {
 		"	/*---------------------\n" + 
 		"	 * END OF SETS AND GETS\n" + 
 		"	 * test test test test test test test\n" + 
-		"	 test test test test test test \n" + 
+		"	test test test test test test \n" + 
 		"	 * \n" + 
-		"	 *\n" + 
+		"	*\n" + 
 		"	 *---------------------*/\n" + 
 		"	void foo();\n" + 
 		"}\n"
@@ -6132,7 +6132,7 @@ public void testBug287833b() {
 	    "	/**\n"+
 	    "	 * <pre>\n"+
 	    "	 * void foo() {\n"+
-	    "	 * \r\n" +
+	    "	 *\r\n" +
 	    "	 * }\n"+
 	    "	 * </pre>\n"+
 	    "	 */\n"+
@@ -6159,7 +6159,7 @@ public void testBug287833c() {
 	    "	/**\n"+
 	    "	 * <pre>\n"+
 	    "	 * void foo() {\n"+
-	    "	 * \n" +
+	    "	 *\n" +
 	    "	 * }\n"+
 	    "	 * </pre>\n"+
 	    "	 */\n"+
@@ -6488,9 +6488,9 @@ public void testBug305518_wksp2_03() {
 		"public class X03 {\n" + 
 		"	/**\n" + 
 		"	 * <PRE>\n" + 
-		"	 *  String s = ... ; // get string from somewhere\n" + 
-		"	 *  byte [] compressed = UnicodeCompressor.compress(s);\n" + 
-		"	 * </PRE>\n" + 
+		"	*  String s = ... ; // get string from somewhere\n" + 
+		"	*  byte [] compressed = UnicodeCompressor.compress(s);\n" + 
+		"	* </PRE>\n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
