@@ -2280,10 +2280,6 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 		runTest(codeFormatter, "test201", "A.java", CodeFormatter.K_STATEMENTS, true);//$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	/**
-	 * TODO Fix multi local declaration alignment
-	 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=44909
-	 */
 	public void test202() {
 		Hashtable options = new Hashtable();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH_IN_TRY_STATEMENT, JavaCore.DO_NOT_INSERT);
@@ -2301,11 +2297,7 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 		runTest(codeFormatter, "test202", "A.java", CodeFormatter.K_STATEMENTS, true);//$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	/**
-	 * TODO Fix multi local declaration alignment
-	 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=44909
-	 */
-	public void _test203() {
+	public void test203() {
 		Hashtable options = new Hashtable();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH_IN_TRY_STATEMENT, JavaCore.INSERT);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_IN_IF_STATEMENT, JavaCore.INSERT);
