@@ -91,10 +91,10 @@ public final class DirectoryComparator {
             }
         }
         if (secondFiles.length != files.length) {
-            final String errorMessage = "Different number of jars files:"
+            final String errorMessage = "Different number of jars files:\n"
                     + "\t" + secondFiles.length + " in "
-                    + secondDirectoryAbsolutePath + "" + "\t" + files.length
-                    + " in " + firstDirectoryAbsolutePath + "";
+                    + secondDirectoryAbsolutePath + "\n" + "\t" + files.length
+                    + " in " + firstDirectoryAbsolutePath + "\n";
             logError(errorMessage);
         }
         for (int i = 0, max = files.length; i < max; i++) {
@@ -117,7 +117,7 @@ public final class DirectoryComparator {
                     byte[] contentsFile2 = getBytes(secondFile);
                     if (!equals(contentsFile1, contentsFile2)) {
                         logError("DIFFERENT CONTENTS: " + firstFile.getName()
-                                + "");
+                                + "\n");
                     }
                 }
             } else {
