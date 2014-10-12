@@ -4203,7 +4203,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"	\n" +
 				"*/\n" +
 				"}";
-		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r\n" +
+		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope,\r\n" +
+				"		int initStateIndex) {\r\n" +
 				"	/*\r\n" +
 				"		\r\n" +
 				"	*/\r\n" +
@@ -4220,7 +4221,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"	\r" +
 				"*/\r" +
 				"}";
-		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r\n" +
+		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope,\r\n" +
+				"		int initStateIndex) {\r\n" +
 				"	/*\r\n" +
 				"		\r\n" +
 				"	*/\r\n" +
@@ -4238,7 +4240,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"	\r\n" +
 				"*/\r\n" +
 				"}";
-		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\n" +
+		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope,\n" +
+				"		int initStateIndex) {\n" +
 				"	/*\n" +
 				"		\n" +
 				"	*/\n" +
@@ -4256,7 +4259,8 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 				"	\r" +
 				"*/\r" +
 				"}";
-		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope, int initStateIndex) {\r" +
+		String expectedResult = "public final void addDefinitelyAssignedVariables(Scope scope,\r" +
+				"		int initStateIndex) {\r" +
 				"	/*\r" +
 				"		\r" +
 				"	*/\r" +
