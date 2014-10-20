@@ -1176,8 +1176,8 @@ public void testBug059891_wksp1_12() throws JavaModelException {
 		"public class X12 {\n" + 
 		"	void foo() {\n" + 
 		"		if (this.fTests.size() == 0) {\n" + 
-		"			this.addTest(TestSuite.warning(\n" +
-		"					\"No tests found in \" + theClass.getName())); //$NON-NLS-1$\n" + 
+		"			this.addTest(TestSuite\n" +
+		"					.warning(\"No tests found in \" + theClass.getName())); //$NON-NLS-1$\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
