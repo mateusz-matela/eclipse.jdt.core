@@ -39,8 +39,9 @@ class Seq<E> {
 			if (Seq.this.isEmpty() || that.isEmpty())
 				return new Seq<Pair<E, T>>();
 			else
-				return new Seq<Pair<E, T>>(new Pair<E, T>(Seq.this.head,
-						that.head), Seq.this.tail.zip(that.tail));
+				return new Seq<Pair<E, T>>(
+						new Pair<E, T>(Seq.this.head, that.head),
+						Seq.this.tail.zip(that.tail));
 		}
 	}
 }
