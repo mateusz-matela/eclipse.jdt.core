@@ -11518,8 +11518,9 @@ public void test751() throws Exception {
 			"\n" + 
 			"public class FormatterError {\n" + 
 			"	public void storeSomething(String s) throws Exception {\n" + 
-			"		try (FileReader fis = new FileReader(s); FileReader fis2 = new FileReader(\n" + 
-			"				s); FileReader fis3 = new FileReader(s);) {\n" + 
+			"		try (FileReader fis = new FileReader(\n" + 
+			"				s); FileReader fis2 = new FileReader(\n" + 
+			"						s); FileReader fis3 = new FileReader(s);) {\n" + 
 			"		}\n" + 
 			"	}\n" + 
 			"}\n"
@@ -12340,8 +12341,8 @@ public void test771() throws Exception {
 		"			else\n" + 
 		"				throw new MyE();\n" + 
 		"		} catch (\n" + 
-		"					MyE | FileNotFoundException\n" + 
-		"					| ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {\n" + 
+		"					MyE | FileNotFoundException | ArrayIndexOutOfBoundsException\n" + 
+		"					| IllegalArgumentException ex) {\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n" + 
