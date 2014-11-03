@@ -1253,8 +1253,7 @@ public void testBug198074_c1() throws JavaModelException {
 		"public class Test {\n" +
 		"\n" +
 		"	String foo(boolean enabled) {\n" +
-		"		if (enabled)\n" +
-		"		{\n" +
+		"		if (enabled) {\n" +
 		"			// we need x\n" +
 		"			// we need a select\n" +
 		"			return \"select x \"\n" +
@@ -1284,8 +1283,7 @@ public void testBug198074_c1b() throws JavaModelException {
 		"public class Test {\n" +
 		"\n" +
 		"    String foo(boolean enabled) {\n" +
-		"        if (enabled)\n" +
-		"        {\n" +
+		"        if (enabled) {\n" +
 		"            // we need x\n" +
 		"            // we need a select\n" +
 		"            return \"select x \"\n" +
@@ -2656,12 +2654,9 @@ public void testBug286601() throws JavaModelException {
 		"    }\n" +
 		"}\n";
 	formatSource(source,
-		"public class Test\n" +
-		"{\n" +
-		"	public void aMethod()\n" +
-		"	{\n" +
-		"		Object anObject = new Object()\n" +
-		"		{\n" +
+		"public class Test {\n" +
+		"	public void aMethod() {\n" +
+		"		Object anObject = new Object() {\n" +
 		"			boolean aVariable;\n" +
 		"		};\n" +
 		"	}\n" +
@@ -2726,16 +2721,13 @@ public void testBug286601c() {
 		"    }\n" +
 		"}\n";
 	formatSource(source,
-		"public class Test\n" +
-		"{\n" +
-		"	public void aMethod()\n" +
-		"	{\n" +
+		"public class Test {\n" +
+		"	public void aMethod() {\n" +
 		"		Object anObject = new Object()\n" +
 		"		{\n" +
 		"			boolean aVariable;\n" +
 		"\n" +
-		"			void foo()\n" +
-		"			{\n" +
+		"			void foo() {\n" +
 		"			}\n" +
 		"		};\n" +
 		"	}\n" +
@@ -2760,10 +2752,8 @@ public void testBug286601d() {
 		"    }\n" +
 		"}\n";
 	formatSource(source,
-		"public class Test\n" +
-		"{\n" +
-		"	public void aMethod()\n" +
-		"	{\n" +
+		"public class Test {\n" +
+		"	public void aMethod() {\n" +
 		"		Object anObject = new Object() /* comment */\n" +
 		"		{\n" +
 		"			boolean aVariable;\n" +
@@ -2909,8 +2899,7 @@ public void testBug286601_massive_03() {
 	formatSource(source,
 		"package massive;\n" + 
 		"\n" + 
-		"public class X03\n" +
-		"{\n" + 
+		"public class X03 {\n" +
 		"\n" + 
 		"	public void foo() throws NullPointerException {\n" + 
 		"\n" + 
@@ -7179,14 +7168,11 @@ public void testBug317039_njl() {
 		"public class X01\n" + 
 		"{\n" + 
 		"\n" + 
-		"	public void innerThread()\n" + 
-		"	{\n" + 
+		"	public void innerThread() {\n" + 
 		"\n" + 
-		"		new Thread(new Runnable()\n" + 
-		"		{\n" + 
+		"		new Thread(new Runnable() {\n" + 
 		"			@Override\n" + 
-		"			public void run()\n" + 
-		"			{\n" + 
+		"			public void run() {\n" + 
 		"				// TODO Auto-generated method stub\n" + 
 		"			}\n" + 
 		"		}).start();\n" + 
@@ -7805,9 +7791,7 @@ public void testBug330313_wksp1_02_njl() {
 		"public class X02 {\n" + 
 		"	public void testMethod(String currentTokenVal,\n" + 
 		"			int[][] expectedTokenSequencesVal,\n" + 
-		"			String[] tokenImageVal\n" + 
-		"			)\n" +
-		"	{\n" + 
+		"			String[] tokenImageVal) {\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8078,11 +8062,9 @@ public void testBug330313_wksp1_07_njl() {
 		"public class X07 {\n" + 
 		"\n" + 
 		"	static final long[] jjtoToken = {\n" + 
-		"			0x7fbfecffL,\n" + 
-		"	};\n" + 
+		"			0x7fbfecffL, };\n" + 
 		"	static final long[] jjtoSkip = {\n" + 
-		"			0x400000L,\n" + 
-		"	};\n" + 
+		"			0x400000L, };\n" + 
 		"\n" + 
 		"}\n"
 	);
@@ -8111,12 +8093,10 @@ public void testBug330313_wksp1_07_njl_bnl() {
 		"\n" + 
 		"	static final long[] jjtoToken =\n" + 
 		"	{\n" + 
-		"			0x7fbfecffL,\n" + 
-		"	};\n" + 
+		"			0x7fbfecffL, };\n" + 
 		"	static final long[] jjtoSkip =\n" + 
 		"	{\n" + 
-		"			0x400000L,\n" + 
-		"	};\n" + 
+		"			0x400000L, };\n" +
 		"\n" + 
 		"}\n"
 	);
@@ -8164,8 +8144,7 @@ public void testBug330313_wksp1_09_njl() {
 		"public class X09 {\n" + 
 		"	public Class[] getAdapterList() {\n" + 
 		"		return new Class[] {\n" + 
-		"				IWorkbenchAdapter.class\n" + 
-		"		};\n" + 
+		"				IWorkbenchAdapter.class };\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8192,9 +8171,8 @@ public void testBug330313_wksp1_10_njl() {
 		"\n" + 
 		"	public void computeConstant() {\n" + 
 		"\n" + 
-		"		if (true)\n" + 
-		"		{ // only a true 0 can be made of zeros\n" + 
-		"			// 2.00000000000000000e-324 is illegal ....\n" + 
+		"		if (true) { // only a true 0 can be made of zeros\n" + 
+		"					// 2.00000000000000000e-324 is illegal ....\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -8223,13 +8201,12 @@ public void testBug330313_wksp1_11_njl() {
 		"\n" + 
 		"public class X11 {\n" + 
 		"	X11() {\n" + 
-		"		accessFlags &= ~(\n" + 
-		"				AccStrictfp\n" + 
-		"						| AccProtected\n" + 
-		"						| AccPrivate\n" + 
-		"						| AccStatic\n" + 
-		"						| AccSynchronized\n" + 
-		"						| AccNative);\n" + 
+		"		accessFlags &= ~(AccStrictfp\n" + 
+		"				| AccProtected\n" + 
+		"				| AccPrivate\n" + 
+		"				| AccStatic\n" + 
+		"				| AccSynchronized\n" + 
+		"				| AccNative);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -9296,7 +9273,18 @@ public void testBug330313_wksp1_38_njl() {
 		"		}\n" + 
 		"	}\n" + 
 		"}\n";
-	formatSource(source	);
+	formatSource(source	,
+			"package wksp1;\n" + 
+			"\n" + 
+			"public class X38 {\n" + 
+			"	void foo(boolean condition) {\n" + 
+			"		if (condition) {\n" + 
+			"			// block 1\n" + 
+			"		} else {\n" + 
+			"			// block 2\n" + 
+			"		}\n" + 
+			"	}\n" + 
+			"}\n");
 }
 public void testBug330313_wksp1_39_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
@@ -9819,8 +9807,7 @@ public void testBug330313_wksp1_51_njl() {
 		"					return true;\n" + 
 		"				}\n" + 
 		"			},\n" + 
-		"			IResource.NONE\n" + 
-		"		);\n" + 
+		"			IResource.NONE);\n" + 
 		"		notifier.checkCancel();\n" + 
 		"	}\n" + 
 		"}\n" + 
