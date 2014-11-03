@@ -7526,7 +7526,8 @@ public void testBug328240() {
 		"	 * \n" +
 		"	 * @param reportHeader\n" +
 		"	 *            a <code>String</coe> value that will be the text of\n" +
-		"	 * the paragraph.\n" +
+		"	\n" +
+		"	* the paragraph.\n" +
 		"	 * @return a <code>Paragraph</code> containing the the text passed as the\n" +
 		"	 *         reportHeader parameter.\n" +
 		"	 */\n" +
