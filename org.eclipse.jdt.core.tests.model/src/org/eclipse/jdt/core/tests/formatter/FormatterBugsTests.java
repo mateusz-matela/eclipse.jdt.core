@@ -10626,7 +10626,7 @@ public void testBug437639() throws Exception {
 		"\n" +
 		"	public static void main(String[] args) {\n" +
 		"		BigDecimal big = new BigDecimal(1);\n" +
-		"		BigInteger bigI = 	new BigInteger(\"1\");\n" +
+		"		BigInteger bigI = new BigInteger(\"1\");\n" +
 		"		Date d = new Date();\n" +
 		"		List list = new ArrayList<>();\n" +
 		"	}\n" +
