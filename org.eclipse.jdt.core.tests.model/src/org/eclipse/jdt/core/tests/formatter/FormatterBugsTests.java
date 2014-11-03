@@ -1459,7 +1459,6 @@ public void testBug199265b() throws JavaModelException {
 	formatSource(source,
 		"import java.util.List;\n" + 
 		"import java.util.Set;\n" + 
-		"\n" + 
 		"//import java.util.HashMap;\n" + 
 		"\n" + 
 		"public class X02 {\n" + 
