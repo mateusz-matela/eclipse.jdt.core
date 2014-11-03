@@ -1643,8 +1643,8 @@ public void testBug208541() throws JavaModelException {
 		"\n" +
 		"    public void testname() throws Exception {\n" +
 		"        int i = 5, j = 6, k = 7;\n" +
-		"        if (new String().length() != 0 &&\n" +
-		"                (i < j && j < k)) {\n" +
+		"        if (new String().length() != 0 \n" +
+		"              &&  (i < j && j < k)) {\n" +
 		"\n" +
 		"        }\n" +
 		"    }\n" +
@@ -1654,8 +1654,8 @@ public void testBug208541() throws JavaModelException {
 		"\n" +
 		"	public void testname() throws Exception {\n" +
 		"		int i = 5, j = 6, k = 7;\n" +
-		"		if (new String().length() != 0 &&\n" +
-		"				(i < j && j < k)) {\n" +
+		"		if (new String().length() != 0\n" +
+		"				&& (i < j && j < k)) {\n" +
 		"\n" +
 		"		}\n" +
 		"	}\n" +
@@ -8103,6 +8103,7 @@ public void testBug330313_wksp1_07_njl_bnl() {
 }
 public void testBug330313_wksp1_08_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.alignment_for_assignment = Alignment.M_COMPACT_SPLIT;
 	String source =
 		"package wksp1;\n" + 
 		"\n" + 
@@ -8602,8 +8603,7 @@ public void testBug330313_wksp1_17_njl() {
 		"\n" + 
 		"public class X17 {\n" + 
 		"	void foo() {\n" + 
-		"		if ((currentMethodScope = this.methodScope())\n" + 
-		"				!= outerLocalVariable.declaringScope.methodScope()) {\n" + 
+		"		if ((currentMethodScope = this.methodScope()) != outerLocalVariable.declaringScope.methodScope()) {\n" + 
 		"			return;\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -8682,6 +8682,7 @@ public void testBug330313_wksp1_19_njl() {
 // Test case extracted from org.eclipse.debug.ui/ui/org/eclipse/debug/ui/AbstractDebugView.java
 public void testBug330313_wksp1_20_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.alignment_for_assignment = Alignment.M_COMPACT_SPLIT;
 	setPageWidth80();
 	String source =
 		"package wksp1;\n" + 
@@ -8778,9 +8779,8 @@ public void testBug330313_wksp1_23_njl() {
 		"\n" + 
 		"public class X23 {\n" + 
 		"	void foo() {\n" + 
-		"		boolean wasError = IMarker.SEVERITY_ERROR\n" + 
-		"				== pb.getAttribute(IMarker.SEVERITY,\n" + 
-		"						IMarker.SEVERITY_ERROR);\n" + 
+		"		boolean wasError = IMarker.SEVERITY_ERROR == pb.getAttribute(IMarker.SEVERITY,\n" + 
+		"				IMarker.SEVERITY_ERROR);\n" + 
 		"	}\n" + 
 		"}\n";
 	formatSource(source	);
@@ -8809,6 +8809,7 @@ public void testBug330313_wksp1_24_njl() {
 }
 public void testBug330313_wksp1_25_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	String source =
 		"package wksp1;\n" + 
 		"\n" + 
@@ -8823,6 +8824,7 @@ public void testBug330313_wksp1_25_njl() {
 }
 public void testBug330313_wksp1_26_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	String source =
 		"package wksp1;\n" + 
 		"\n" + 
@@ -8886,10 +8888,8 @@ public void testBug330313_wksp1_27_njl() {
 		"public class X27 {\n" + 
 		"	private void foo() {\n" + 
 		"\n" + 
-		"		if (_VerificationResult.getVerificationCode()\n" + 
-		"					== IVerificationResult.TYPE_ENTRY_SIGNED_UNRECOGNIZED\n" + 
-		"				|| _VerificationResult.getVerificationCode()\n" + 
-		"					== IVerificationResult.TYPE_ENTRY_SIGNED_RECOGNIZED) {\n" + 
+		"		if (_VerificationResult.getVerificationCode() == IVerificationResult.TYPE_ENTRY_SIGNED_UNRECOGNIZED\n" + 
+		"				|| _VerificationResult.getVerificationCode() == IVerificationResult.TYPE_ENTRY_SIGNED_RECOGNIZED) {\n" + 
 		"			// Group box\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -8974,6 +8974,7 @@ public void testBug330313_wksp1_29_njl() {
 }
 public void testBug330313_wksp1_30_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	setPageWidth80();
 	String source =
 		"package wksp1;\n" + 
@@ -8992,8 +8993,8 @@ public void testBug330313_wksp1_30_njl() {
 		"	private boolean isInTypeNestedInInputType(ASTNode node,\n" + 
 		"			TypeDeclaration inputType) {\n" + 
 		"		return (isInAnonymousTypeInsideInputType(node, inputType) ||\n" + 
-		"				isInLocalTypeInsideInputType(node, inputType) || isInNonStaticMemberTypeInsideInputType(\n" + 
-		"					node, inputType));\n" + 
+		"				isInLocalTypeInsideInputType(node, inputType) ||\n" + 
+		"				isInNonStaticMemberTypeInsideInputType(node, inputType));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -9092,6 +9093,7 @@ public void testBug330313_wksp1_33() {
 }
 public void testBug330313_wksp1_33_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	String source =
 		"package wksp1;\n" + 
 		"\n" + 
@@ -9114,10 +9116,7 @@ public void testBug330313_wksp1_33_njl() {
 		"	void foo() {\n" + 
 		"		if (inMetaTag &&\n" + 
 		"				(t1.image.equalsIgnoreCase(\"name\") ||\n" + 
-		"				t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")\n" + 
-		"				)\n" + 
-		"				&& t2 != null)\n" + 
-		"		{\n" + 
+		"						t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")) && t2 != null) {\n" + 
 		"			currentMetaTag = t2.image.toLowerCase();\n" + 
 		"		}\n" + 
 		"	}\n" + 
