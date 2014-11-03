@@ -304,7 +304,7 @@ public void testBug027079c() throws JavaModelException {
 		"/* enable-formatter */\n" + 
 		"		bar(\n" + 
 		"		/** formatted comment */\n" + 
-		"		\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
+		"				\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
 		"	}\n" + 
 		"\n" + 
 		"	void bar(String... str) {\n" + 
@@ -352,7 +352,7 @@ public void testBug027079c2() throws JavaModelException {
 		"		);\n" + 
 		"		bar(\n" + 
 		"		/** formatted comment */\n" + 
-		"		\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
+		"				\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
 		"	}\n" + 
 		"\n" + 
 		"	void bar(String... str) {\n" + 
@@ -6648,8 +6648,8 @@ public void testBug313524_02() throws JavaModelException {
 		"	void test() {\n" + 
 		"		foo(bar(1, 2, 3, 4, 5, 6, 7, 8,\n" + 
 		"				9, 10), bar(11, 12, 13,\n" + 
-		"				14, 15, 16, 17, 18, 19,\n" + 
-		"				20));\n" + 
+		"						14, 15, 16, 17,\n" + 
+		"						18, 19, 20));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -6693,7 +6693,7 @@ public void testBug313524_03() throws JavaModelException {
 		"	void test() {\n" + 
 		"		foo(bar(1, 2, 3, 4), bar(5, 6,\n" + 
 		"				7, 8), bar(9, 10, 11,\n" + 
-		"				12));\n" + 
+		"						12));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8438,9 +8438,10 @@ public void testBug330313_wksp1_14_njl() {
 		"		if (true) {\n" + 
 		"			if (((bits & DepthMASK) != 0)\n" + 
 		"					&& (fieldBinding.isPrivate() // private access\n" + 
-		"					|| (fieldBinding.isProtected() // implicit protected access\n" + 
-		"					&& fieldBinding.declaringClass.getPackage()\n" + 
-		"						!= currentScope.enclosingSourceType().getPackage()))) {\n" + 
+		"							|| (fieldBinding.isProtected() // implicit protected\n" + 
+		"															// access\n" + 
+		"									&& fieldBinding.declaringClass.getPackage() != currentScope.enclosingSourceType()\n" + 
+		"											.getPackage()))) {\n" + 
 		"				return;\n" + 
 		"			}\n" + 
 		"		}\n" + 
@@ -8493,7 +8494,7 @@ public void testBug330313_wksp1_15_njl() {
 		"																			// was\n" + 
 		"																			// any)\n" + 
 		"							|| !fieldBinding.declaringClass\n" + 
-		"								.canBeSeenBy(currentScope))) {\n" + 
+		"									.canBeSeenBy(currentScope))) {\n" + 
 		"				this.codegenBinding = currentScope.enclosingSourceType()\n" + 
 		"						.getUpdatedFieldBinding(fieldBinding,\n" + 
 		"								(ReferenceBinding) this.actualReceiverType);\n" + 
@@ -8573,10 +8574,10 @@ public void testBug330313_wksp1_16_njl() {
 		"			if (!(this.currentElement instanceof RecoveredType)\n" + 
 		"					&& (this.currentToken == TokenNameDOT\n" + 
 		"					// || declaration.modifiers != 0\n" + 
-		"					|| (this.scanner\n" + 
-		"							.getLineNumber(declaration.type.sourceStart)\n" + 
-		"						!= this.scanner\n" + 
-		"							.getLineNumber((int) (namePosition >>> 32))))) {\n" + 
+		"							|| (this.scanner.getLineNumber(\n" + 
+		"									declaration.type.sourceStart) != this.scanner\n" + 
+		"											.getLineNumber(\n" + 
+		"													(int) (namePosition >>> 32))))) {\n" + 
 		"				return;\n" + 
 		"			}\n" + 
 		"		}\n" + 
@@ -8638,8 +8639,8 @@ public void testBug330313_wksp1_18_njl() {
 		"				&& safeSubtreeMatch(node.getName(), o.getName())\n" + 
 		"				&& safeSubtreeListMatch(node.arguments(), o.arguments())\n" + 
 		"				&& safeSubtreeListMatch(\n" + 
-		"					node.bodyDeclarations(),\n" + 
-		"					o.bodyDeclarations()));\n" + 
+		"						node.bodyDeclarations(),\n" + 
+		"						o.bodyDeclarations()));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8673,8 +8674,8 @@ public void testBug330313_wksp1_19_njl() {
 		"				&& safeSubtreeListMatch(node.superInterfaceTypes(),\n" + 
 		"						o.superInterfaceTypes())\n" + 
 		"				&& safeSubtreeListMatch(\n" + 
-		"					node.bodyDeclarations(),\n" + 
-		"					o.bodyDeclarations()));\n" + 
+		"						node.bodyDeclarations(),\n" + 
+		"						o.bodyDeclarations()));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8767,7 +8768,7 @@ public void testBug330313_wksp1_22_njl() {
 		"				&& safeSubtreeMatch(node.getJavadoc(), o.getJavadoc())\n" + 
 		"				&& safeSubtreeMatch(node.getName(), o.getName())\n" +
 		"				&& safeSubtreeListMatch(node.bodyDeclarations(),\n" + 
-		"					o.bodyDeclarations()));\n" + 
+		"						o.bodyDeclarations()));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -8936,12 +8937,12 @@ public void testBug330313_wksp1_28_njl() {
 		"									.isStatic())\n" + 
 		"						&& fieldBinding.declaringClass.id != T_Object)\n" + 
 		"						|| !(useDelegate\n" + 
-		"							? new CodeSnippetScope(currentScope)\n" + 
-		"									.canBeSeenByForCodeSnippet(\n" + 
-		"											fieldBinding.declaringClass,\n" + 
-		"											(ReferenceBinding) this.delegateThis.type)\n" + 
-		"							: fieldBinding.declaringClass\n" +
-		"									.canBeSeenBy(currentScope)))) {\n" + 
+		"								? new CodeSnippetScope(currentScope)\n" + 
+		"										.canBeSeenByForCodeSnippet(\n" + 
+		"												fieldBinding.declaringClass,\n" + 
+		"												(ReferenceBinding) this.delegateThis.type)\n" + 
+		"								: fieldBinding.declaringClass\n" +
+		"										.canBeSeenBy(currentScope)))) {\n" + 
 		"			// code\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -9497,7 +9498,6 @@ public void testBug330313_wksp1_43_njl() {
 	);
 }
 public void testBug330313_wksp1_44_njl() {
-	// TODO Could be improved to put the all array statements at the same indentation...
 	this.formatterPrefs.join_wrapped_lines = false;
 	String source =
 		"package wksp1;\n" + 
@@ -9519,9 +9519,9 @@ public void testBug330313_wksp1_44_njl() {
 		"	String foo() {\n" + 
 		"		return Policy.bind(\"CVSAnnotateBlock.6\", new Object[] { //$NON-NLS-1$\n" + 
 		"				user,\n" + 
-		"						revision,\n" + 
-		"						String.valueOf(delta),\n" + 
-		"						line\n" + 
+		"				revision,\n" + 
+		"				String.valueOf(delta),\n" + 
+		"				line\n" + 
 		"		});\n" + 
 		"	}\n" + 
 		"}\n"
@@ -9590,9 +9590,8 @@ public void testBug330313_wksp1_46_njl() {
 		"					colorRegistry\n" + 
 		"							.get(IWorkbenchThemeConstants.INACTIVE_TAB_TEXT_COLOR),\n" + 
 		"					new Color[] {\n" + 
-		"					colorRegistry\n" + 
-		"							.get(IWorkbenchThemeConstants.INACTIVE_TAB_BG_START)\n" + 
-		"					},\n" + 
+		"							colorRegistry\n" + 
+		"									.get(IWorkbenchThemeConstants.INACTIVE_TAB_BG_START) },\n" + 
 		"					new int[0],\n" + 
 		"					true);\n" + 
 		"		}\n" + 
@@ -9753,16 +9752,15 @@ public void testBug330313_wksp1_50_njl() {
 		"			// Deploy CodeSnippet class (only once)\n" + 
 		"			requestor.acceptClassFiles(\n" + 
 		"					new ClassFile[] {\n" + 
-		"					new ClassFile() {\n" + 
-		"						public byte[] getBytes() {\n" + 
-		"							return getCodeSnippetBytes();\n" + 
-		"						}\n" + 
+		"							new ClassFile() {\n" + 
+		"								public byte[] getBytes() {\n" + 
+		"									return getCodeSnippetBytes();\n" + 
+		"								}\n" + 
 		"\n" + 
-		"						public char[][] getCompoundName() {\n" + 
-		"							return EvaluationConstants.ROOT_COMPOUND_NAME;\n" + 
-		"						}\n" + 
-		"					}\n" + 
-		"					},\n" + 
+		"								public char[][] getCompoundName() {\n" + 
+		"									return EvaluationConstants.ROOT_COMPOUND_NAME;\n" + 
+		"								}\n" + 
+		"							} },\n" + 
 		"					null);\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -10079,28 +10077,27 @@ public void testBug330313_wksp1_53_njl_bnl() {
 		"	{\n" + 
 		"			/* 9 bits */\n" + 
 		"			{\n" + 
-		"			{ 24, 15 } },\n" + 
+		"					{ 24, 15 } },\n" + 
 		"			/* 10 bits */\n" + 
 		"			{\n" + 
-		"			{ 8, 18 },\n" + 
-		"			{ 15, 64 },\n" + 
-		"			{ 23, 16 },\n" + 
-		"			{ 24, 17 },\n" + 
-		"			{ 55, 0 } },\n" + 
+		"					{ 8, 18 },\n" + 
+		"					{ 15, 64 },\n" + 
+		"					{ 23, 16 },\n" + 
+		"					{ 24, 17 },\n" + 
+		"					{ 55, 0 } },\n" + 
 		"			/* 11 bits */\n" + 
-		"			{/* EOL */\n" + 
-		"			{ 0, -1 },\n" + 
-		"			{ 8, 1792 },\n" + 
-		"			{ 23, 24 },\n" + 
-		"			{ 24, 25 },\n" + 
-		"			{ 40, 23 },\n" + 
-		"			{ 55, 22 },\n" + 
-		"			{ 103, 19 },\n" + 
-		"			{ 104, 20 },\n" + 
-		"			{ 108, 21 },\n" + 
-		"			{ 12, 1856 },\n" + 
-		"			{ 13, 1920 } },\n" + 
-		"	};\n" + 
+		"			{\n" + 
+		"					/* EOL */ { 0, -1 },\n" + 
+		"					{ 8, 1792 },\n" + 
+		"					{ 23, 24 },\n" + 
+		"					{ 24, 25 },\n" + 
+		"					{ 40, 23 },\n" + 
+		"					{ 55, 22 },\n" + 
+		"					{ 103, 19 },\n" + 
+		"					{ 104, 20 },\n" + 
+		"					{ 108, 21 },\n" + 
+		"					{ 12, 1856 },\n" + 
+		"					{ 13, 1920 } }, };\n" + 
 		"}\n"
 	);
 }
