@@ -818,7 +818,8 @@ public void testBug059891_146175() throws JavaModelException {
 		"	}\n" + 
 		"\n" + 
 		"	private static class SomeOtherClass {\n" + 
-		"		public static void someMethodInInnerClass(String param1, String param2) {\n" + 
+		"		public static void someMethodInInnerClass(String param1,\n" + 
+		"				String param2) {\n" + 
 		"		}\n" + 
 		"\n" + 
 		"		public String anotherMethod(String par) {\n" + 
@@ -870,7 +871,8 @@ public void testBug059891_164093_02() throws JavaModelException {
 		"        someIdentifier(someArg).someMethodName()\n" + 
 		"                               .someMethodName(foo,\n" + 
 		"                                       bar)\n" + 
-		"                               .otherMethod(arg0, arg1);\n" + 
+		"                               .otherMethod(arg0,\n" + 
+		"                                       arg1);\n" + 
 		"    }\n" + 
 		"}\n"
 	);
@@ -911,9 +913,9 @@ public void testBug059891_wksp1_01() throws JavaModelException {
 	formatSource(source,
 		"public class X01 {\n" + 
 		"	private void reportError(String name) throws ParseError {\n" + 
-		"		throw new ParseError(\n" + 
-		"				MessageFormat.format(\n" + 
-		"						AntDTDSchemaMessages.getString(\"NfmParser.Ambiguous\"), new String[] { name })); //$NON-NLS-1$\n" + 
+		"		throw new ParseError(MessageFormat.format(\n" + 
+		"				AntDTDSchemaMessages.getString(\"NfmParser.Ambiguous\"), //$NON-NLS-1$\n" + 
+		"				new String[] { name }));\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -937,18 +939,16 @@ public void testBug059891_wksp1_02() throws JavaModelException {
 		"public class X02 {\n" + 
 		"	private void parseBuildFile(Project project) {\n" + 
 		"		if (!buildFile.exists()) {\n" + 
-		"			throw new BuildException(\n" + 
-		"					MessageFormat.format(\n" + 
-		"							InternalAntMessages\n" + 
-		"									.getString(\"InternalAntRunner.Buildfile__{0}_does_not_exist_!_1\"), //$NON-NLS-1$\n" + 
-		"							new String[] { buildFile.getAbsolutePath() }));\n" + 
+		"			throw new BuildException(MessageFormat.format(\n" + 
+		"					InternalAntMessages.getString(\n" + 
+		"							\"InternalAntRunner.Buildfile__{0}_does_not_exist_!_1\"), //$NON-NLS-1$\n" + 
+		"					new String[] { buildFile.getAbsolutePath() }));\n" + 
 		"		}\n" + 
 		"		if (!buildFile.isFile()) {\n" + 
-		"			throw new BuildException(\n" + 
-		"					MessageFormat.format(\n" + 
-		"							InternalAntMessages\n" + 
-		"									.getString(\"InternalAntRunner.Buildfile__{0}_is_not_a_file_1\"), //$NON-NLS-1$\n" + 
-		"							new String[] { buildFile.getAbsolutePath() }));\n" + 
+		"			throw new BuildException(MessageFormat.format(\n" + 
+		"					InternalAntMessages.getString(\n" + 
+		"							\"InternalAntRunner.Buildfile__{0}_is_not_a_file_1\"), //$NON-NLS-1$\n" + 
+		"					new String[] { buildFile.getAbsolutePath() }));\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -1005,11 +1005,8 @@ public void testBug059891_wksp1_05() throws JavaModelException {
 	formatSource(source,
 		"public class X05 {\n" + 
 		"	void foo() {\n" + 
-		"		if (false && AntUIPlugin\n" + 
-		"				.getDefault()\n" + 
-		"				.getPreferenceStore()\n" + 
-		"				.getBoolean(\n" + 
-		"						AntEditorPreferenceConstants.TEMPLATES_USE_CODEFORMATTER)) {\n" + 
+		"		if (false && AntUIPlugin.getDefault().getPreferenceStore().getBoolean(\n" + 
+		"				AntEditorPreferenceConstants.TEMPLATES_USE_CODEFORMATTER)) {\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -1059,13 +1056,9 @@ public void testBug059891_wksp1_07() throws JavaModelException {
 		"public class X07 {\n" + 
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			configureAntObject(\n" + 
-		"					result,\n" + 
-		"					element,\n" + 
-		"					task,\n" + 
-		"					task.getTaskName(),\n" + 
-		"					InternalCoreAntMessages\n" + 
-		"							.getString(\"AntCorePreferences.No_library_for_task\")); //$NON-NLS-1$\n" + 
+		"			configureAntObject(result, element, task, task.getTaskName(),\n" + 
+		"					InternalCoreAntMessages.getString(\n" + 
+		"							\"AntCorePreferences.No_library_for_task\")); //$NON-NLS-1$\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -1956,10 +1949,9 @@ public void testBug281655b() throws JavaModelException {
 		"public class X {\n" + 
 		"}\n";
 	formatSource(source,
-		"@MessageDriven(\n" + 
-		"		mappedName = \"filiality/SchedulerMQService\",\n" + 
-		"		activationConfig = { @ActivationConfigProperty(\n" + 
-		"				propertyName = \"cronTrigger\", propertyValue = \"0/10 * * * * ?\") })\n" + 
+		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\", activationConfig = {\n" + 
+		"		@ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
+		"				propertyValue = \"0/10 * * * * ?\") })\n" + 
 		"@RunAs(\"admin\")\n" + 
 		"@ResourceAdapter(\"quartz-ra.rar\")\n" + 
 		"@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)\n" + 
@@ -1985,7 +1977,8 @@ public void testBug281655c() throws JavaModelException {
 		"@MessageDriven(\n" + 
 		"		mappedName = \"filiality/SchedulerMQService\",\n" + 
 		"		activationConfig = { @ActivationConfigProperty(\n" + 
-		"				propertyName = \"cronTrigger\", propertyValue = \"0/10 * * * * ?\") })\n" + 
+		"				propertyName = \"cronTrigger\",\n" + 
+		"				propertyValue = \"0/10 * * * * ?\") })\n" + 
 		"@RunAs(\"admin\")\n" + 
 		"@ResourceAdapter(\"quartz-ra.rar\")\n" + 
 		"@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)\n" + 
@@ -2063,8 +2056,9 @@ public void testBug281655f() throws JavaModelException {
 		"}\n";
 	formatSource(source,
 		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\",\n" + 
-		"		activationConfig = { @ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
-		"				propertyValue = \"0/10 * * * * ?\") })\n" + 
+		"		activationConfig = {\n" +
+		"				@ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
+		"						propertyValue = \"0/10 * * * * ?\") })\n" + 
 		"@RunAs(\"admin\")\n" + 
 		"@ResourceAdapter(\"quartz-ra.rar\")\n" + 
 		"@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)\n" + 
@@ -6764,7 +6758,8 @@ public void testBug313524_146175() throws JavaModelException {
 		"	}\n" + 
 		"\n" + 
 		"	private static class SomeOtherClass {\n" + 
-		"		public static void someMethodInInnerClass(String param1, String param2) {\n" + 
+		"		public static void someMethodInInnerClass(String param1,\n" + 
+		"				String param2) {\n" + 
 		"		}\n" + 
 		"\n" + 
 		"		public String anotherMethod(String par) {\n" + 
@@ -8306,16 +8301,18 @@ public void testBug330313_wksp1_12_njl() {
 		"		Document doc = new Document(string);\n" + 
 		"		try {\n" + 
 		"			if (positions != null) {\n" + 
-		"				doc.addPositionUpdater(new DefaultPositionUpdater(POS_CATEGORY) {\n" + 
-		"					protected boolean notDeleted() {\n" + 
-		"						if (fOffset < fPosition.offset\n" + 
-		"								&& (fPosition.offset + fPosition.length < fOffset\n" + 
-		"										+ fLength)) {\n" + 
-		"							return false;\n" + 
-		"						}\n" + 
-		"						return true;\n" + 
-		"					}\n" + 
-		"				});\n" + 
+		"				doc.addPositionUpdater(\n" + 
+		"						new DefaultPositionUpdater(POS_CATEGORY) {\n" + 
+		"							protected boolean notDeleted() {\n" + 
+		"								if (fOffset < fPosition.offset\n" + 
+		"										&& (fPosition.offset\n" + 
+		"												+ fPosition.length < fOffset\n" + 
+		"														+ fLength)) {\n" + 
+		"									return false;\n" + 
+		"								}\n" + 
+		"								return true;\n" + 
+		"							}\n" + 
+		"						});\n" + 
 		"			}\n" + 
 		"		} catch (BadPositionCategoryException cannotHappen) {\n" + 
 		"			// can not happen: category is correctly set up\n" + 
@@ -8482,7 +8479,8 @@ public void testBug330313_wksp1_15_njl() {
 		"					&& !this.actualReceiverType.isArrayType()\n" + 
 		"					&& fieldBinding.declaringClass != null\n" + 
 		"					&& fieldBinding.constant == NotAConstant\n" + 
-		"					&& ((currentScope.environment().options.targetJDK >= ClassFileConstants.JDK1_2\n" + 
+		"					&& ((currentScope\n" + 
+		"							.environment().options.targetJDK >= ClassFileConstants.JDK1_2\n" + 
 		"							&& !fieldBinding.isStatic()\n" + 
 		"							&& fieldBinding.declaringClass.id != T_Object) // no\n" + 
 		"																			// change\n" + 
@@ -8931,7 +8929,8 @@ public void testBug330313_wksp1_28_njl() {
 		"				&& !lastReceiverType.isArrayType()\n" + 
 		"				&& fieldBinding.declaringClass != null\n" + 
 		"				&& fieldBinding.constant == NotAConstant\n" + 
-		"				&& ((currentScope.environment().options.targetJDK >= ClassFileConstants.JDK1_2\n" + 
+		"				&& ((currentScope\n" + 
+		"						.environment().options.targetJDK >= ClassFileConstants.JDK1_2\n" + 
 		"						&& (fieldBinding != this.binding\n" + 
 		"								|| this.indexOfFirstFieldBinding > 1 || !fieldBinding\n" + 
 		"									.isStatic())\n" + 
@@ -9152,7 +9151,8 @@ public void testBug330313_wksp1_34_njl() {
 		"						.getMarkerGenerationCount();\n" + 
 		"	}\n" + 
 		"\n" + 
-		"	private boolean compareSync(ResourceInfo oldElement, ResourceInfo newElement) {\n" + 
+		"	private boolean compareSync(ResourceInfo oldElement,\n" + 
+		"			ResourceInfo newElement) {\n" + 
 		"		return oldElement.getSyncInfoGenerationCount() == newElement\n" + 
 		"				.getSyncInfoGenerationCount();\n" + 
 		"	}\n" + 
@@ -9964,7 +9964,8 @@ public void testBug330313_wksp1_52_njl() {
 		"								SyncInfo.CONFLICTING, SyncInfo.ADDITION),\n" + 
 		"						new FastSyncInfoFilter() {\n" + 
 		"							public boolean select(SyncInfo info) {\n" + 
-		"								return info.getLocal().getType() == IResource.FILE;\n" + 
+		"								return info.getLocal()\n" + 
+		"										getType() == IResource.FILE;\n" + 
 		"							}\n" + 
 		"						}\n" + 
 		"				}),\n" + 
@@ -9976,15 +9977,17 @@ public void testBug330313_wksp1_52_njl() {
 		"								SyncInfo.CONFLICTING, SyncInfo.CHANGE),\n" + 
 		"						new FastSyncInfoFilter() {\n" + 
 		"							public boolean select(SyncInfo info) {\n" + 
-		"								if (info.getLocal().getType() == IResource.FILE) {\n" + 
+		"								if (info.getLocal()\n" + 
+		"										.getType() == IResource.FILE) {\n" + 
 		"									try {\n" + 
 		"										ICVSFile cvsFile = CVSWorkspaceRoot\n" + 
 		"												.getCVSFileFor((IFile) info\n" + 
 		"														.getLocal());\n" + 
 		"										byte[] syncBytes = cvsFile\n" + 
 		"												.getSyncBytes();\n" + 
-		"										return (syncBytes == null || ResourceSyncInfo\n" + 
-		"												.isAddition(syncBytes));\n" + 
+		"										return (syncBytes == null\n" + 
+		"												|| ResourceSyncInfo\n" + 
+		"														.isAddition(syncBytes));\n" + 
 		"									} catch (CVSException e) {\n" + 
 		"										CVSUIPlugin.log(e);\n" + 
 		"										// Fall though and try to update\n" + 
