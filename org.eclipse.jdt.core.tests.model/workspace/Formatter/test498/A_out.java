@@ -106,9 +106,9 @@ public final class DirectoryComparator {
                             .substring(firstDirectoryAbsolutePath.length() + 1);
             if (new File(secondFileName).exists()) {
                 if (firstFileName.toLowerCase().endsWith(".jar")) {
-                    new JarFileComparator(
-                            new String[] { firstFileName, secondFileName,
-                                    resultFile.getAbsolutePath() }).compare();
+                    new JarFileComparator(new String[] { firstFileName,
+                            secondFileName, resultFile.getAbsolutePath() })
+                                    .compare();
                 } else {
                     // do a binary compare byte per byte
                     File firstFile = new File(firstFileName);
@@ -156,19 +156,20 @@ public final class DirectoryComparator {
             int amountRead = -1;
             FileInputStream stream = new FileInputStream(file);
             do {
-                int amountRequested = Math
-                        .max(stream.available(), DEFAULT_READING_SIZE); // read at least 8K
+                int amountRequested = Math.max(stream.available(),
+                        DEFAULT_READING_SIZE); // read at least 8K
 
                 // resize contents if needed
                 if (contentsLength + amountRequested > contents.length) {
                     System.arraycopy(contents, 0,
                             contents = new byte[contentsLength
-                                    + amountRequested], 0, contentsLength);
+                                    + amountRequested],
+                            0, contentsLength);
                 }
 
                 // read as many bytes as possible
-                amountRead = stream
-                        .read(contents, contentsLength, amountRequested);
+                amountRead = stream.read(contents, contentsLength,
+                        amountRequested);
 
                 if (amountRead > 0) {
                     // remember length of contents

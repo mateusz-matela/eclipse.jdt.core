@@ -967,8 +967,10 @@ public void testBug059891_wksp1_03() throws JavaModelException {
 		"public class X03 {\n" + 
 		"\n" + 
 		"	protected void foo() {\n" + 
-		"		printTargets(project, subNames, null, InternalAntMessages\n" + 
-		"				.getString(\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
+		"		printTargets(project, subNames, null,\n" + 
+		"				InternalAntMessages\n" + 
+		"						.getString(\"InternalAntRunner.Subtargets__5\"), //$NON-NLS-1$\n" + 
+		"				0);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1078,13 +1080,13 @@ public void testBug059891_wksp1_08() throws JavaModelException {
 		"public class X08 {\n" + 
 		"	public void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			IStatus status = new Status(\n" + 
-		"					IStatus.ERROR,\n" + 
-		"					AntCorePlugin.PI_ANTCORE,\n" + 
+		"			IStatus status = new Status(IStatus.ERROR, AntCorePlugin.PI_ANTCORE,\n" + 
 		"					AntCorePlugin.ERROR_RUNNING_BUILD,\n" + 
 		"					MessageFormat.format(\n" + 
 		"							InternalCoreAntMessages\n" + 
-		"									.getString(\"AntRunner.Already_in_progess\"), new String[] { buildFileLocation }), null); //$NON-NLS-1$\n" + 
+		"									.getString(\"AntRunner.Already_in_progess\"), //$NON-NLS-1$\n" + 
+		"							new String[] { buildFileLocation }),\n" + 
+		"					null);\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -1148,8 +1150,10 @@ public void testBug059891_wksp1_11() throws JavaModelException {
 	formatSource(source,
 		"public class X11 {\n" + 
 		"	private void antFileNotFound() {\n" + 
-		"		reportError(AntLaunchConfigurationMessages\n" + 
-		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$	\n" + 
+		"		reportError(\n" + 
+		"				AntLaunchConfigurationMessages\n" + 
+		"						.getString(\"AntLaunchShortcut.Unable\"), //$NON-NLS-1$	\n" + 
+		"				null);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1680,8 +1684,9 @@ public void testBug203588() throws JavaModelException {
 		"public class Test {\n" +
 		"	void foo() {\n" +
 		"		while (true) {\n" +
-		"			if (patternChar != (isCaseSensitive ? name[iName] : Character\n" +
-		"					.toLowerCase(name[iName])) && patternChar != \'?\') {\n" +
+		"			if (patternChar != (isCaseSensitive ? name[iName]\n" +
+		"					: Character.toLowerCase(name[iName]))\n" +
+		"					&& patternChar != \'?\') {\n" +
 		"				return;\n" +
 		"			}\n" +
 		"		}\n" +
@@ -2216,9 +2221,9 @@ public void testBug282030h1() throws JavaModelException {
 		"public class X {\n" + 
 		"}\n";
 	formatSource(source,
-		"@MyAnnot1(name = \"sample1\", value = { @MyAnnot2(\n" + 
-		"		name = \"sample2\",\n" + 
-		"		value = \"demo\") })\n" + 
+		"@MyAnnot1(\n" + 
+		"		name = \"sample1\",\n" + 
+		"		value = { @MyAnnot2(name = \"sample2\", value = \"demo\") })\n" + 
 		"public class X {\n" + 
 		"}\n"
 	);
@@ -5322,13 +5327,11 @@ public void testBug264112_w25_S1() {
 		"class Sample1 {\n" + 
 		"	void foo() {\n" + 
 		"		Other.bar(100,\n" + 
-		"				200,\n" + 
-		"				300,\n" + 
-		"				400,\n" + 
-		"				500,\n" + 
-		"				600,\n" + 
-		"				700,\n" + 
-		"				800, 900);\n" + 
+		"				200, 300,\n" + 
+		"				400, 500,\n" + 
+		"				600, 700,\n" + 
+		"				800,\n" + 
+		"				900);\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -5524,8 +5527,7 @@ public void testBug264112_wksp2_01() {
 		"				sb.append(PATH_SMOOTH_QUAD_TO)\n" + 
 		"						.append(String\n" + 
 		"								.valueOf(midValue(point.x, point_plus1.x)))\n" + 
-		"						.append(XML_SPACE)\n" + 
-		"						.append(String\n" + 
+		"						.append(XML_SPACE).append(String\n" + 
 		"								.valueOf(midValue(point.y, point_plus1.y)));\n" + 
 		"			} else {\n" + 
 		"				break;\n" + 
@@ -6620,8 +6622,7 @@ public void testBug313524_01b() throws JavaModelException {
 	formatSource(source,
 		"public class X01 {\n" + 
 		"	void test() {\n" + 
-		"		foo(bar(1, 2, 3, 4), bar(	5,\n" + 
-		"									6,\n" + 
+		"		foo(bar(1, 2, 3, 4), bar(	5, 6,\n" + 
 		"									7,\n" + 
 		"									8));\n" + 
 		"	}\n" + 
@@ -6708,8 +6709,7 @@ public void testBug313524_03b() throws JavaModelException {
 	formatSource(source,
 		"public class X03 {\n" + 
 		"	void test() {\n" + 
-		"		foo(bar(1, 2, 3, 4), bar(	5,\n" + 
-		"									6,\n" + 
+		"		foo(bar(1, 2, 3, 4), bar(	5, 6,\n" + 
 		"									7,\n" + 
 		"									8),\n" + 
 		"			bar(9, 10, 11, 12));\n" + 
@@ -6912,8 +6912,8 @@ public void testBug313524_wksp1_03() throws JavaModelException {
 		"public class X03 {\n" + 
 		"\n" + 
 		"	protected void foo() {\n" + 
-		"		printTargets(project, subNames, null, InternalAntMessages\n" + 
-		"				.getString(\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
+		"		printTargets(project, subNames, null, InternalAntMessages.getString(\n" + 
+		"				\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -6979,9 +6979,8 @@ public void testBug313524_wksp1_06() throws JavaModelException {
 		"	public void launch() {\n" + 
 		"		try {\n" + 
 		"			if ((javaProject == null) || !javaProject.exists()) {\n" + 
-		"				abort(PDEPlugin________\n" + 
-		"						.getResourceString(\"JUnitLaunchConfig_____\"),\n" + 
-		"						null,\n" + 
+		"				abort(PDEPlugin________.getResourceString(\n" + 
+		"						\"JUnitLaunchConfig_____\"), null,\n" + 
 		"						IJavaLaunchConfigurationConstants.ERR_NOT_A_JAVA_PROJECT);\n" + 
 		"			}\n" + 
 		"		} catch (CoreException e) {\n" + 
@@ -7005,13 +7004,9 @@ public void testBug313524_wksp1_07() throws JavaModelException {
 		"public class X07 {\n" + 
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			configureAntObject(\n" + 
-		"					result,\n" + 
-		"					element,\n" + 
-		"					task,\n" + 
-		"					task.getTaskName(),\n" + 
-		"					InternalCoreAntMessages\n" + 
-		"							.getString(\"AntCorePreferences.No_library_for_task\")); //$NON-NLS-1$\n" + 
+		"			configureAntObject(result, element, task, task.getTaskName(),\n" + 
+		"					InternalCoreAntMessages.getString(\n" + 
+		"							\"AntCorePreferences.No_library_for_task\")); //$NON-NLS-1$\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -7032,13 +7027,11 @@ public void testBug313524_wksp1_08() throws JavaModelException {
 		"public class X08 {\n" + 
 		"	public void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			IStatus status = new Status(\n" + 
-		"					IStatus.ERROR,\n" + 
-		"					AntCorePlugin.PI_ANTCORE,\n" + 
-		"					AntCorePlugin.ERROR_RUNNING_BUILD,\n" + 
-		"					MessageFormat\n" + 
-		"							.format(InternalCoreAntMessages\n" + 
-		"									.getString(\"AntRunner.Already_in_progess\"), new String[] { buildFileLocation }), null); //$NON-NLS-1$\n" + 
+		"			IStatus status = new Status(IStatus.ERROR, AntCorePlugin.PI_ANTCORE,\n" + 
+		"					AntCorePlugin.ERROR_RUNNING_BUILD, MessageFormat.format(\n" + 
+		"							InternalCoreAntMessages.getString(\n" + 
+		"									\"AntRunner.Already_in_progess\"),\n" + 
+		"							new String[] { buildFileLocation }), null); //$NON-NLS-1$\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
@@ -7969,12 +7962,8 @@ public void testBug330313_wksp1_06_njl() {
 		"\n" + 
 		"		try\n" + 
 		"		{\n" + 
-		"			index = this.manager.getIndexForUpdate(this.containerPath, true, /*\n" + 
-		"																			 * reuse\n" + 
-		"																			 * index\n" + 
-		"																			 * file\n" + 
-		"																			 */\n" + 
-		"					true /* create if none */);\n" + 
+		"			index = this.manager.getIndexForUpdate(this.containerPath, true,\n" + 
+		"					/* reuse index file */ true /* create if none */);\n" + 
 		"		} finally\n" + 
 		"		{\n" + 
 		"		}\n" + 
@@ -8248,8 +8237,9 @@ public void testBug330313_wksp1_12() {
 		"						new DefaultPositionUpdater(POS_CATEGORY) {\n" + 
 		"							protected boolean notDeleted() {\n" + 
 		"								if (fOffset < fPosition.offset\n" + 
-		"										&& (fPosition.offset + fPosition.length\n" + 
-		"												< fOffset + fLength)) {\n" + 
+		"										&& (fPosition.offset\n" + 
+		"												+ fPosition.length < fOffset\n" + 
+		"														+ fLength)) {\n" + 
 		"									return false;\n" + 
 		"								}\n" + 
 		"								return true;\n" + 
@@ -8709,8 +8699,8 @@ public void testBug330313_wksp1_20_njl() {
 		"			if (entity.charAt(2) == \'X\' || entity.charAt(2) == \'x\') {\n" + 
 		"			}\n" + 
 		"			Character c =\n" + 
-		"					new Character((char) Integer.parseInt(\n" + 
-		"							entity.substring(start), radix));\n" + 
+		"					new Character((char) Integer\n" + 
+		"							.parseInt(entity.substring(start), radix));\n" + 
 		"			return c.toString();\n" + 
 		"		}\n" + 
 		"		return \"\";\n" + 
@@ -8932,8 +8922,8 @@ public void testBug330313_wksp1_28_njl() {
 		"				&& ((currentScope\n" + 
 		"						.environment().options.targetJDK >= ClassFileConstants.JDK1_2\n" + 
 		"						&& (fieldBinding != this.binding\n" + 
-		"								|| this.indexOfFirstFieldBinding > 1 || !fieldBinding\n" + 
-		"									.isStatic())\n" + 
+		"								|| this.indexOfFirstFieldBinding > 1\n" + 
+		"								|| !fieldBinding.isStatic())\n" + 
 		"						&& fieldBinding.declaringClass.id != T_Object)\n" + 
 		"						|| !(useDelegate\n" + 
 		"								? new CodeSnippetScope(currentScope)\n" + 
@@ -9083,8 +9073,10 @@ public void testBug330313_wksp1_33() {
 		"\n" + 
 		"public class X33 {\n" + 
 		"	void foo() {\n" + 
-		"		if (inMetaTag && (t1.image.equalsIgnoreCase(\"name\")\n" + 
-		"				|| t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")) && t2 != null) {\n" + 
+		"		if (inMetaTag\n" + 
+		"				&& (t1.image.equalsIgnoreCase(\"name\")\n" + 
+		"						|| t1.image.equalsIgnoreCase(\"HTTP-EQUIV\"))\n" + 
+		"				&& t2 != null) {\n" + 
 		"			currentMetaTag = t2.image.toLowerCase();\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -9146,9 +9138,8 @@ public void testBug330313_wksp1_34_njl() {
 		"			ResourceInfo newElement) {\n" + 
 		"		boolean bothNull = oldElement.getMarkers(false) == null\n" + 
 		"				&& newElement.getMarkers(false) == null;\n" + 
-		"		return bothNull\n" + 
-		"				|| oldElement.getMarkerGenerationCount() == newElement\n" + 
-		"						.getMarkerGenerationCount();\n" + 
+		"		return bothNull || oldElement.getMarkerGenerationCount() == newElement\n" + 
+		"				.getMarkerGenerationCount();\n" + 
 		"	}\n" + 
 		"\n" + 
 		"	private boolean compareSync(ResourceInfo oldElement,\n" + 
@@ -9241,14 +9232,13 @@ public void testBug330313_wksp1_37_njl() {
 		"public class X37 {\n" + 
 		"	void foo() {\n" + 
 		"		if (true) {\n" + 
-		"			if (ignoreQuickDiffPrefPage\n" + 
-		"					&& (info.getAnnotationType()\n" + 
-		"							.equals(\"org.eclipse.ui.workbench.texteditor.quickdiffChange\") //$NON-NLS-1$\n" + 
-		"							|| (info.getAnnotationType()\n" + 
-		"									.equals(\"org.eclipse.ui.workbench.texteditor.quickdiffAddition\")) //$NON-NLS-1$\n" + 
-		"					|| (info.getAnnotationType()\n" + 
-		"							.equals(\"org.eclipse.ui.workbench.texteditor.quickdiffDeletion\")) //$NON-NLS-1$\n" + 
-		"					))\n" + 
+		"			if (ignoreQuickDiffPrefPage && (info.getAnnotationType().equals(\n" + 
+		"					\"org.eclipse.ui.workbench.texteditor.quickdiffChange\") //$NON-NLS-1$\n" + 
+		"					|| (info.getAnnotationType().equals(\n" + 
+		"							\"org.eclipse.ui.workbench.texteditor.quickdiffAddition\")) //$NON-NLS-1$\n" + 
+		"					|| (info.getAnnotationType().equals(\n" + 
+		"							\"org.eclipse.ui.workbench.texteditor.quickdiffDeletion\")) //$NON-NLS-1$\n" + 
+		"			))\n" + 
 		"				continue;\n" + 
 		"		}\n" + 
 		"	}\n" + 

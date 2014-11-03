@@ -3,7 +3,8 @@ public class A {
 		while (true) {
 			newFilename = (new StringBuffer(_workingDir).append(File.separator)
 					.append(_localFilename).append(documentCount)
-					.append(EXTENTION)).toString();
+					.append(EXTENTION))
+							.toString();
 		}
 	}
 }
