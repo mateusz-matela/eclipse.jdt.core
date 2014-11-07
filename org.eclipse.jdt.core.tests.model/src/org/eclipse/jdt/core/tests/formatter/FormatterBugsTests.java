@@ -1901,6 +1901,7 @@ public void testBug252556_wksp3a() {
  */
 public void testBug281655() throws JavaModelException {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.alignment_for_arguments_in_annotation = Alignment.M_COMPACT_SPLIT;
 	String source =
 		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\", \n" + 
 		"        activationConfig = { \n" + 
@@ -1916,8 +1917,7 @@ public void testBug281655() throws JavaModelException {
 		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\",\n" + 
 		"		activationConfig = {\n" + 
 		"				@ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
-		"						propertyValue = \"0/10 * * * * ?\")\n" + 
-		"		})\n" + 
+		"						propertyValue = \"0/10 * * * * ?\") })\n" + 
 		"@RunAs(\"admin\")\n" + 
 		"@ResourceAdapter(\"quartz-ra.rar\")\n" + 
 		"@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)\n" + 
@@ -1927,6 +1927,7 @@ public void testBug281655() throws JavaModelException {
 }
 public void testBug281655a() throws JavaModelException {
 	this.formatterPrefs.alignment_for_arguments_in_annotation = Alignment.M_NO_ALIGNMENT;
+	this.formatterPrefs.alignment_for_expressions_in_array_initializer = Alignment.M_NO_ALIGNMENT;
 	String source =
 		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\", \n" + 
 		"        activationConfig = { \n" + 
