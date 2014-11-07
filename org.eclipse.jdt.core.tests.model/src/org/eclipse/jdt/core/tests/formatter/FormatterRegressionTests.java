@@ -8842,43 +8842,10 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 	}
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=111270
 	public void test608() {
-		/* old test
 		Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 		DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 		DefaultCodeFormatter codeFormatter = new DefaultCodeFormatter(preferences);
 		runTest(codeFormatter, "test608", "A.java", CodeFormatter.K_JAVA_DOC, false);//$NON-NLS-1$ //$NON-NLS-2$
-		*/
-		String source = 
-			"/**\r\n" + 
-			" * Mensagens SMTP tem o seguinte formato:\r\n" + 
-			" * <pre>\r\n" + 
-			" * resposta de uma linha só:\r\n" + 
-			" *  nnn [SP] lalalal [CR] [LF]\r\n" + 
-			" * resposta de várias linhas:\r\n" + 
-			" *  nnn [-] lalalalal [CR] [LF]\r\n" + 
-			" *  nnn [-] lalalalal [CR] [LF]\r\n" + 
-			" *  ...\r\n" + 
-			" *  nnn [SP] lalalalal [CR] [LF]\r\n" + 
-			" * </pre>\r\n" + 
-			" * */";
-		formatSource(source,
-			"/**\n" + 
-			" * Mensagens SMTP tem o seguinte formato:\n" + 
-			" * \n" + 
-			" * <pre>\n" + 
-			" * resposta de uma linha só:\n" + 
-			" *  nnn [SP] lalalal [CR] [LF]\n" + 
-			" * resposta de várias linhas:\n" + 
-			" *  nnn [-] lalalalal [CR] [LF]\n" + 
-			" *  nnn [-] lalalalal [CR] [LF]\n" + 
-			" *  ...\n" + 
-			" *  nnn [SP] lalalalal [CR] [LF]\n" + 
-			" * </pre>\n" + 
-			" * */",
-			CodeFormatter.K_JAVA_DOC,
-			0 /*no indentation*/,
-			true /*repeat formatting twice*/
-		);
 	}
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=116858
 	public void test609() {
