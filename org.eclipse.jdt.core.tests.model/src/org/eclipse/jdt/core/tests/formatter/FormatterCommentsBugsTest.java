@@ -637,7 +637,8 @@ public void testBug217108f() {
 	formatSource(source,
 		"public class Test {\n" + 
 		"\n" + 
-		"	// a b\n" + 
+		"	// a\n" + 
+		"	// b\n" + 
 		"\n" + 
 		"	int i;\n" + 
 		"\n" + 
@@ -681,28 +682,6 @@ public void testBug217108h() {
 		"\n" + 
 		"	/** a */\n" + 
 		"\n" + 
-		"	// b\n" + 
-		"\n" + 
-		"	int i;\n" + 
-		"\n" + 
-		"}\n"
-	);
-}
-public void testBug217108i() {
-	this.formatterPrefs.join_lines_in_comments = false;
-	String source =
-		"public class Test {\n" + 
-		"\n" + 
-		"    // a\n" + 
-		"    // b\n" + 
-		"\n" + 
-		"    int i;\n" + 
-		"\n" + 
-		"}\n";
-	formatSource(source,
-		"public class Test {\n" + 
-		"\n" + 
-		"	// a\n" + 
 		"	// b\n" + 
 		"\n" + 
 		"	int i;\n" + 
