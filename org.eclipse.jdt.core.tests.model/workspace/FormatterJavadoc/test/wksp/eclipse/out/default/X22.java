@@ -7,6 +7,6 @@ public class X22 {
 		 * "synchronized" modifier with flag value {@link Modifier#SYNCHRONIZED}
 		 * .
 		 */
-		public static final String SYNCHRONIZED_KEYWORD = "synchronized"; //$NON-NLS-1$
+		public static final String SYNCHRONIZED_KEYWORD = "synchronized";//$NON-NLS-1$
 	}
 }
