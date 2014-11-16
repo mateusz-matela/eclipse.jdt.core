@@ -63,6 +63,7 @@ public class DefaultCodeFormatterOptions {
 	public int alignment_for_enum_constants;
 	public int alignment_for_expressions_in_array_initializer;
 	public int alignment_for_method_declaration;
+	@Deprecated
 	public int alignment_for_multiple_fields;
 	public int alignment_for_parameters_in_constructor_declaration;
 	public int alignment_for_parameters_in_method_declaration;
@@ -174,6 +175,7 @@ public class DefaultCodeFormatterOptions {
 	public boolean insert_space_after_closing_paren_in_cast;
 	public boolean insert_space_after_closing_brace_in_block;
 	public boolean insert_space_after_colon_in_assert;
+	@Deprecated
 	public boolean insert_space_after_colon_in_case;
 	public boolean insert_space_after_colon_in_conditional;
 	public boolean insert_space_after_colon_in_for;
@@ -338,7 +340,6 @@ public class DefaultCodeFormatterOptions {
 	public boolean join_lines_in_comments;
 	public boolean put_empty_statement_on_new_line;
 	public int tab_size;
-	public final char filling_space = ' ';
 	public int page_width;
 	public int tab_char;
 	public boolean use_tabs_only_for_leading_indentations;
