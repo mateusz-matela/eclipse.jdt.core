@@ -16,7 +16,7 @@ import org.eclipse.jdt.internal.formatter.redesign.TokenManager;
 import org.eclipse.jdt.internal.formatter.redesign.TokenTraverser;
 import org.eclipse.jdt.internal.formatter.redesign.Token.WrapPolicy;
 
-public class WrapExecutor extends TokenTraverser {
+public class WrapExecutor {
 
 	private static class WrapInfo {
 		public int wrapTokenIndex;
@@ -251,7 +251,7 @@ public class WrapExecutor extends TokenTraverser {
 	private final static int[] EMPTY_ARRAY = {};
 
 	private final HashMap<WrapInfo, WrapResult> wrapSearchResults = new HashMap<WrapInfo, WrapResult>();
-	private final HashSet<WrapPolicy> usedTopPriorityWraps = new HashSet<Token.WrapPolicy>();
+	private final HashSet<WrapPolicy> usedTopPriorityWraps = new HashSet<WrapPolicy>();
 
 	private final LineAnalyzer lineAnalyzer;
 
@@ -259,10 +259,6 @@ public class WrapExecutor extends TokenTraverser {
 	final DefaultCodeFormatterOptions options;
 
 	private int topPriorityWrapIndex;
-	private int jumpToIndex;
-	private int currentIndent;
-	private boolean isLineWrapped;
-	private WrapInfo nextWrapInfo;
 
 	private final WrapInfo wrapInfoTemp = new WrapInfo();
 
@@ -272,39 +268,67 @@ public class WrapExecutor extends TokenTraverser {
 		this.lineAnalyzer = new LineAnalyzer(tokenManager, options);
 	}
 
-	@Override
-	protected boolean token(Token token, int index) {
-		if (this.nextWrapInfo != null && this.nextWrapInfo.wrapTokenIndex == index) {
-			this.currentIndent = this.nextWrapInfo.indent;
-			this.isLineWrapped = true;
-			this.nextWrapInfo = this.wrapSearchResults.get(this.nextWrapInfo).nextWrap;
-			token.breakBefore();
-			handleOnColumnIndent(index, token.getWrapPolicy());
-			if (handleTopPriorityWraps(index))
-				return false;
-		} else if (this.nextWrapInfo == null && (getLineBreaksBefore() > 0 || index == 0)) {
+	public void executeWraps() {
+		int index = 0;
+		mainLoop:
+		while (index < this.tm.size()) {
+			// this might be a pre-existing wrap that should trigger other top priority wraps
+			Token token = this.tm.get(index);
 			WrapPolicy wrapPolicy = token.getWrapPolicy();
 			handleOnColumnIndent(index, wrapPolicy);
-			if (handleTopPriorityWraps(index))
-				return false;
-			// determine wraps for incoming line
-			this.currentIndent = getWrapIndent(token);
-			this.isLineWrapped = wrapPolicy != null;
-			this.wrapSearchResults.clear();
-			this.topPriorityWrapIndex = -1;
-			WrapResult wrapResult = findWraps(index, this.currentIndent);
-			if (wrapResult == WrapResult.TOP_PRIORITY_WRAP_MET && handleTopPriorityWraps(this.topPriorityWrapIndex)) {
-				this.jumpToIndex = Math.min(this.jumpToIndex, index);
-				return false;
+			int jumpToIndex = handleTopPriorityWraps(index);
+			if (jumpToIndex >= 0) {
+				index = jumpToIndex;
+				continue mainLoop;
 			}
-			this.nextWrapInfo = wrapResult.nextWrap;
+
+			// determine wraps for incoming line
+			int currentIndent = getWrapIndent(token);
+			boolean isLineWrapped = token.isWrappable();
+			this.wrapSearchResults.clear();
+			WrapResult wrapResult = findWraps(index, currentIndent);
+			if (wrapResult == WrapResult.TOP_PRIORITY_WRAP_MET) {
+				jumpToIndex = handleTopPriorityWraps(this.topPriorityWrapIndex);
+				assert jumpToIndex >= 0;
+				index = Math.min(index, jumpToIndex);
+				continue mainLoop;
+			}
+
+			// apply wraps and indents
+			WrapInfo wrapInfo = wrapResult.nextWrap;
+			while (wrapInfo != null) {
+				isLineWrapped = true;
+				for (; index < wrapInfo.wrapTokenIndex; index++)
+					this.tm.get(index).setIndent(currentIndent);
+				token = this.tm.get(index);
+				token.breakBefore();
+				token.setIndent(currentIndent = wrapInfo.indent);
+				handleOnColumnIndent(index, token.getWrapPolicy());
+				jumpToIndex = handleTopPriorityWraps(index);
+				if (jumpToIndex >= 0) {
+					index = jumpToIndex;
+					continue mainLoop;
+				}
+				wrapInfo = this.wrapSearchResults.get(wrapInfo).nextWrap;
+			}
+
+			// apply indent until the beginning of the next line
+			token.setIndent(currentIndent);
+			for (index++; index < this.tm.size(); index++) {
+				if (token.getLineBreaksAfter() > 0)
+					break;
+				token = this.tm.get(index);
+				if (token.isNextLineOnWrap() && isLineWrapped)
+					token.breakBefore();
+				if (token.getLineBreaksBefore() > 0)
+					break;
+				token.setIndent(currentIndent);
+			}
 		}
-		if (token.isNextLineOnWrap() && this.isLineWrapped) {
-			token.breakBefore();
-		} else {
-			token.setIndent(this.currentIndent);
-		}
-		return true;
+		this.wrapSearchResults.clear();
+		this.usedTopPriorityWraps.clear();
+
+		this.tm.traverse(0, new NLSTagHandler());
 	}
 
 	private WrapResult findWrapsCached(int startTokenIndex, int indent) {
@@ -493,11 +517,16 @@ public class WrapExecutor extends TokenTraverser {
 		return Math.exp(policy.structureDepth) * policy.penaltyMultiplier;
 	}
 
-	private boolean handleTopPriorityWraps(int wrapIndex) {
+	/**
+	 * @return index of the first token in the top priority group that given token belongs to or -1 if it doesn't belong
+	 *         to any top priority.
+	 */
+	private int handleTopPriorityWraps(int wrapIndex) {
 		// wrap all tokens in the same top priority group and jump back to the first one
 		WrapPolicy wrapPolicy = this.tm.get(wrapIndex).getWrapPolicy();
 		if (wrapPolicy == null || !wrapPolicy.isTopPriority() || this.usedTopPriorityWraps.contains(wrapPolicy))
-			return false;
+			return -1;
+		int firstTokenIndex = -1;
 		int parentIndex = wrapPolicy.wrapParentIndex;
 		for (int i = wrapIndex; i > parentIndex; i--) {
 			Token token = this.tm.get(i);
@@ -505,7 +534,7 @@ public class WrapExecutor extends TokenTraverser {
 			if (wrapPolicy != null && wrapPolicy.wrapParentIndex == parentIndex) {
 				if (wrapPolicy.isTopPriority()) {
 					token.breakBefore();
-					this.jumpToIndex = i;
+					firstTokenIndex = i;
 					this.usedTopPriorityWraps.add(wrapPolicy);
 				}
 				if (wrapPolicy.isFirstInGroup)
@@ -528,7 +557,7 @@ public class WrapExecutor extends TokenTraverser {
 			}
 			breakAfterPrevious = token.getLineBreaksAfter() > 0;
 		}
-		return this.jumpToIndex >= 0;
+		return firstTokenIndex;
 	}
 
 	private int[] toArray(List<Integer> list) {
@@ -574,19 +603,5 @@ public class WrapExecutor extends TokenTraverser {
 		}
 		wrapIndent += policy.extraIndent * this.options.indentation_size;
 		return this.tm.toIndent(wrapIndent, true);
-	}
-
-	public void executeWraps() {
-		this.jumpToIndex = 0;
-		while (this.jumpToIndex >= 0) {
-			int jumpIndex = this.jumpToIndex;
-			this.jumpToIndex = -1;
-			this.nextWrapInfo = null;
-			this.tm.traverse(jumpIndex, this);
-		}
-		this.wrapSearchResults.clear();
-		this.usedTopPriorityWraps.clear();
-
-		this.tm.traverse(0, new NLSTagHandler());
 	}
 }
