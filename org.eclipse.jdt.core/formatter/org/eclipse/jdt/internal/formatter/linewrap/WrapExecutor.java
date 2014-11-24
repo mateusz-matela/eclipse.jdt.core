@@ -274,8 +274,7 @@ public class WrapExecutor {
 		while (index < this.tm.size()) {
 			// this might be a pre-existing wrap that should trigger other top priority wraps
 			Token token = this.tm.get(index);
-			WrapPolicy wrapPolicy = token.getWrapPolicy();
-			handleOnColumnIndent(index, wrapPolicy);
+			handleOnColumnIndent(index, token.getWrapPolicy());
 			int jumpToIndex = handleTopPriorityWraps(index);
 			if (jumpToIndex >= 0) {
 				index = jumpToIndex;
@@ -298,8 +297,15 @@ public class WrapExecutor {
 			WrapInfo wrapInfo = wrapResult.nextWrap;
 			while (wrapInfo != null) {
 				isLineWrapped = true;
-				for (; index < wrapInfo.wrapTokenIndex; index++)
-					this.tm.get(index).setIndent(currentIndent);
+				for (; index < wrapInfo.wrapTokenIndex; index++) {
+					token = this.tm.get(index);
+					if (shouldForceWrap(token, currentIndent)) {
+						currentIndent = token.getIndent();
+						wrapInfo = new WrapInfo(index, currentIndent);
+						break;
+					}
+					token.setIndent(currentIndent);
+				}
 				token = this.tm.get(index);
 				token.breakBefore();
 				token.setIndent(currentIndent = wrapInfo.indent);
@@ -322,6 +328,8 @@ public class WrapExecutor {
 					token.breakBefore();
 				if (token.getLineBreaksBefore() > 0)
 					break;
+				if (shouldForceWrap(token, currentIndent))
+					currentIndent = token.getIndent();
 				token.setIndent(currentIndent);
 			}
 		}
@@ -481,26 +489,30 @@ public class WrapExecutor {
 		// add more penalty than if it was wrapped.
 		Token lineStartToken = this.tm.get(lineStartIndex);
 		WrapPolicy lineStartWrapPolicy = lineStartToken.getWrapPolicy();
-		if (lineStartToken.isWrappable()) {
+		if (wrapToken != null && wrapToken.isWrappable() && lineStartToken.isWrappable()) {
 			for (int i = lineStartIndex + 1; i < wrapIndex; i++) {
 				WrapPolicy intermediatePolicy = this.tm.get(i).getWrapPolicy();
 				if (intermediatePolicy != null
-						&& intermediatePolicy.structureDepth < lineStartWrapPolicy.structureDepth) {
+						&& intermediatePolicy.structureDepth < lineStartWrapPolicy.structureDepth
+						&& intermediatePolicy.structureDepth < wrapPolicy.structureDepth) {
 					penalty += getPenalty(intermediatePolicy) * 1.25;
 				}
 			}
 		}
 
 		// In the previous example, bar1 should be wrapped too, to emphasize that bar1 and bar2 are the same level.
-		// Assuming lineStartIndex is at bar1, check if there is a higher depth wrap (bbb) followed by
+		// Assuming wrapIndex is at bar1, check if there is a higher depth wrap (bbb) followed by
 		// a wrap of the same parent (bar2). If so, then bar1 must be wrapped (so give it negative penalty).
+		// Update: Actually, every token that is followed by a higher level depth wrap should be also wrapped,
+		// as long as this next wrap is not the last in line and the token is not the first in its wrap group.
 		WrapResult nextWrapResult = wrapResult;
 		boolean checkDepth = wrapToken != null && wrapToken.isWrappable() &&
 				(lineStartWrapPolicy == null || wrapPolicy.structureDepth >= lineStartWrapPolicy.structureDepth);
 		double penaltyDiff = 0;
 		while (checkDepth && nextWrapResult.nextWrap != null) {
 			WrapPolicy nextPolicy = this.tm.get(nextWrapResult.nextWrap.wrapTokenIndex).getWrapPolicy();
-			if (nextPolicy.wrapParentIndex == wrapPolicy.wrapParentIndex) {
+			if (nextPolicy.wrapParentIndex == wrapPolicy.wrapParentIndex
+					|| (penaltyDiff != 0 && !wrapPolicy.isFirstInGroup)) {
 				penalty -= penaltyDiff * 1.25;
 				break;
 			}
@@ -515,6 +527,22 @@ public class WrapExecutor {
 
 	private double getPenalty(WrapPolicy policy) {
 		return Math.exp(policy.structureDepth) * policy.penaltyMultiplier;
+	}
+
+	private boolean shouldForceWrap(Token token, int currentIndent) {
+		// A token that will have smaller indent when wrapped than the current line indent,
+		// should be wrapped because it's a low depth token following some complex wraps of higher depth.
+		// This rule could not be implemented in getWrapPenalty() because a token's wrap indent may depend
+		// on wraps in previous lines, which are not determined yet when the token's penalty is calculated.
+		if (token.isWrappable() && this.options.wrap_outer_expressions_when_nested) {
+			int indent = getWrapIndent(token);
+			if (indent < currentIndent) {
+				token.breakBefore();
+				token.setIndent(indent);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
