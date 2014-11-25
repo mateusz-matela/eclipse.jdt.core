@@ -9335,12 +9335,11 @@ public void testBug330313_wksp1_40_njl() {
 		"\n" + 
 		"public class X40 {\n" + 
 		"	protected final static String[][] TABLE = new String[][] {\n" + 
-		"			/* INACTIVE *//* PARTLY_ACTIVE *//* ACTIVE */\n" + 
-		"			/* INACTIVE */{ \"INACTIVE\", \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\" },\n" + 
-		"			/* PARTLY_ACTIVE */{ \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\",\n" + 
+		"			/* INACTIVE */ /* PARTLY_ACTIVE */ /* ACTIVE */\n" + 
+		"			/* INACTIVE */ { \"INACTIVE\", \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\" },\n" + 
+		"			/* PARTLY_ACTIVE */ { \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\",\n" + 
 		"					\"PARTLY_ACTIVE\" },\n" + 
-		"			/* ACTIVE */{ \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\", \"ACTIVE\" }\n" + 
-		"	};\n" + 
+		"			/* ACTIVE */ { \"PARTLY_ACTIVE\", \"PARTLY_ACTIVE\", \"ACTIVE\" } };\n" + 
 		"}\n"
 	);
 }
@@ -9511,8 +9510,7 @@ public void testBug330313_wksp1_44_njl() {
 		"				user,\n" + 
 		"				revision,\n" + 
 		"				String.valueOf(delta),\n" + 
-		"				line\n" + 
-		"		});\n" + 
+		"				line });\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -9886,8 +9884,7 @@ public void testBug330313_wksp1_51_njl() {
 		"							return true;\n" + 
 		"						}\n" + 
 		"					},\n" + 
-		"					IResource.NONE\n" + 
-		"					);\n" + 
+		"					IResource.NONE);\n" + 
 		"			notifier.checkCancel();\n" + 
 		"		}\n" + 
 		"	}\n" + 
@@ -10117,7 +10114,7 @@ public void testBug330313_wksp1_53_njl_bnl() {
 		"					{ 55, 0 } },\n" + 
 		"			/* 11 bits */\n" + 
 		"			{\n" + 
-		"					/* EOL */ { 0, -1 },\n" + 
+		"					/* EOL */{ 0, -1 },\n" + 
 		"					{ 8, 1792 },\n" + 
 		"					{ 23, 24 },\n" + 
 		"					{ 24, 25 },\n" + 
@@ -10227,51 +10224,48 @@ public void testBug330313_b286601_04() {
 		"	private static final int[][] ACCESS_MODE_CONDITIONAL_TABLE =\n" + 
 		"	{\n" + 
 		"			/* UNUSED READ READ_POTENTIAL WRTIE WRITE_POTENTIAL UNKNOWN */\n" + 
-		"			/* UNUSED */{\n" + 
+		"			/* UNUSED */ {\n" + 
 		"					UNUSED,\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					UNKNOWN },\n" + 
-		"			/* READ */{\n" + 
+		"			/* READ */ {\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					READ,\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN },\n" + 
-		"			/* READ_POTENTIAL */{\n" + 
+		"			/* READ_POTENTIAL */ {\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					READ_POTENTIAL,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN },\n" + 
-		"			/* WRITE */{\n" + 
+		"			/* WRITE */ {\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN,\n" + 
 		"					WRITE,\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					UNKNOWN },\n" + 
-		"			/* WRITE_POTENTIAL */{\n" + 
+		"			/* WRITE_POTENTIAL */ {\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					UNKNOWN,\n" + 
 		"					UNKNOWN,\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					WRITE_POTENTIAL,\n" + 
 		"					UNKNOWN },\n" + 
-		"			/* UNKNOWN */{ UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN }\n" + 
-		// Should be slip but that has been broken since 3.4.2 (i.e. 3.3.2 is OK)
-//		"			/* UNKNOWN */{\n" + 
-//		"					UNKNOWN,\n" + 
-//		"					UNKNOWN,\n" + 
-//		"					UNKNOWN,\n" + 
-//		"					UNKNOWN,\n" + 
-//		"					UNKNOWN,\n" + 
-//		"					UNKNOWN }\n" + 
-		"	};\n" + 
+		"			/* UNKNOWN */ {\n" + 
+		"					UNKNOWN,\n" + 
+		"					UNKNOWN,\n" + 
+		"					UNKNOWN,\n" + 
+		"					UNKNOWN,\n" + 
+		"					UNKNOWN,\n" + 
+		"					UNKNOWN } };\n" + 
 		"\n" + 
 		"}\n"
 	);
@@ -10317,8 +10311,7 @@ public void testBug330313_b286601_05() {
 		"					\"READ_POTENTIAL\",\n" + 
 		"					\"UNKNOWN\",\n" + 
 		"					\"UNKNOWN\",\n" + 
-		"					\"UNKNOWN\" },\n" + 
-		"	};\n" + 
+		"					\"UNKNOWN\" }, };\n" + 
 		"\n" + 
 		"}\n"
 	);
@@ -10353,21 +10346,20 @@ public void testBug330313_b286601_06() {
 		"	static final String[][] ACCESS_MODE_CONDITIONAL_TABLE =\n" + 
 		"	{\n" + 
 		"			/* Comment 1 */\n" + 
-		"			/* Comment 2 */{\n" + 
+		"			/* Comment 2 */ {\n" + 
 		"					\"UNUSED\",\n" + 
 		"					\"READ_POTENTIAL\",\n" + 
 		"					\"READ_POTENTIAL\",\n" + 
 		"					\"WRITE_POTENTIAL\",\n" + 
 		"					\"WRITE_POTENTIAL\",\n" + 
 		"					\"UNKNOWN\" },\n" + 
-		"			/* Comment 3 */{\n" + 
+		"			/* Comment 3 */ {\n" + 
 		"					\"READ_POTENTIAL\",\n" + 
 		"					\"READ\",\n" + 
 		"					\"READ_POTENTIAL\",\n" + 
 		"					\"UNKNOWN\",\n" + 
 		"					\"UNKNOWN\",\n" + 
-		"					\"UNKNOWN\" },\n" + 
-		"	};\n" + 
+		"					\"UNKNOWN\" }, };\n" + 
 		"\n" + 
 		"}\n"
 	);
@@ -10403,13 +10395,12 @@ public void testBug330313_b286601_07() {
 		"    static final String[][] ACCESS_MODE_CONDITIONAL_TABLE =\n" + 
 		"    {\n" + 
 		"            /* Comment 1 */\n" + 
-		"            /* Comment 2 */{\n" + 
+		"            /* Comment 2 */ {\n" + 
 		"                    \"1234567890123456789012345678901234567890\",\n" + 
 		"                    \"1234567890123456789012345678901234567890\" },\n" + 
-		"            /* Comment 3 */{\n" + 
+		"            /* Comment 3 */ {\n" + 
 		"                    \"ABCDEFGHIJKLMNOPQRSTUVWXYZ______________\",\n" + 
-		"                    \"ABCDEFGHIJKLMNOPQRSTUVWXYZ______________\" },\n" + 
-		"    };\n" + 
+		"                    \"ABCDEFGHIJKLMNOPQRSTUVWXYZ______________\" }, };\n" + 
 		"\n" + 
 		"}\n"
 	);
