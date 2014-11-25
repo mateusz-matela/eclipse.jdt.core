@@ -1369,6 +1369,7 @@ public void testBug198074_comments() throws JavaModelException {
 // see also bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=287462
 public void testBug198074_dup201022() throws JavaModelException {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	String source =
 		"public class Test {\n" +
 		"\n" +
@@ -1384,11 +1385,10 @@ public void testBug198074_dup201022() throws JavaModelException {
 		"public class Test {\n" +
 		"\n" +
 		"	void foo() {\n" +
-		"		String sQuery =\n" +
-		"				\"select * \" +\n" +
-		"						\"from person p, address a \" +\n" +
-		"						\"where p.person_id = a.person_id \" +\n" +
-		"						\"and p.person_id = ?\";\n" +
+		"		String sQuery = \"select * \" +\n" +
+		"				\"from person p, address a \" +\n" +
+		"				\"where p.person_id = a.person_id \" +\n" +
+		"				\"and p.person_id = ?\";\n" +
 		"	}\n" +
 		"}\n"
 	);
@@ -1396,6 +1396,7 @@ public void testBug198074_dup201022() throws JavaModelException {
 // duplicate bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=213700
 public void testBug198074_dup213700() throws JavaModelException {
 	this.formatterPrefs.join_wrapped_lines = false;
+	this.formatterPrefs.wrap_before_binary_operator = false;
 	String source =
 		"public class Test {\n" +
 		"\n" +
