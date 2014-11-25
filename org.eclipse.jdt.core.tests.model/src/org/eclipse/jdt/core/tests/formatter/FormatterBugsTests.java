@@ -6748,7 +6748,7 @@ public void testBug313524_146175() throws JavaModelException {
 		"		/* The following statement demonstrates the formatter issue */\n" + 
 		"		SomeOtherClass.someMethodInInnerClass(instanceOfOtherClass\n" + 
 		"				.anotherMethod(\"Value of paramter 1\"), instanceOfOtherClass\n" + 
-		"				.anotherMethod(\"Value of paramter 2\"));\n" + 
+		"						.anotherMethod(\"Value of paramter 2\"));\n" + 
 		"\n" + 
 		"	}\n" + 
 		"\n" + 
@@ -8385,8 +8385,10 @@ public void testBug330313_wksp1_14() {
 		"			if (((bits & DepthMASK) != 0) && (fieldBinding.isPrivate() // private\n" + 
 		"																		// access\n" + 
 		"					|| (fieldBinding.isProtected() // implicit protected access\n" + 
-		"					&& fieldBinding.declaringClass.getPackage() != currentScope\n" + 
-		"							.enclosingSourceType().getPackage()))) {\n" + 
+		"							&& fieldBinding.declaringClass\n" + 
+		"									.getPackage() != currentScope\n" + 
+		"											.enclosingSourceType()\n" + 
+		"											.getPackage()))) {\n" + 
 		"				return;\n" + 
 		"			}\n" + 
 		"		}\n" + 
@@ -8517,9 +8519,10 @@ public void testBug330313_wksp1_16() {
 		"			if (!(this.currentElement instanceof RecoveredType)\n" + 
 		"					&& (this.currentToken == TokenNameDOT\n" + 
 		"					// || declaration.modifiers != 0\n" + 
-		"					|| (this.scanner\n" + 
-		"							.getLineNumber(declaration.type.sourceStart) != this.scanner\n" + 
-		"							.getLineNumber((int) (namePosition >>> 32))))) {\n" + 
+		"							|| (this.scanner.getLineNumber(\n" + 
+		"									declaration.type.sourceStart) != this.scanner\n" + 
+		"											.getLineNumber(\n" + 
+		"													(int) (namePosition >>> 32))))) {\n" + 
 		"				return;\n" + 
 		"			}\n" + 
 		"		}\n" + 
