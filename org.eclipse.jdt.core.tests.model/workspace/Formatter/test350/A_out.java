@@ -7,7 +7,8 @@ if (JavaModelManager.CP_RESOLVE_VERBOSE) {
 						public String displayString(Object o) {
 							return ((IJavaProject) o).getElementName();
 						}
-					})) + "} with values: " //$NON-NLS-1$
+					}))
+			+ "} with values: " //$NON-NLS-1$
 			+ (org.eclipse.jdt.internal.compiler.util.Util.toString(
 					respectiveContainers,
 					new org.eclipse.jdt.internal.compiler.util.Util.Displayable() {

@@ -395,7 +395,7 @@ public class TextEditsBuilder extends TokenTraverser {
 			if (fragment.hasNLSTag()) {
 				int tagNumber = this.stringLiteralsInLine.indexOf(fragment.getNLSTag());
 				assert tagNumber >= 0;
-				this.buffer.append("//$NON-NLS-").append(tagNumber + 1).append("$"); //$NON-NLS-1$ //$NON-NLS-2$				
+				this.buffer.append("//$NON-NLS-").append(tagNumber + 1).append("$"); //$NON-NLS-1$ //$NON-NLS-2$
 			}  else if (fragment.originalStart < this.counter) {
 				// Comment line prefix may be a copy of earlier code
 				this.buffer.append(this.tm.toString(fragment));

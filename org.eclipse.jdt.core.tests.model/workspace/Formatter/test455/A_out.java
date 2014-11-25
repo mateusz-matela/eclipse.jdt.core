@@ -5,16 +5,14 @@ public class A {
 			IJavaProject javaProject = getJavaProject(configuration);
 			if ((javaProject == null) || !javaProject.exists()) {
 				abort(PDEPlugin.getResourceString(
-						"JUnitLaunchConfiguration.error.invalidproject"), //$NON-NLS-1$
-						null,
+						"JUnitLaunchConfiguration.error.invalidproject"), null, //$NON-NLS-1$
 						IJavaLaunchConfigurationConstants.ERR_NOT_A_JAVA_PROJECT);
 			}
 			IType[] testTypes = getTestTypes(configuration, javaProject,
 					new SubProgressMonitor(monitor, 1));
 			if (testTypes.length == 0) {
 				abort(PDEPlugin.getResourceString(
-						"JUnitLaunchConfiguration.error.notests"), //$NON-NLS-1$
-						null,
+						"JUnitLaunchConfiguration.error.notests"), null, //$NON-NLS-1$
 						IJavaLaunchConfigurationConstants.ERR_UNSPECIFIED_MAIN_TYPE);
 			}
 			monitor.worked(1);

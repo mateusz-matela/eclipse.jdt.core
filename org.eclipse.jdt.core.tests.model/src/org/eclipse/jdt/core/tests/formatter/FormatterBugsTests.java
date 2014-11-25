@@ -967,10 +967,8 @@ public void testBug059891_wksp1_03() throws JavaModelException {
 		"public class X03 {\n" + 
 		"\n" + 
 		"	protected void foo() {\n" + 
-		"		printTargets(project, subNames, null,\n" + 
-		"				InternalAntMessages\n" + 
-		"						.getString(\"InternalAntRunner.Subtargets__5\"), //$NON-NLS-1$\n" + 
-		"				0);\n" + 
+		"		printTargets(project, subNames, null, InternalAntMessages\n" + 
+		"				.getString(\"InternalAntRunner.Subtargets__5\"), 0); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1014,7 +1012,6 @@ public void testBug059891_wksp1_05() throws JavaModelException {
 		"}\n"
 	);
 }
-// TODO Improve this formatting as it let the message send argument in one line over the max width
 public void testBug059891_wksp1_06() throws JavaModelException {
 	setPageWidth80();
 	String source =
@@ -1034,8 +1031,7 @@ public void testBug059891_wksp1_06() throws JavaModelException {
 		"		try {\n" + 
 		"			if ((javaProject == null) || !javaProject.exists()) {\n" + 
 		"				abort(PDEPlugin________\n" + 
-		"						.getResourceString(\"JUnitLaunchConfig_____\"),\n" + 
-		"						null,\n" + 
+		"						.getResourceString(\"JUnitLaunchConfig_____\"), null,\n" + 
 		"						IJavaLaunchConfigurationConstants.ERR_NOT_A_JAVA_PROJECT);\n" + 
 		"			}\n" + 
 		"		} catch (CoreException e) {\n" + 
@@ -1150,10 +1146,8 @@ public void testBug059891_wksp1_11() throws JavaModelException {
 	formatSource(source,
 		"public class X11 {\n" + 
 		"	private void antFileNotFound() {\n" + 
-		"		reportError(\n" + 
-		"				AntLaunchConfigurationMessages\n" + 
-		"						.getString(\"AntLaunchShortcut.Unable\"), //$NON-NLS-1$	\n" + 
-		"				null);\n" + 
+		"		reportError(AntLaunchConfigurationMessages\n" + 
+		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -1954,9 +1948,10 @@ public void testBug281655b() throws JavaModelException {
 		"public class X {\n" + 
 		"}\n";
 	formatSource(source,
-		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\", activationConfig = {\n" + 
-		"		@ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
-		"				propertyValue = \"0/10 * * * * ?\") })\n" + 
+		"@MessageDriven(mappedName = \"filiality/SchedulerMQService\",\n" + 
+		"		activationConfig = {\n" + 
+		"				@ActivationConfigProperty(propertyName = \"cronTrigger\",\n" + 
+		"						propertyValue = \"0/10 * * * * ?\") })\n" + 
 		"@RunAs(\"admin\")\n" + 
 		"@ResourceAdapter(\"quartz-ra.rar\")\n" + 
 		"@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)\n" + 
@@ -9108,7 +9103,8 @@ public void testBug330313_wksp1_33_njl() {
 		"	void foo() {\n" + 
 		"		if (inMetaTag &&\n" + 
 		"				(t1.image.equalsIgnoreCase(\"name\") ||\n" + 
-		"						t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")) && t2 != null) {\n" + 
+		"						t1.image.equalsIgnoreCase(\"HTTP-EQUIV\")) &&\n" + 
+		"				t2 != null) {\n" + 
 		"			currentMetaTag = t2.image.toLowerCase();\n" + 
 		"		}\n" + 
 		"	}\n" + 

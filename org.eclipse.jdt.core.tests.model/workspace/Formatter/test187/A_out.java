@@ -238,8 +238,7 @@ public class RemotePublication extends Publication {
 			documentCount++;
 			newFilename = (new StringBuffer(_workingDir).append(File.separator)
 					.append(_localFilename).append(documentCount)
-					.append(EXTENTION))
-							.toString();
+					.append(EXTENTION)).toString();
 			if (log.isDebugEnabled()) {
 				log.debug(
 						"File already exists. Check to see if we need rename existing file");
