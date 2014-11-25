@@ -9534,18 +9534,56 @@ public void testBug330313_wksp1_45_njl() {
 		"public class X45 {\n" + 
 		"	private String[][] TABLE = {\n" + 
 		"			{ \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" }, /* revision */\n" + 
+		"					\"COL_TAGS\" },\n" + 
+		"			/* revision */\n" + 
 		"			{ \"COL_TAGS\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
-		"					\"COL_COMMENT\" }, /* tags */\n" + 
+		"					\"COL_COMMENT\" },\n" + 
+		"			/* tags */\n" + 
 		"			{ \"COL_DATE\", \"COL_REVISION\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" }, /* date */\n" + 
+		"					\"COL_TAGS\" },\n" + 
+		"			/* date */\n" + 
 		"			{ \"COL_AUTHOR\", \"COL_REVISION\", \"COL_DATE\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" }, /* author */\n" + 
+		"					\"COL_TAGS\" },\n" + 
+		"			/* author */\n" + 
 		"			{ \"COL_COMMENT\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
 		"					\"COL_TAGS\" } /* comment */\n" + 
 		"	};\n" + 
 		"}\n"
 	);
+}
+public void testBug330313_wksp1_45b_njl() {
+	this.formatterPrefs.join_wrapped_lines = false;
+	setPageWidth80();
+	String source =
+			"package wksp1;\n" + 
+					"\n" + 
+					"public class X45 {\n" + 
+					"		private String[][] TABLE  = {\n" + 
+					"			{\"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_COMMENT\", \"COL_TAGS\"},	// revision \n" + 
+					"			{\"COL_TAGS\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_COMMENT\"},	// tags \n" + 
+					"			{\"COL_DATE\", \"COL_REVISION\", \"COL_AUTHOR\", \"COL_COMMENT\", \"COL_TAGS\"},	// date \n" + 
+					"			{\"COL_AUTHOR\", \"COL_REVISION\", \"COL_DATE\", \"COL_COMMENT\", \"COL_TAGS\"},	// author \n" + 
+					"			{\"COL_COMMENT\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_TAGS\"}		// comment \n" + 
+					"		};\n" + 
+					"}\n";
+	formatSource(source	,
+			"package wksp1;\n" + 
+					"\n" + 
+					"public class X45 {\n" + 
+					"	private String[][] TABLE = {\n" + 
+					"			{ \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
+					"					\"COL_TAGS\" }, // revision\n" + 
+					"			{ \"COL_TAGS\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
+					"					\"COL_COMMENT\" }, // tags\n" + 
+					"			{ \"COL_DATE\", \"COL_REVISION\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
+					"					\"COL_TAGS\" }, // date\n" + 
+					"			{ \"COL_AUTHOR\", \"COL_REVISION\", \"COL_DATE\", \"COL_COMMENT\",\n" + 
+					"					\"COL_TAGS\" }, // author\n" + 
+					"			{ \"COL_COMMENT\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
+					"					\"COL_TAGS\" } // comment\n" + 
+					"	};\n" + 
+					"}\n"
+			);
 }
 public void testBug330313_wksp1_46_njl() {
 	this.formatterPrefs.join_wrapped_lines = false;
@@ -9837,9 +9875,8 @@ public void testBug330313_wksp1_51_njl() {
 		"											exclusionPatterns))\n" + 
 		"										return false;\n" + 
 		"								}\n" + 
-		"								if (isAlsoProject\n" + 
-		"										&& isExcludedFromProject(proxy\n" + 
-		"												.requestFullPath()))\n" + 
+		"								if (isAlsoProject && isExcludedFromProject(\n" + 
+		"										proxy.requestFullPath()))\n" + 
 		"									return false;\n" + 
 		"							}\n" + 
 		"							return true;\n" + 
