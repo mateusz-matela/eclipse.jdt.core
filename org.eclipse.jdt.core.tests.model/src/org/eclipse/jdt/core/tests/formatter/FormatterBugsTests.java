@@ -7025,8 +7025,8 @@ public void testBug313524_wksp1_08() throws JavaModelException {
 		"			IStatus status = new Status(IStatus.ERROR, AntCorePlugin.PI_ANTCORE,\n" + 
 		"					AntCorePlugin.ERROR_RUNNING_BUILD, MessageFormat.format(\n" + 
 		"							InternalCoreAntMessages.getString(\n" + 
-		"									\"AntRunner.Already_in_progess\"),\n" + 
-		"							new String[] { buildFileLocation }), null); //$NON-NLS-1$\n" + 
+		"									\"AntRunner.Already_in_progess\"), //$NON-NLS-1$\n" + 
+		"							new String[] { buildFileLocation }), null);\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
