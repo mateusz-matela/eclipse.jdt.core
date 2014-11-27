@@ -9613,11 +9613,11 @@ public void testBug330313_wksp1_46_njl() {
 		"	void foo() {\n" + 
 		"		if (getActive() == StackPresentation.AS_ACTIVE_NOFOCUS) {\n" + 
 		"			drawGradient(\n" + 
-		"					colorRegistry\n" + 
-		"							.get(IWorkbenchThemeConstants.INACTIVE_TAB_TEXT_COLOR),\n" + 
+		"					colorRegistry.get(\n" + 
+		"							IWorkbenchThemeConstants.INACTIVE_TAB_TEXT_COLOR),\n" + 
 		"					new Color[] {\n" + 
-		"							colorRegistry\n" + 
-		"									.get(IWorkbenchThemeConstants.INACTIVE_TAB_BG_START) },\n" + 
+		"							colorRegistry.get(\n" + 
+		"									IWorkbenchThemeConstants.INACTIVE_TAB_BG_START) },\n" + 
 		"					new int[0],\n" + 
 		"					true);\n" + 
 		"		}\n" + 
