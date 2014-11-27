@@ -7149,8 +7149,7 @@ public void testBug317039_njl() {
 		"        }\n" + 
 		"    }\n";
 	formatSource(source,
-		"public class X01\n" + 
-		"{\n" + 
+		"public class X01 {\n" + 
 		"\n" + 
 		"	public void innerThread() {\n" + 
 		"\n" + 
@@ -9306,8 +9305,7 @@ public void testBug330313_wksp1_39_njl() {
 		"	 * 		\"GeneralPage.DoubleClick\", resName, 1,\n" + 
 		"	 * 		new String[][] {\n" + 
 		"	 * 				{ \"Open Browser\", \"open\" },\n" + 
-		"	 * 				{ \"Expand Tree\", \"expand\" }\n" + 
-		"	 * 		},\n" + 
+		"	 * 				{ \"Expand Tree\", \"expand\" } },\n" + 
 		"	 * 		parent);\n" + 
 		"	 * </pre>\n" + 
 		"	 */\n" + 
@@ -9989,10 +9987,9 @@ public void testBug330313_wksp1_52_njl() {
 		"						new FastSyncInfoFilter() {\n" + 
 		"							public boolean select(SyncInfo info) {\n" + 
 		"								return info.getLocal()\n" + 
-		"										getType() == IResource.FILE;\n" + 
+		"										.getType() == IResource.FILE;\n" + 
 		"							}\n" + 
-		"						}\n" + 
-		"				}),\n" + 
+		"						} }),\n" + 
 		"				// Conflicting changes of files will fail if the local is not\n" + 
 		"				// managed\n" + 
 		"				// or is an addition\n" + 
@@ -10019,8 +10016,7 @@ public void testBug330313_wksp1_52_njl() {
 		"								}\n" + 
 		"								return false;\n" + 
 		"							}\n" + 
-		"						}\n" + 
-		"				}),\n" + 
+		"						} }),\n" + 
 		"				// Conflicting changes involving a deletion on one side will\n" + 
 		"				// aways fail\n" + 
 		"				new AndSyncInfoFilter(new FastSyncInfoFilter[] {\n" + 
@@ -10039,8 +10035,7 @@ public void testBug330313_wksp1_52_njl() {
 		"											.equals(remote));\n" + 
 		"								}\n" + 
 		"							}\n" + 
-		"						}\n" + 
-		"				}),\n" + 
+		"						} }),\n" + 
 		"				// Conflicts where the file type is binary will work but are not\n" + 
 		"				// merged\n" + 
 		"				// so they should be skipped\n" + 
@@ -10069,11 +10064,9 @@ public void testBug330313_wksp1_52_njl() {
 		"								}\n" + 
 		"								return false;\n" + 
 		"							}\n" + 
-		"						}\n" + 
-		"				}),\n" + 
+		"						} }),\n" + 
 		"				// Outgoing changes may not fail but they are skipped as well\n" + 
-		"				new SyncInfoDirectionFilter(SyncInfo.OUTGOING)\n" + 
-		"		});\n" + 
+		"				new SyncInfoDirectionFilter(SyncInfo.OUTGOING) });\n" + 
 		"	}\n" + 
 		"}\n"
 	);
