@@ -9303,10 +9303,10 @@ public void testBug330313_wksp1_39_njl() {
 		"	/**\n" + 
 		"	 * <pre>\n" + 
 		"	 * RadioGroupFieldEditor editor = new RadioGroupFieldEditor(\n" + 
-		"	 * 		&quot;GeneralPage.DoubleClick&quot;, resName, 1,\n" + 
+		"	 * 		\"GeneralPage.DoubleClick\", resName, 1,\n" + 
 		"	 * 		new String[][] {\n" + 
-		"	 * 				{ &quot;Open Browser&quot;, &quot;open&quot; },\n" + 
-		"	 * 				{ &quot;Expand Tree&quot;, &quot;expand&quot; }\n" + 
+		"	 * 				{ \"Open Browser\", \"open\" },\n" + 
+		"	 * 				{ \"Expand Tree\", \"expand\" }\n" + 
 		"	 * 		},\n" + 
 		"	 * 		parent);\n" + 
 		"	 * </pre>\n" + 
