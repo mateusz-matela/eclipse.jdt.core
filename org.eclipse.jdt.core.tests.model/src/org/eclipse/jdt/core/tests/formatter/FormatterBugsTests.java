@@ -5458,8 +5458,8 @@ public void testBug264112_wksp1_02() {
 		"	public String toString() {\n" + 
 		"		StringBuffer buffer = new StringBuffer();\n" + 
 		"		if (true) {\n" + 
-		"			buffer.append(\"- possible values:	[\"); //$NON-NLS-1$ \n" + 
-		"			buffer.append(\"]\\n\"); //$NON-NLS-1$ \n" + 
+		"			buffer.append(\"- possible values:	[\"); //$NON-NLS-1$\n" + 
+		"			buffer.append(\"]\\n\"); //$NON-NLS-1$\n" + 
 		"			buffer.append(\"- curr. val. index:	\").append(currentValueIndex).append(\"\\n\"); //$NON-NLS-1$ //$NON-NLS-2$\n" + 
 		"		}\n" + 
 		"		buffer.append(\"- description:		\").append(description).append(\"\\n\"); //$NON-NLS-1$ //$NON-NLS-2$\n" + 
@@ -7095,7 +7095,7 @@ public void testBug313524_wksp1_11() throws JavaModelException {
 		"public class X11 {\n" + 
 		"	private void antFileNotFound() {\n" + 
 		"		reportError(AntLaunchConfigurationMessages\n" + 
-		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$	\n" + 
+		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
