@@ -4469,7 +4469,6 @@ public void testBug293300_wksp2_11() {
 		"	 * Comment foo\n" + 
 		"	 */\n" + 
 		"	public abstract StringBuffer foo();\n" + 
-		"\n" + 
 		"	// #if defined(TEST)\n" + 
 		"	// #else\n" + 
 		"	// #endif\n" + 
