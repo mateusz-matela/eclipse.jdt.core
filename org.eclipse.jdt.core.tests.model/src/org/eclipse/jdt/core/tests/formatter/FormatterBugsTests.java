@@ -10141,13 +10141,13 @@ public void testBug330313_wksp2_01 () {
 		"public class X01 {\n" + 
 		"\n" + 
 		"	static final Object[][] contents = {\n" + 
-		"	// comment\n" + 
-		"	{ \"STR1\",\n" + 
 		"			// comment\n" + 
-		"			new String[] { \"STR\", // comment\n" + 
-		"					\"STR\", // comment\n" + 
-		"					\"STR\" } // comment\n" + 
-		"	}\n" + 
+		"			{ \"STR1\",\n" + 
+		"					// comment\n" + 
+		"					new String[] { \"STR\", // comment\n" + 
+		"							\"STR\", // comment\n" + 
+		"							\"STR\" } // comment\n" + 
+		"			}\n" + 
 		"\n" + 
 		"	};\n" + 
 		"\n" + 

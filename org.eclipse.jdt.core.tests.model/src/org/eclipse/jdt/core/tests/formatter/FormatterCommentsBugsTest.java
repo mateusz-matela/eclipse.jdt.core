@@ -7029,8 +7029,8 @@ public void testBug313651_wksp3_01() {
 		"package wksp3;\n" + 
 		"\n" + 
 		"public class X01 implements\n" + 
-		"// start of comment\n" + 
-		"// MyFirstInterface {\n" + 
+		"		// start of comment\n" + 
+		"		// MyFirstInterface {\n" + 
 		"		MySecondInterface {\n" + 
 		"	// end of comment\n" + 
 	    "}\n"
@@ -7049,8 +7049,8 @@ public void testBug313651_wksp3_02() {
 		"package wksp3;\n" + 
 		"\n" + 
 		"public class X02 implements MyOtherInterface,\n" + 
-		"// start of comment\n" + 
-		"// MyFirstInterface {\n" + 
+		"		// start of comment\n" + 
+		"		// MyFirstInterface {\n" + 
 		"		MySecondInterface {\n" + 
 		"	// end of comment\n" + 
 	    "}\n"
