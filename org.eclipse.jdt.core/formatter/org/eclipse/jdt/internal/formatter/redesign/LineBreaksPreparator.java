@@ -281,20 +281,28 @@ public class LineBreaksPreparator extends ASTVisitor {
 			this.tm.get(closeBraceIndex).unindent();
 		}
 
+		boolean isBreakStatement = false;
 		List<Statement> statements = node.statements();
 		for (Statement statement : statements) {
+			if (isBreakStatement) // actually, was break statement
+				this.tm.firstTokenIn(statement, -1).indent();
+			isBreakStatement = statement instanceof BreakStatement;
 			if (this.options.indent_switchstatements_compare_to_cases
-					&& (statement instanceof SwitchCase || statement instanceof BreakStatement
-							|| statement instanceof Block)) {
+					&& (isBreakStatement || statement instanceof SwitchCase || statement instanceof Block)) {
 				unindent(statement);
 			}
 			if (statement instanceof Block)
 				continue; // will add break in visit(Block) if necessary
 			if (this.options.put_empty_statement_on_new_line || !(statement instanceof EmptyStatement))
 				breakLineBefore(statement);
-			if (this.options.indent_breaks_compare_to_cases && statement instanceof BreakStatement)
-				indent(statement);
+			if (isBreakStatement) {
+				if (this.options.indent_breaks_compare_to_cases)
+					indent(statement);
+				this.tm.firstTokenAfter(statement, -1).unindent();
+			}
 		}
+		if (isBreakStatement) // actually, was break statement
+			this.tm.lastTokenIn(node, -1).indent();
 
 		return true;
 	}
