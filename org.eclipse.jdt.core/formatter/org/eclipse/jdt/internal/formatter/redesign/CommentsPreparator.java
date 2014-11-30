@@ -384,14 +384,14 @@ public class CommentsPreparator extends ASTVisitor {
 					next.setWrapPolicy(wrapPolicy);
 			}
 
-			if (existingBreaksBefore < existingBreaksAfter && existingBreaksBefore <= 1) {
+			if (existingBreaksBefore < existingBreaksAfter && previous != null) {
 				commentToken.putLineBreaksAfter(previous.getLineBreaksAfter());
 				previous.clearLineBreaksAfter();
-			} else if (existingBreaksAfter <= existingBreaksBefore && existingBreaksAfter <= 1 && commentIndex > 0) {
+			} else if (existingBreaksAfter <= existingBreaksBefore && next != null
+					&& commentIndex > 0 /* doesn't apply to a comment before the package declaration */) {
 				commentToken.putLineBreaksBefore(next.getLineBreaksBefore());
 				next.clearLineBreaksBefore();
 			}
-		
 		}
 
 		boolean isFirstColumn = (charBefore == '\r' || charBefore == '\n' || commentToken.originalStart == 0);
