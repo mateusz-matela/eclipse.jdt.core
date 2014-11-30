@@ -88,7 +88,7 @@ public class CommentsPreparator extends ASTVisitor {
 	private int noFormatTagOpenStart = -1;
 	private int formatCodeTagOpenEnd = -1;
 	private int lastFormatCodeClosingTagIndex = -1;
-	private boolean visitedFirstTag;
+	private Token firstTagToken;
 	private DefaultCodeFormatter commentCodeFormatter;
 
 	public CommentsPreparator(TokenManager tm, DefaultCodeFormatterOptions options) {
@@ -495,6 +495,7 @@ public class CommentsPreparator extends ASTVisitor {
 		this.noFormatTagOpenStart = -1;
 		this.formatCodeTagOpenEnd = -1;
 		this.lastFormatCodeClosingTagIndex = -1;
+		this.firstTagToken = null;
 
 		int commentIndex = this.tm.firstIndexIn(node, TokenNameCOMMENT_JAVADOC);
 		Token commentToken = this.tm.get(commentIndex);
@@ -519,8 +520,15 @@ public class CommentsPreparator extends ASTVisitor {
 		this.commentStructure = commentToken.getInternalStructure();
 		this.commentIndent = this.tm.toIndent(commentToken.getIndent(), true);
 		this.ctm = new TokenManager(commentToken.getInternalStructure(), this.tm);
-		this.visitedFirstTag = false;
 		return true;
+	}
+
+	@Override
+	public void endVisit(Javadoc node) {
+		if (this.options.comment_insert_empty_line_before_root_tags && this.firstTagToken != null
+				&& this.ctm.indexOf(this.firstTagToken) > 0) {
+			this.firstTagToken.putLineBreaksBefore(2);
+		}
 	}
 
 	@Override
@@ -558,13 +566,12 @@ public class CommentsPreparator extends ASTVisitor {
 				}
 			}
 
-			if (this.options.comment_insert_empty_line_before_root_tags && !this.visitedFirstTag) {
-				this.visitedFirstTag = true;
-				if (startIndex > 1)
-					this.ctm.get(startIndex).putLineBreaksBefore(2);
-			} else {
-				this.ctm.get(startIndex).breakBefore();
-			}
+			Token startTokeen = this.ctm.get(startIndex);
+			startTokeen.breakBefore();
+			int firstTagIndex;
+			if (this.firstTagToken == null || (firstTagIndex = this.ctm.indexOf(this.firstTagToken)) < 0
+					|| startIndex < firstTagIndex)
+				this.firstTagToken = startTokeen;
 		}
 
 		else if (IMMUTABLE_TAGS.contains(tagName)) {
@@ -874,6 +881,10 @@ public class CommentsPreparator extends ASTVisitor {
 							if (commentToken.tokenType == TokenNameCOMMENT_BLOCK && lineBreaks == 1
 									&& structure.size() > 1)
 								outputToken.putLineBreaksBefore(cleanBlankLines ? 1 : 2);
+							if (this.tm.charAt(tokenStart + 1) == '@' && lineBreaks > 0 && this.firstTagToken == null) {
+								// Commons Attributes annotation, see bug 237051
+								this.firstTagToken = outputToken;
+							}
 						}
 						structure.add(outputToken);
 						lineBreaks = 0;

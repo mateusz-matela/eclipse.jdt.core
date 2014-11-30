@@ -90,7 +90,8 @@ public class TokenManager implements Iterable<Token> {
 
 	public int indexOf(Token token) {
 		int index = findIndex(token.originalStart, -1, false);
-		assert get(index) == token;
+		if (get(index) != token)
+			return -1;
 		return index;
 	}
 
