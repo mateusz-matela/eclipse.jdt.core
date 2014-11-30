@@ -10027,8 +10027,8 @@ public void testBug330313_wksp1_52_njl() {
 		"									return (base != null && remote == null);\n" + 
 		"								} else {\n" + 
 		"									// no local and base != remote\n" + 
-		"									return (base != null && remote != null && !base\n" + 
-		"											.equals(remote));\n" + 
+		"									return (base != null && remote != null\n" + 
+		"											&& !base.equals(remote));\n" + 
 		"								}\n" + 
 		"							}\n" + 
 		"						} }),\n" + 
