@@ -303,7 +303,7 @@ public void testBug027079c() throws JavaModelException {
 		"\n" + 
 		"/* enable-formatter */\n" + 
 		"		bar(\n" + 
-		"		/** formatted comment */\n" + 
+		"				/** formatted comment */\n" + 
 		"				\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
 		"	}\n" + 
 		"\n" + 
@@ -351,7 +351,7 @@ public void testBug027079c2() throws JavaModelException {
 		"// enable-formatter\n" + 
 		"		);\n" + 
 		"		bar(\n" + 
-		"		/** formatted comment */\n" + 
+		"				/** formatted comment */\n" + 
 		"				\"this\", \"is\", \"a specific\", \"line wrapping \");\n" + 
 		"	}\n" + 
 		"\n" + 
@@ -8518,7 +8518,7 @@ public void testBug330313_wksp1_16() {
 		"		if (this.currentElement != null) {\n" + 
 		"			if (!(this.currentElement instanceof RecoveredType)\n" + 
 		"					&& (this.currentToken == TokenNameDOT\n" + 
-		"					// || declaration.modifiers != 0\n" + 
+		"							// || declaration.modifiers != 0\n" + 
 		"							|| (this.scanner.getLineNumber(\n" + 
 		"									declaration.type.sourceStart) != this.scanner\n" + 
 		"											.getLineNumber(\n" + 
@@ -8559,7 +8559,7 @@ public void testBug330313_wksp1_16_njl() {
 		"		if (this.currentElement != null) {\n" + 
 		"			if (!(this.currentElement instanceof RecoveredType)\n" + 
 		"					&& (this.currentToken == TokenNameDOT\n" + 
-		"					// || declaration.modifiers != 0\n" + 
+		"							// || declaration.modifiers != 0\n" + 
 		"							|| (this.scanner.getLineNumber(\n" + 
 		"									declaration.type.sourceStart) != this.scanner\n" + 
 		"											.getLineNumber(\n" + 
@@ -9534,17 +9534,13 @@ public void testBug330313_wksp1_45_njl() {
 		"public class X45 {\n" + 
 		"	private String[][] TABLE = {\n" + 
 		"			{ \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" },\n" + 
-		"			/* revision */\n" + 
+		"					\"COL_TAGS\" }, /* revision */\n" + 
 		"			{ \"COL_TAGS\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
-		"					\"COL_COMMENT\" },\n" + 
-		"			/* tags */\n" + 
+		"					\"COL_COMMENT\" }, /* tags */\n" + 
 		"			{ \"COL_DATE\", \"COL_REVISION\", \"COL_AUTHOR\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" },\n" + 
-		"			/* date */\n" + 
+		"					\"COL_TAGS\" }, /* date */\n" + 
 		"			{ \"COL_AUTHOR\", \"COL_REVISION\", \"COL_DATE\", \"COL_COMMENT\",\n" + 
-		"					\"COL_TAGS\" },\n" + 
-		"			/* author */\n" + 
+		"					\"COL_TAGS\" }, /* author */\n" + 
 		"			{ \"COL_COMMENT\", \"COL_REVISION\", \"COL_DATE\", \"COL_AUTHOR\",\n" + 
 		"					\"COL_TAGS\" } /* comment */\n" + 
 		"	};\n" + 

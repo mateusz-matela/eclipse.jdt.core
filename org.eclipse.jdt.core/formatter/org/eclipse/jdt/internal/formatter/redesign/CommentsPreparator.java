@@ -141,16 +141,12 @@ public class CommentsPreparator extends ASTVisitor {
 
 		boolean isContinuation = this.lastLineComment != null
 				&& commentIndex > 0 && this.tm.get(commentIndex - 1).tokenType == TokenNameCOMMENT_LINE
-				&& (positionInLine >= this.lastLineCommentPosition - this.options.indentation_size + 1
-						|| (positionInLine == 0 && commentToken.getIndent() >= this.lastLineComment.getIndent()))
+				&& (positionInLine >= this.lastLineCommentPosition - this.options.indentation_size + 1)
 				&& this.tm.countLineBreaksBetween(this.lastLineComment, commentToken) == 1;
 		if (isContinuation) {
-			// if (!this.options.join_lines_in_comments) // it seems line comments should never be joined
-			{
-				Token first = structure.get(0);
-				first.breakBefore();
-				first.setWrapPolicy(new WrapPolicy(this.lastLineCommentPosition, commentIndex - 1, false));
-			} // else structure.remove(0);
+			Token first = structure.get(0);
+			first.breakBefore();
+			first.setWrapPolicy(new WrapPolicy(this.lastLineCommentPosition, commentIndex - 1, false));
 
 			// merge previous and current line comment
 			Token previous = this.lastLineComment;
@@ -380,7 +376,8 @@ public class CommentsPreparator extends ASTVisitor {
 			if (previous != null && previous.getLineBreaksAfter() == 0
 					&& next != null && next.getLineBreaksBefore() == 0
 					&& Arrays.binarySearch(NO_INDENT_AFTER_COMMENT, next.tokenType) < 0) {
-				WrapPolicy wrapPolicy = new WrapPolicy(0, commentIndex - 1, true);
+				int policyIndent = (commentToken.getIndent() - previous.getIndent()) / this.options.indentation_size;
+				WrapPolicy wrapPolicy = new WrapPolicy(policyIndent, commentIndex - 1, true);
 				if (this.tm.countLineBreaksBetween(previous, commentToken) == 1)
 					commentToken.setWrapPolicy(wrapPolicy);
 				if (this.tm.countLineBreaksBetween(commentToken, next) == 1)

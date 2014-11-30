@@ -568,16 +568,14 @@ public class WrapPreparator extends ASTVisitor {
 
 	private void setTokenWrapPolicy(int index, WrapPolicy policy, boolean wrapPreceedingComments) {
 		if (wrapPreceedingComments) {
-			for (int i = index - 1; i >= 0; i++) {
+			for (int i = index - 1; i >= 0; i--) {
 				Token previous = this.tm.get(i);
-				if (previous.tokenType != TokenNameCOMMENT_BLOCK)
-					break;
-				if (previous.getLineBreaksAfter() == 0) {
-					if (i == index - 1)
-						index = i;
-				} else {
+				if (!previous.isComment())
+					break;				
+				if (previous.getLineBreaksAfter() == 0 && i == index - 1)
+					index = i;
+				if (previous.getLineBreaksBefore() > 0)
 					previous.setWrapPolicy(policy);
-				}
 			}
 		}
 
