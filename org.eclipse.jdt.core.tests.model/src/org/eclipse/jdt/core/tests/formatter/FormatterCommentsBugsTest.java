@@ -4497,7 +4497,8 @@ public void testBug260274c() throws JavaModelException {
 		"}\n";
 	formatSource(source,
 		"class X {\n" + 
-		"	/* *********************************************\n" + 
+		"	/*\n" + 
+		"	 * *********************************************\n" + 
 		"	 * Test\n" + 
 		"	 */\n" + 
 		"}\n"
@@ -4512,8 +4513,8 @@ public void testBug260274d() throws JavaModelException {
 		"}\n";
 	formatSource(source,
 		"class X {\n" + 
-		"	/* *********************************************\n" + 
-		"	 * Test\n" + 
+		"	/*\n" + 
+		"	 * ********************************************* Test\n" + 
 		"	 */\n" + 
 		"}\n"
 	);
@@ -4530,8 +4531,8 @@ public void testBug260274e() throws JavaModelException {
 	formatSource(source,
 		"class X {\n" + 
 		"	/*\n" + 
-		"	 * **************************************************\n" + 
-		"	 * ********** Test ********** Test **************\n" + 
+		"	 * ************************************************** ********** Test\n" + 
+		"	 * ********** Test **************\n" + 
 		"	 * **************************************************\n" + 
 		"	 */\n" + 
 		"}\n"
@@ -4548,7 +4549,8 @@ public void testBug260274f() throws JavaModelException {
 		"}\n";
 	formatSource(source,
 		"class X {\n" + 
-		"	/* *****************************************************************************\n" + 
+		"	/*\n" + 
+		"	 * *****************************************************************************\n" + 
 		"	 * Action that allows changing the model providers sort order.\n" + 
 		"	 */\n" + 
 		"	void foo() {\n" + 
@@ -4599,6 +4601,21 @@ public void testBug260274h() throws JavaModelException {
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
+		"}\n"
+	);
+}
+public void testBug260274i() throws JavaModelException {
+	String source = 
+		"class X {\n" + 
+		"/***********************************************\n" + 
+		" * Test \n" + 
+		" */\n" + 
+		"}\n";
+	formatSource(source,
+		"class X {\n" + 
+		"	/***********************************************\n" + 
+		"	 * Test\n" + 
+		"	 */\n" + 
 		"}\n"
 	);
 }
