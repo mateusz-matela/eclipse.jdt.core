@@ -185,7 +185,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if (this.astRoot == null)
 			return null;
 
-		findHeader();
+		if (kind != CodeFormatter.K_UNKNOWN)
+			findHeader();
 
 		prepareSpaces();
 		prepareLineBreaks();
@@ -202,7 +203,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			List<TypeDeclaration> types = ((CompilationUnit) this.astRoot).types();
 			if (!types.isEmpty()) {
 				int headerEndIndex = this.tokenManager.firstIndexIn(types.get(0), -1);
-				this.tokenManager.setHeaderEndIndex(headerEndIndex );
+				this.tokenManager.setHeaderEndIndex(headerEndIndex);
 			}
 		}
 	}
