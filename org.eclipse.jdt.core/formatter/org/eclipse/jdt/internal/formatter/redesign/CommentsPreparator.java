@@ -555,7 +555,7 @@ public class CommentsPreparator extends ASTVisitor {
 			}
 
 			if (this.options.comment_indent_root_tags) {
-				int indent = tagName.length() + 1;
+				int indent = this.ctm.getLength(this.ctm.get(startIndex), 0) + 1;
 				if (isParamTag && this.options.comment_indent_parameter_description)
 					indent += this.options.indentation_size;
 				for (int i = startIndex + 1; i <= endIndex; i++) {
