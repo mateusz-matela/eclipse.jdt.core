@@ -2337,7 +2337,7 @@ public void testBug236406_EX1() {
 		"//        Line		comment    	    \n" + 
 		"i =\n" + 
 		"/**        Javadoc		comment    	    */\n" + 
-		"1 + (/*      Block		comment*/++a)",
+		"1 + (/*      Block		comment*/++a)\n",
 		CodeFormatter.K_EXPRESSION
 	);
 }
@@ -2351,7 +2351,7 @@ public void testBug236406_EX2() {
 		"// Line comment\n" + 
 		"i =\n" + 
 		"/** Javadoc comment */\n" + 
-		"1 + (/* Block comment */++a)",
+		"1 + (/* Block comment */++a)\n",
 		CodeFormatter.K_EXPRESSION | CodeFormatter.F_INCLUDE_COMMENTS
 	);
 }
