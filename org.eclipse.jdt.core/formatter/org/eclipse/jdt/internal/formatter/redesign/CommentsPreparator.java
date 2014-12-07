@@ -295,6 +295,11 @@ public class CommentsPreparator extends ASTVisitor {
 				sourcePosition++;
 			}
 		}
+
+		if (this.tm.getSource().startsWith("$FALL-THROUGH$", result.get(0).originalEnd + 1)) { //$NON-NLS-1$
+			result.get(1).clearSpaceBefore();
+		}
+
 		return result;
 	}
 
