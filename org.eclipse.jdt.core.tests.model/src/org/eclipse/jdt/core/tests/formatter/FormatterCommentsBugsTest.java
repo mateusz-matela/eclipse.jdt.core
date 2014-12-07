@@ -4152,7 +4152,7 @@ public void testBug260011_01() throws JavaModelException {
 		"	/**\n" + 
 		"	 * some comment text here\n" + 
 		"	 * <ul style=\"font-variant:small-caps;\">\n" + 
-		"	 * <li style=\"font-variant:small-caps;\">some text to be styled a certain way" + 
+		"	 * <li style=\"font-variant:small-caps;\">some text to be styled a certain way\n" + 
 		"	 * </li>\n" + 
 		"	 * </ul>\n" + 
 		"	 * end of comment\n" + 
@@ -4413,7 +4413,7 @@ public void testBug260011_10() throws JavaModelException {
 		"public interface Test {\n" + 
 		"\n" + 
 		"	/**\n" + 
-		"	 * Creates and opens a dialog to edit the given template. <p Subclasses my\n" + 
+		"	 * Creates and opens a dialog to edit the given template. <p Subclasses may\n" + 
 		"	 * override this method to provide a custom dialog.\n" + 
 		"	 * </p>\n" + 
 		"	 */\n" + 
