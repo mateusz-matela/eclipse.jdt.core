@@ -55,6 +55,7 @@ public class Token {
 	private int lineBreaksBefore, lineBreaksAfter;
 	private int indent;
 	private int align;
+	private boolean toEscape;
 
 	private boolean nextLineOnWrap;
 	private WrapPolicy wrapPolicy;
@@ -184,6 +185,14 @@ public class Token {
 
 	public int getAlign() {
 		return this.align;
+	}
+
+	public void setToEscape(boolean shouldEscape) {
+		this.toEscape = shouldEscape;
+	}
+
+	public boolean isToEscape() {
+		return this.toEscape;
 	}
 
 	public void setNextLineOnWrap() {

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
@@ -16,6 +18,9 @@ import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.linewrap.CommentWrapExecutor;
 
 public class TokenManager implements Iterable<Token> {
+
+	private static final Pattern COMMENT_LINE_ANNOTATION_PATTERN = Pattern.compile("^(\\s*\\*?\\s*)(@)"); //$NON-NLS-1$
+
 	private final List<Token> tokens;
 	private final String source;
 	private final int tabSize;
@@ -76,7 +81,12 @@ public class TokenManager implements Iterable<Token> {
 		return toString(get(tokenIndex));
 	}
 
+	/**
+	 * Gets token text with characters escaped as HTML entities where necessary.
+	 */
 	public String toString(Token token) {
+		if (token.isToEscape())
+			return getEscapedTokenString(token);
 		return token.toString(this.source);
 	}
 
@@ -244,8 +254,32 @@ public class TokenManager implements Iterable<Token> {
 		return positionInLine;
 	}
 
+	private String getEscapedTokenString(Token token) {
+		if (token.getLineBreaksBefore() > 0 && charAt(token.originalStart) == '@') {
+			return "&#64;" + this.source.substring(token.originalStart + 1, token.originalEnd + 1); //$NON-NLS-1$
+		} else if (token.tokenType == TokenNameNotAToken) {
+			String text = token.toString(this.source);
+			Matcher matcher = COMMENT_LINE_ANNOTATION_PATTERN.matcher(text);
+			if (matcher.find()) {
+				return matcher.group(1) + "&#64;" + text.substring(matcher.end(2)); //$NON-NLS-1$
+			}
+		}
+		return token.toString(this.source);
+	}
+
 	public int getLength(Token token, int startPosition) {
-		return getLength(token.originalStart, token.originalEnd, startPosition);
+		int length = getLength(token.originalStart, token.originalEnd, startPosition);
+		if  (token.isToEscape()) {
+			if (token.getLineBreaksBefore() > 0 && charAt(token.originalStart) == '@') {
+				length += 4; // 4 = "&#64;".length() - "@".length()
+			} else if (token.tokenType == TokenNameNotAToken) {
+				Matcher matcher = COMMENT_LINE_ANNOTATION_PATTERN.matcher(token.toString(this.source));
+				if (matcher.find()) {
+					length += 4; // 4 = "&#64;".length() - "@".length()
+				}
+			}
+		}
+		return length;
 	}
 
 	public int getLength(int originalStart, int originalEnd, int startPosition) {
@@ -310,9 +344,9 @@ public class TokenManager implements Iterable<Token> {
 
 	public int getNLSAlign(int index) {
 		if (this.tokenIndexToNLSAlign == null)
-			return -1;
+			return 0;
 		Integer align = this.tokenIndexToNLSAlign.get(index);
-		return align != null ? align : -1;
+		return align != null ? align : 0;
 	}
 
 	public void setHeaderEndIndex(int headerEndIndex) {

@@ -115,7 +115,12 @@ public class TextEditsBuilder extends TokenTraverser {
 			handleMultiLineComment(token, index);
 		} else {
 			flushBuffer(token.originalStart);
-			this.counter = token.originalEnd + 1;
+			if (token.isToEscape()) {
+				this.buffer.append(this.tm.toString(token));
+				flushBuffer(token.originalEnd + 1);
+			} else {
+				this.counter = token.originalEnd + 1;
+			}
 		}
 
 		if (token.tokenType == TokenNameStringLiteral)
@@ -146,25 +151,15 @@ public class TextEditsBuilder extends TokenTraverser {
 				}
 			}
 			bufferLineSeparator(token, false);
+			bufferAlign(token, index);
 			bufferIndent(token, index);
 		} else if (index == 0 && this.parent == null) {
 			bufferIndent(token, index);
+		} else {
+			bufferAlign(token, index);
+			if (isSpaceBefore() && token.getAlign() == 0)
+				this.buffer.append(' ');
 		}
-
-		int align = token.getAlign();
-		if (align > 0) {
-			int positionInLine;
-			if (getLineBreaksBefore() > 0) {
-				positionInLine = this.tm.toIndent(token.getIndent(), token.getWrapPolicy() != null);
-			} else {
-				positionInLine = this.tm.getPositionInLine(index - 1);
-				positionInLine += this.tm.getLength(this.tm.get(index - 1), positionInLine);
-			}
-			bufferAlign(positionInLine, align);
-		} else if (isSpaceBefore() && getLineBreaksBefore() == 0 && index > 0) {
-			this.buffer.append(' ');
-		}
-
 	}
 
 	private void bufferLineSeparator(Token token, boolean emptyLine) {
@@ -265,7 +260,20 @@ public class TextEditsBuilder extends TokenTraverser {
 		target.append(indentChars);
 	}
 
-	private void bufferAlign(int currentPositionInLine, int align) {
+	private void bufferAlign(Token token, int index) {
+		int align = token.getAlign();
+		if (align == 0)
+			return;
+
+		int currentPositionInLine = 0;
+		if (getLineBreaksBefore() > 0) {
+			if (this.parent == null)
+				currentPositionInLine = this.tm.toIndent(token.getIndent(), token.getWrapPolicy() != null);
+		} else {
+			currentPositionInLine = this.tm.getPositionInLine(index - 1);
+			currentPositionInLine += this.tm.getLength(this.tm.get(index - 1), currentPositionInLine);
+		}
+
 		final int tabSize = this.options.tab_size;
 		switch (this.alignChar) {
 			case DefaultCodeFormatterOptions.SPACE:

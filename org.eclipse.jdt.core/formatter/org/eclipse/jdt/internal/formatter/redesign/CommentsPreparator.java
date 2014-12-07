@@ -526,7 +526,7 @@ public class CommentsPreparator extends ASTVisitor {
 	@Override
 	public void endVisit(Javadoc node) {
 		if (this.options.comment_insert_empty_line_before_root_tags && this.firstTagToken != null
-				&& this.ctm.indexOf(this.firstTagToken) > 0) {
+				&& this.ctm.indexOf(this.firstTagToken) > 1) {
 			this.firstTagToken.putLineBreaksBefore(2);
 		}
 	}
@@ -694,6 +694,8 @@ public class CommentsPreparator extends ASTVisitor {
 			int closingTagIndex = tokenEndingAt(end);
 			if (openingTagIndex < closingTagIndex)
 				disableFormatting(openingTagIndex, closingTagIndex);
+			closingTagIndex = tokenEndingAt(end);
+			cleanupHTMLElement(openingTagIndex, closingTagIndex, false);
 			this.noFormatTagOpenStart = -1;
 		}
 	}
@@ -721,6 +723,25 @@ public class CommentsPreparator extends ASTVisitor {
 			formatCode(startPos, endPos);
 			this.formatCodeTagOpenEnd = -1;
 			this.lastFormatCodeClosingTagIndex = this.ctm.findIndex(startPos, -1, true);
+		}
+	}
+
+	private void cleanupHTMLElement(int openingTagIndex, int closingTagIndex, boolean formattedCode) {
+		Token previous = this.ctm.get(openingTagIndex);
+		int indent = previous.getIndent();
+		for (int i = openingTagIndex + 1; i < closingTagIndex; i++) {
+			Token token = this.ctm.get(i);
+			token.setToEscape(true);
+			if (formattedCode && (token.getLineBreaksBefore() > 0 || previous.getLineBreaksAfter() > 0))
+				token.setAlign(indent);
+			previous = token;
+		}
+		for (int i = closingTagIndex; i < this.ctm.size(); i++) {
+			Token token = this.ctm.get(i);
+			if (token.getIndent() == 0)
+				break;
+			token.setIndent(indent);
+			previous = token;
 		}
 	}
 
@@ -929,6 +950,8 @@ public class CommentsPreparator extends ASTVisitor {
 
 		if (formattedTokens == null) {
 			disableFormattingExclusively(openingTagLastIndex, closingTagFirstIndex);
+			closingTagFirstIndex = tokenStartingAt(javadocNoFormatCloseStart);
+			cleanupHTMLElement(openingTagLastIndex, closingTagFirstIndex, false);
 			return;
 		}
 
@@ -944,6 +967,7 @@ public class CommentsPreparator extends ASTVisitor {
 		List<Token> tokensToReplace = this.commentStructure.subList(openingTagLastIndex + 1, closingTagFirstIndex);
 		tokensToReplace.clear();
 		tokensToReplace.addAll(formattedTokens);
+		cleanupHTMLElement(openingTagLastIndex, openingTagLastIndex + formattedTokens.size() + 1, true);
 	}
 
 	private DefaultCodeFormatter getCommentCodeFormatter() {
