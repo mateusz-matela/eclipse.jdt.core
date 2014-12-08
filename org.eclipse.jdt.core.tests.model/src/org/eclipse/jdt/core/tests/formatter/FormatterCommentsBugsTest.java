@@ -5940,7 +5940,7 @@ public void testBug280061() throws JavaModelException {
 		"public interface X {\n" + 
 		"	/**\n" + 
 		"	 * <pre>\n" + 
-		"	 * void solve(Executor e,\n" + 
+		"	 *   void solve(Executor e,\n" + 
 		"	 *              Collection&lt;Callable&lt;Result&gt;&gt; solvers)\n" + 
 		"	 *     throws InterruptedException, ExecutionException {\n" + 
 		"	 *       CompletionService&lt;Result&gt; ecs\n" + 
