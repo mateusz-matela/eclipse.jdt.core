@@ -2469,7 +2469,7 @@ public void testBug237051c() throws JavaModelException {
 		"	/**\n" +
 		"	 * Returns the download rate in bytes per second. If the rate is unknown,\n" +
 		"	 * \n" +
-		"	 * @{link {@link #UNKNOWN_RATE} is returned.\n" +
+		"	 * @{link {@link #UNKNOWN_RATE}} is returned.\n" +
 		"	 * @return the download rate in bytes per second\n" +
 		"	 */\n" +
 		"	public long getTransferRate() {\n" +
