@@ -760,13 +760,15 @@ public class SpacePreparator extends ASTVisitor {
 		if (lastToken.tokenType == TokenNameLBRACE) {
 			handleToken(this.tm.get(openingBraceIndex),
 					this.options.insert_space_before_opening_brace_in_array_initializer
-							&& !(node.getParent() instanceof ArrayInitializer),
+							&& !(node.getParent() instanceof ArrayInitializer)
+							&& !(node.getParent() instanceof SingleMemberAnnotation),
 					this.options.insert_space_between_empty_braces_in_array_initializer);
 		} else {
 			boolean endsWithComma = lastToken.tokenType == TokenNameCOMMA;
 			handleToken(this.tm.get(openingBraceIndex),
 					this.options.insert_space_before_opening_brace_in_array_initializer
-							&& !(node.getParent() instanceof ArrayInitializer),
+							&& !(node.getParent() instanceof ArrayInitializer)
+							&& !(node.getParent() instanceof SingleMemberAnnotation),
 					this.options.insert_space_after_opening_brace_in_array_initializer
 							&& !(endsWithComma && node.expressions().isEmpty()));
 			handleCommas(node.expressions(), this.options.insert_space_before_comma_in_array_initializer,
