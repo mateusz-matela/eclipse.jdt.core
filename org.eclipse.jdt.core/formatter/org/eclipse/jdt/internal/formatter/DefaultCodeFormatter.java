@@ -34,7 +34,6 @@ import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.internal.compiler.util.Util;
@@ -76,6 +75,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private DefaultCodeFormatterOptions workingOptions;
 
 	private final boolean oldCommentFormatOption;
+	private final String sourceLevel;
 
 	private String sourceString;
 	private char[] sourceArray;
@@ -92,16 +92,23 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		this(options, null);
 	}
 
+	public DefaultCodeFormatter(Map options) {
+		this(null, options);
+	}
+
 	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
 		if (options != null) {
 			this.originalOptions = new DefaultCodeFormatterOptions(options);
 			this.workingOptions = new DefaultCodeFormatterOptions(options);
 			this.oldCommentFormatOption = getOldCommentFormatOption(options);
+			String compilerSource = (String) options.get(CompilerOptions.OPTION_Source);
+			this.sourceLevel = compilerSource != null ? compilerSource : CompilerOptions.VERSION_1_8;
 		} else {
 			Map settings = DefaultCodeFormatterConstants.getJavaConventionsSettings();
 			this.originalOptions = new DefaultCodeFormatterOptions(settings);
 			this.workingOptions = new DefaultCodeFormatterOptions(settings);
 			this.oldCommentFormatOption = true;
+			this.sourceLevel = CompilerOptions.VERSION_1_8;
 		}
 		if (defaultCodeFormatterOptions != null) {
 			this.originalOptions.set(defaultCodeFormatterOptions.getMap());
@@ -113,10 +120,6 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private boolean getOldCommentFormatOption(Map options) {
 		Object oldOption = options.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT);
 		return oldOption == null || DefaultCodeFormatterConstants.TRUE.equals(oldOption);
-	}
-
-	public DefaultCodeFormatter(Map options) {
-		this(null, options);
 	}
 
 	public String createIndentationString(final int indentationLevel) {
@@ -213,7 +216,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if (!init(source))
 			return result;
 
-		CommentsPreparator commentsPreparator = new CommentsPreparator(this.tokenManager, this.workingOptions);
+		CommentsPreparator commentsPreparator = new CommentsPreparator(this.tokenManager, this.workingOptions,
+				this.sourceLevel);
 		CommentWrapExecutor commentWrapper = new CommentWrapExecutor(this.tokenManager, this.workingOptions);
 		switch (kind) {
 			case K_JAVA_DOC:
@@ -278,7 +282,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private ASTNode parseSourceCode(int kind) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		Map parserOptions = JavaCore.getOptions();
-		parserOptions.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_8);
+		parserOptions.put(CompilerOptions.OPTION_Source, this.sourceLevel);
 		parser.setCompilerOptions(parserOptions);
 
 		switch (kind & K_MASK) {
@@ -297,6 +301,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 					ASTNode astNode = parseSourceCode(parser, parserMode, false);
 					if (astNode != null)
 						return astNode;
+					parser.setCompilerOptions(parserOptions); // parser loses compiler options after every use
 				}
 				return null;
 			default:
@@ -324,8 +329,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 
 	private void tokenizeSource() {
 		this.tokens.clear();
-		Scanner scanner = new Scanner(true, false, false/* nls */, ClassFileConstants.JDK1_8, null/* taskTags */,
-				null/* taskPriorities */, false/* taskCaseSensitive */);
+		Scanner scanner = new Scanner(true, false, false/* nls */, CompilerOptions.versionToJdkLevel(this.sourceLevel),
+				null/* taskTags */, null/* taskPriorities */, false/* taskCaseSensitive */);
 		scanner.setSource(this.sourceArray);
 		while (true) {
 			try {
@@ -333,7 +338,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 				if (tokenType == TokenNameEOF)
 					break;
 				Token token = Token.fromCurrent(scanner, tokenType);
-				this.tokens.add(token);				
+				this.tokens.add(token);
 			} catch (InvalidInputException e) {
 				Token token = Token.fromCurrent(scanner, TokenNameNotAToken);
 				this.tokens.add(token);
@@ -354,7 +359,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private void prepareComments() {
-		CommentsPreparator commentsPreparator = new CommentsPreparator(this.tokenManager, this.workingOptions);
+		CommentsPreparator commentsPreparator = new CommentsPreparator(this.tokenManager, this.workingOptions,
+				this.sourceLevel);
 		List<Comment> comments = ((CompilationUnit) this.astRoot.getRoot()).getCommentList();
 		for (Comment comment : comments) {
 			comment.accept(commentsPreparator);

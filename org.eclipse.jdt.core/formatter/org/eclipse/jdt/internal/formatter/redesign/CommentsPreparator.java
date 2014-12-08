@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,8 @@ import org.eclipse.jdt.core.dom.MethodRef;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
@@ -73,6 +76,7 @@ public class CommentsPreparator extends ASTVisitor {
 
 	private final TokenManager tm;
 	private final DefaultCodeFormatterOptions options;
+	private final String sourceLevel;
 	private final String formatDisableTag;
 	private final String formatEnableTag;
 
@@ -91,9 +95,10 @@ public class CommentsPreparator extends ASTVisitor {
 	private Token firstTagToken;
 	private DefaultCodeFormatter commentCodeFormatter;
 
-	public CommentsPreparator(TokenManager tm, DefaultCodeFormatterOptions options) {
+	public CommentsPreparator(TokenManager tm, DefaultCodeFormatterOptions options, String sourceLevel) {
 		this.tm = tm;
 		this.options = options;
+		this.sourceLevel = sourceLevel;
 		this.formatDisableTag = options.disabling_tag != null ? new String(options.disabling_tag) : null;
 		this.formatEnableTag = options.enabling_tag != null ? new String(options.enabling_tag) : null;
 	}
@@ -977,9 +982,11 @@ public class CommentsPreparator extends ASTVisitor {
 
 	private DefaultCodeFormatter getCommentCodeFormatter() {
 		if (this.commentCodeFormatter == null) {
-			DefaultCodeFormatterOptions options2 = new DefaultCodeFormatterOptions(this.options.getMap());
-			options2.page_width = options2.comment_line_length - this.commentIndent - COMMENT_LINE_SEPARATOR_LENGTH;
-			options2.tab_char = DefaultCodeFormatterOptions.SPACE;
+			Map<String, Object> options2 = this.options.getMap();
+			options2.put(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH,
+					this.options.comment_line_length - this.commentIndent - COMMENT_LINE_SEPARATOR_LENGTH);
+			options2.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, DefaultCodeFormatterOptions.SPACE);
+			options2.put(CompilerOptions.OPTION_Source, this.sourceLevel);
 			this.commentCodeFormatter = new DefaultCodeFormatter(options2);
 		}
 		return this.commentCodeFormatter;
