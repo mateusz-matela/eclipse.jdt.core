@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
-
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.text.edits.TextEdit;
 
 public class JavaDocTestCase extends MultiLineTestCase {
@@ -823,6 +823,7 @@ public class JavaDocTestCase extends MultiLineTestCase {
 
 	public void test197169() {
 		Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
+		options.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);
 
 		String input = "/**" + DELIMITER +
 				" * <pre>" + DELIMITER +
