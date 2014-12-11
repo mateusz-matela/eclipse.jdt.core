@@ -295,8 +295,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			case K_EXPRESSION:
 				return parseSourceCode(parser, ASTParser.K_EXPRESSION, true);
 			case K_UNKNOWN:
-				int[] parserModes = { ASTParser.K_COMPILATION_UNIT, ASTParser.K_CLASS_BODY_DECLARATIONS,
-						ASTParser.K_STATEMENTS, ASTParser.K_EXPRESSION };
+				int[] parserModes = { ASTParser.K_COMPILATION_UNIT, ASTParser.K_EXPRESSION,
+						ASTParser.K_CLASS_BODY_DECLARATIONS, ASTParser.K_STATEMENTS};
 				for (int parserMode : parserModes) {
 					ASTNode astNode = parseSourceCode(parser, parserMode, false);
 					if (astNode != null)
