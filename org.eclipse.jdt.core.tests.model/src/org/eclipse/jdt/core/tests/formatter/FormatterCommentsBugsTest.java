@@ -3407,11 +3407,11 @@ public void testBug239719() throws JavaModelException {
 		"/**\n" + 
 		" * <pre>\n" + 
 		" * public class Test implements Runnable {\n" + 
-		" * 	&#064;Override\n" + 
+		" * 	&#64;Override\n" + 
 		" * 	public void run() {\n" + 
 		" * 		// Hello really bad Ganymede formatter !!!\n" + 
 		" * 		// Shit happens when somebody tries to change a running system\n" + 
-		" * 		System.out.println(&quot;Press Shift+Ctrl+F to format&quot;);\n" + 
+		" * 		System.out.println(\"Press Shift+Ctrl+F to format\");\n" + 
 		" * 	}\n" + 
 		" * }\n" + 
 		" * </pre>\n" + 
