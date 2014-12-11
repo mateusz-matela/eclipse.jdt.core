@@ -4714,7 +4714,8 @@ public void testBug260381b() throws JavaModelException {
 		" * Comments that can be formated in several lines...\n" + 
 		" * \n" + 
 		" * @author Myself\n" + 
-		" * @version {@code The  			  text		here     should     not			be   		    			     formatted....   	   }\n" + 
+		" * @version {@code\n" + 
+		" * The  			  text		here     should     not			be   		    			     formatted....   	   }\n" + 
 		" */\n" + 
 		"public class X01b {\n" + 
 		"}\n"
@@ -4740,7 +4741,7 @@ public void testBug260381c() throws JavaModelException {
 		" * @author Myself\n" + 
 		" * @version {@code     \n" + 
 		" *          \n" + 
-		" *          \n" + 
+		"            \n" + 
 		" *          The  			  text		here     should     not			be   		    			     formatted....   	   }\n" + 
 		" */\n" + 
 		"public class X01c {\n" + 
@@ -5208,8 +5209,8 @@ public void testBug260381_wksp2_04() throws JavaModelException {
 		"	 * yields a multiset with elements in the order {@code 2, 3, 3, 1}.\n" + 
 		"	 *\n" + 
 		"	 * <p>\n" + 
-		"	 * Note that if {@code c} is a {@code Collection<String>}, then\n" + 
-		"	 * {@code ImmutableMultiset.copyOf(c)} returns an\n" + 
+		"	 * Note that if {@code c} is a {@code Collection<String>}, then {@code\n" + 
+		"	 * ImmutableMultiset.copyOf(c)} returns an\n" + 
 		"	 * {@code ImmutableMultiset<String>} containing each of the strings in\n" + 
 		"	 * {@code c}, while {@code ImmutableMultiset.of(c)} returns an\n" + 
 		"	 * {@code ImmutableMultiset<Collection<String>>} containing one element (the\n" + 
@@ -5366,7 +5367,8 @@ public void testBug260381_wksp2_06() throws JavaModelException {
 		"	 * @throws NullPointerException\n" + 
 		"	 *             if {@code element} is null and this implementation does not\n" + 
 		"	 *             permit null elements. Note that if {@code occurrences} is\n" + 
-		"	 *             zero, the implementation may opt to return normally.\n" + 
+		"	 *     occurrences} is zero, the implementation may opt to return\n" + 
+		"	 *             normally.\n" + 
 		"	 */\n" + 
 		"	boolean /* int */add(E element, int occurrences);\n" + 
 		"}\n"
@@ -6397,11 +6399,11 @@ public void testBug305518() {
 		"public interface Test {\n" + 
 		"	/**\n" + 
 		"	 * <pre>\n" + 
-		"	 *     A\n" + 
-		"	 *    / \\\n" + 
-		"	 *   B   C\n" + 
-		"	 *  / \\ / \\\n" + 
-		"	 * D  E F  G\n" + 
+		"	 *    A\n" + 
+		"	 *   / \\\n" + 
+		"	 *  B   C\n" + 
+		"	 * / \\ / \\\n" + 
+		"	 *D  E F  G\n" + 
 		"	 * </pre>\n" + 
 		"	 */\n" + 
 		"	public void foo();\n" + 
