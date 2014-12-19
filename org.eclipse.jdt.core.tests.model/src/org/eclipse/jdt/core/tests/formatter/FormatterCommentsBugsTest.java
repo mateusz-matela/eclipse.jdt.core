@@ -5487,8 +5487,7 @@ public void testBug260381_wksp2_09() throws JavaModelException {
 		"     if condition\n" +
 		"	 then code\n" +
 		"	 else code\n" +
-		"</code>\n" +
-		" * what actually gets built is <code>\n" +
+		"</code> what actually gets built is <code>\n" +
 		"     if !condition branch to eb:\n" +
 		"	  then code\n" +
 		"	  goto end:  // skip else\n" +
