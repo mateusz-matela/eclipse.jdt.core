@@ -73,8 +73,14 @@ public class CommentWrapExecutor extends TokenTraverser {
 			}
 			return startPosition + this.tm.getLength(endingToken, startPosition);
 		} else if (this.lineCounter > 1 && !newLinesAtBoundries) {
-			// the rest of this code assumes that newLinesAtBoundries==true, so now substract the additional lines
+			// the rest of this code assumes that newLinesAtBoundries==true, so now subtract the additional lines
 			this.lineCounter -= 2;
+
+			this.lineCounter -= structure.get(1).getLineBreaksBefore();
+			structure.get(1).clearLineBreaksBefore();
+			Token last = structure.get(structure.size() - 1);
+			this.lineCounter -= last.getLineBreaksBefore();
+			last.clearLineBreaksBefore();
 		}
 		return this.counter;
 	}
