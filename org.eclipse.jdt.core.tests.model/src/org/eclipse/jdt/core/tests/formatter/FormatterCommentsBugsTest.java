@@ -6515,7 +6515,8 @@ public void testBug305830() {
 	formatSource(source,
 		"public class X01 {\n" + 
 		"	void foo() {\n" + 
-		"		bar(\"a non-nls string\", 0 /*a    comment*/); //$NON-NLS-1$\n" + 
+		"		bar(\"a non-nls string\", //$NON-NLS-1$\n" + 
+		"				0 /* a comment */);\n" + 
 		"	}\n" + 
 		"\n" + 
 		"	void bar(String string, int i) {\n" + 
@@ -6562,6 +6563,30 @@ public void testBug305830c() {
 		"public class X03 {\n" + 
 		"	void foo() {\n" + 
 		"		bar(\"str\", 0 /* a comment */); //$NON-NLS-1$\n" + 
+		"	}\n" + 
+		"\n" + 
+		"	void bar(String string, int i) {\n" + 
+		"	}\n" + 
+	    "}\n"
+	);
+}
+public void testBug305830d() {
+	this.formatterPrefs = null;
+	this.formatterOptions.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "40");
+	this.formatterOptions.put(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH, "40");
+	String source = 
+		"public class X01 {\n" + 
+		"void foo() {\n" + 
+		"bar(\"a non-nls string\" /*a    comment*/, 0); //$NON-NLS-1$\n" + 
+		"}\n" + 
+		"void bar(String string, int i) {\n" + 
+		"}\n" + 
+	    "}\n";
+	formatSource(source,
+		"public class X01 {\n" + 
+		"	void foo() {\n" + 
+		"		bar(\"a non-nls string\" /* a comment */, //$NON-NLS-1$\n" + 
+		"				0);\n" + 
 		"	}\n" + 
 		"\n" + 
 		"	void bar(String string, int i) {\n" + 
