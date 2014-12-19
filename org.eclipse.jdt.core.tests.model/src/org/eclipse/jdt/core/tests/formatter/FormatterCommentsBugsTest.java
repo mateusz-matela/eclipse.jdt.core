@@ -5211,9 +5211,9 @@ public void testBug260381_wksp2_04() throws JavaModelException {
 		"	 *\n" + 
 		"	 * <p>\n" + 
 		"	 * Note that if {@code c} is a {@code Collection<String>}, then {@code\n" + 
-		"	 * ImmutableMultiset.copyOf(c)} returns an\n" + 
-		"	 * {@code ImmutableMultiset<String>} containing each of the strings in\n" + 
-		"	 * {@code c}, while {@code ImmutableMultiset.of(c)} returns an\n" + 
+		"	 * ImmutableMultiset.copyOf(c)} returns an {@code ImmutableMultiset<String>}\n" + 
+		"	 * containing each of the strings in {@code c}, while\n" + 
+		"	 * {@code ImmutableMultiset.of(c)} returns an\n" + 
 		"	 * {@code ImmutableMultiset<Collection<String>>} containing one element (the\n" + 
 		"	 * given collection itself).\n" + 
 		"	 *\n" + 
@@ -5368,8 +5368,7 @@ public void testBug260381_wksp2_06() throws JavaModelException {
 		"	 * @throws NullPointerException\n" + 
 		"	 *             if {@code element} is null and this implementation does not\n" + 
 		"	 *             permit null elements. Note that if {@code\n" + 
-		"	 *     occurrences} is zero, the implementation may opt to return\n" + 
-		"	 *             normally.\n" + 
+		"	 *     occurrences} is zero, the implementation may opt to return normally.\n" + 
 		"	 */\n" + 
 		"	boolean /* int */ add(E element, int occurrences);\n" + 
 		"}\n"
@@ -5405,8 +5404,7 @@ public void testBug260381_wksp2_07() throws JavaModelException {
 		"	 * Constructs a new, empty multiset, sorted according to the specified\n" + 
 		"	 * comparator. All elements inserted into the multiset must be <i>mutually\n" + 
 		"	 * comparable</i> by the specified comparator: {@code comparator.compare(e1,\n" + 
-		"	 * e2)} must not throw a {@code ClassCastException} for any elements\n" + 
-		"	 * {@code\n" + 
+		"	 * e2)} must not throw a {@code ClassCastException} for any elements {@code\n" + 
 		"	 * e1} and {@code e2} in the multiset. If the user attempts to add an\n" + 
 		"	 * element to the multiset that violates this constraint, the\n" + 
 		"	 * {@code add(Object)} call will throw a {@code ClassCastException}.\n" + 

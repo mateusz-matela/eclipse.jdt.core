@@ -54,7 +54,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 			return startPosition + this.tm.getLength(commentToken, startPosition);
 
 		commentToken.setIndent(this.tm.toIndent(startPosition, true));
-		this.lineStartPosition = commentToken.getIndent() + COMMENT_LINE_SEPARATOR_LENGTH;
+		this.lineStartPosition = commentToken.getIndent();
 		this.simulation = simulate;
 		this.wrapDisabled = noWrap;
 		this.potentialWrapToken = null;
@@ -86,6 +86,8 @@ public class CommentWrapExecutor extends TokenTraverser {
 	@Override
 	protected boolean token(Token token, int index) {
 		int positionIfNewLine = this.lineStartPosition + token.getAlign() + token.getIndent();
+		if (token.tokenType != TokenNameNotAToken)
+			positionIfNewLine += COMMENT_LINE_SEPARATOR_LENGTH;
 		if (getLineBreaksBefore() > 0) {
 			this.lineCounter = Math.max(this.lineCounter + getLineBreaksBefore(), 4);
 			this.counter = positionIfNewLine;
