@@ -5126,9 +5126,10 @@ public void testBug260381_wksp2_03() throws JavaModelException {
 		"	 * \n" + 
 		"	 * <pre>\n" + 
 		"	 * {\n" + 
-		"	 * 	&#064;code\n" + 
-		"	 * 	static final ImmutableBiMap&lt;String, Integer&gt; WORD_TO_INT = new ImmutableBiMap.Builder&lt;String, Integer&gt;()\n" + 
-		"	 * 			.put(&quot;one&quot;, 1).put(&quot;two&quot;, 2).put(&quot;three&quot;, 3).build();\n" + 
+		"	 * 	&#64;code\n" + 
+		"	 *\n" + 
+		"	 * 	static final ImmutableBiMap<String, Integer> WORD_TO_INT = new ImmutableBiMap.Builder<String, Integer>()\n" + 
+		"	 * 			.put(\"one\", 1).put(\"two\", 2).put(\"three\", 3).build();\n" + 
 		"	 * }\n" + 
 		"	 * </pre>\n" + 
 		"	 *\n" + 
