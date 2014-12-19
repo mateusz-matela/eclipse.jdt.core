@@ -715,16 +715,19 @@ public class WrapPreparator extends ASTVisitor {
 
 	private void wrapComments() {
 		CommentWrapExecutor commentWrapper = new CommentWrapExecutor(this.tm, this.options);
+		boolean isNLSTagInLine = false;
 		for (int i = 0; i < this.tm.size(); i++) {
 			Token token = this.tm.get(i);
+			if (token.hasNLSTag())
+				isNLSTagInLine = token.tokenType == TokenNameStringLiteral;
 			List<Token> structure = token.getInternalStructure();
-			if (structure != null && !structure.isEmpty()) {
+			if (structure != null && !structure.isEmpty() && !isNLSTagInLine) {
 				int startPosition = this.tm.getPositionInLine(i);
 				if (token.tokenType == TokenNameCOMMENT_LINE) {
 					commentWrapper.wrapLineComment(token, startPosition);
 				} else {
 					assert token.tokenType == TokenNameCOMMENT_BLOCK || token.tokenType == TokenNameCOMMENT_JAVADOC;
-					commentWrapper.wrapMultiLineComment(token, startPosition, false);
+					commentWrapper.wrapMultiLineComment(token, startPosition, false, false);
 				}
 			}
 		}

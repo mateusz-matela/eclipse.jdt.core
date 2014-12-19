@@ -89,7 +89,7 @@ public class WrapExecutor {
 		final List<Integer> extraLinesPerComment = new ArrayList<Integer>();
 		final List<Integer> topPriorityGroupStarts = new ArrayList<Integer>();
 		int currentTopPriorityGroupEnd;
-		
+		private boolean isNLSTagInLine;
 
 		public LineAnalyzer(TokenManager tokenManager, DefaultCodeFormatterOptions options) {
 			this.commentWrapper = new CommentWrapExecutor(tokenManager, options);
@@ -107,6 +107,7 @@ public class WrapExecutor {
 			this.extraLinesPerComment.clear();
 			this.topPriorityGroupStarts.clear();
 			this.currentTopPriorityGroupEnd = -1;
+			this.isNLSTagInLine = false;
 			return WrapExecutor.this.tm.traverse(startIndex, this);
 		}
 
@@ -114,6 +115,9 @@ public class WrapExecutor {
 		protected boolean token(Token token, int index) {
 			if (token.tokenType == TokenNameCOMMENT_LINE)
 				return false;
+
+			if (token.hasNLSTag())
+				this.isNLSTagInLine = true;
 
 			if (token.isWrappable()) {
 				WrapPolicy wrapPolicy = token.getWrapPolicy();
@@ -133,7 +137,7 @@ public class WrapExecutor {
 			}
 
 			if (token.isComment()) {
-				this.counter = this.commentWrapper.wrapMultiLineComment(token, this.counter, true);
+				this.counter = this.commentWrapper.wrapMultiLineComment(token, this.counter, true, this.isNLSTagInLine);
 				this.extraLines += this.commentWrapper.getLinesCount() - 1;
 				this.extraLinesPerComment.add(this.commentWrapper.getLinesCount() - 1);
 			} else {

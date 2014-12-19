@@ -25,6 +25,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 	private int lineStartPosition;
 	private List<Token> blockStructure;
 	private boolean simulation;
+	private boolean wrapDisabled;
 
 	private Token potentialWrapToken;
 	private int counterIfWrapped;
@@ -36,9 +37,15 @@ public class CommentWrapExecutor extends TokenTraverser {
 	}
 
 	/**
+	 * @param commentToken token to wrap
+	 * @param startPosition position in line of the beginning of the comment
+	 * @param simulate if {@code true}, the properties of internal tokens will not really change. This
+	 * mode is useful for checking how much space the comment takes.
+	 * @param noWrap if {@code true}, it means that wrapping is disabled for this comment (for example because there's
+	 * a NON-NLS tag after it). This method is still useful for checking comment length in that case.
 	 * @return position in line at the end of comment
 	 */
-	public int wrapMultiLineComment(Token commentToken, int startPosition, boolean simulate) {
+	public int wrapMultiLineComment(Token commentToken, int startPosition, boolean simulate, boolean noWrap) {
 		this.lineCounter = 1;
 		this.counter = startPosition;
 
@@ -49,6 +56,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 		commentToken.setIndent(this.tm.toIndent(startPosition, true));
 		this.lineStartPosition = commentToken.getIndent() + COMMENT_LINE_SEPARATOR_LENGTH;
 		this.simulation = simulate;
+		this.wrapDisabled = noWrap;
 		this.potentialWrapToken = null;
 		this.blockStructure = structure;
 		traverse(structure, 0);
@@ -123,7 +131,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 	}
 
 	private boolean shouldWrap() {
-		if (this.counter <= this.options.comment_line_length)
+		if (this.wrapDisabled || this.counter <= this.options.comment_line_length)
 			return false;
 		if (this.potentialWrapToken == null) {
 			boolean isFormattingEnabled = this.blockStructure.get(0).getWrapPolicy() == null;

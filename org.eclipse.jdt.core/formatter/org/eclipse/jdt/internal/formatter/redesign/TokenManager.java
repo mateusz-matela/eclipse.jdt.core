@@ -209,16 +209,23 @@ public class TokenManager implements Iterable<Token> {
 	}
 
 	private TokenTraverser positionInLineCounter = new TokenTraverser() {
+		private boolean isNLSTagInLine = false;
+
 		@Override
 		protected boolean token(Token traversed, int index) {
-			if (index == this.value)
+			if (index == this.value) {
+				this.isNLSTagInLine = false;
 				return false;
+			}
+			if (traversed.hasNLSTag())
+				this.isNLSTagInLine = traversed.tokenType == TokenNameStringLiteral;
 			if (traversed.getAlign() > 0)
 				this.counter = traversed.getAlign();
 			List<Token> internalStructure = traversed.getInternalStructure();
 			if (internalStructure != null && !internalStructure.isEmpty()) {
 				assert traversed.tokenType == TokenNameCOMMENT_BLOCK || traversed.tokenType == TokenNameCOMMENT_JAVADOC;
-				this.counter = TokenManager.this.commentWrapper.wrapMultiLineComment(traversed, this.counter, true);
+				this.counter = TokenManager.this.commentWrapper.wrapMultiLineComment(traversed, this.counter, true,
+						this.isNLSTagInLine);
 			} else {
 				this.counter += getLength(traversed, this.counter);
 			}

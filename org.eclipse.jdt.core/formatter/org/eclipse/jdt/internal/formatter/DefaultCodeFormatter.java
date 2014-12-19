@@ -229,7 +229,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 						Javadoc javadoc = (Javadoc) cu.getCommentList().get(0);
 						javadoc.accept(commentsPreparator);
 						int startPosition = this.tokenManager.findSourcePositionInLine(token.originalStart);
-						commentWrapper.wrapMultiLineComment(token, startPosition, false);
+						commentWrapper.wrapMultiLineComment(token, startPosition, false, false);
 					}
 				}
 				break;
@@ -239,7 +239,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 					if (token.tokenType == TokenNameCOMMENT_BLOCK) {
 						commentsPreparator.handleBlockComment(i);
 						int startPosition = this.tokenManager.findSourcePositionInLine(token.originalStart);
-						commentWrapper.wrapMultiLineComment(token, startPosition, false);
+						commentWrapper.wrapMultiLineComment(token, startPosition, false, false);
 					}
 				}
 				break;
