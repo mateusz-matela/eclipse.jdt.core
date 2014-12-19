@@ -21,8 +21,6 @@ import org.eclipse.text.edits.TextEdit;
 
 public class TextEditsBuilder extends TokenTraverser {
 
-	private static final char[] BREAK_CHARS = { '\r', '\n' };
-
 	private final String source;
 	private List<IRegion> regions;
 	private TokenManager tm;
@@ -325,56 +323,89 @@ public class TextEditsBuilder extends TokenTraverser {
 
 	private TextEdit getReplaceEdit(int editStart, int editEnd, String text) {
 		IRegion region = this.regions.get(this.currentRegion);
-		if (region.getOffset() > editStart) {
+		if (region.getOffset() > editStart && isOnlyWhitespace(text)) {
 			int breaksInReplacement = this.tm.countLineBreaksBetween(text, 0, text.length());
 			int breaksOutsideRegion = this.tm.countLineBreaksBetween(this.source, editStart, region.getOffset());
 			int breaksToPreserve = breaksInReplacement - breaksOutsideRegion;
-			text = adaptReplaceText(text, breaksToPreserve, false);
-			if (breaksToPreserve <= 0) {
-				int indentInSource = this.tm.findSourcePositionInLine(region.getOffset());
-				int cutPosition = 0;
-				int textPosition = 0;
-				while (cutPosition < text.length() && textPosition < indentInSource) {
-					textPosition += (text.charAt(cutPosition) == '\t') ? this.options.tab_size : 1;
-					if (textPosition <= indentInSource)
-						cutPosition++;
-				}
-				text = text.substring(cutPosition);
-			}
+			text = adaptReplaceText(text, breaksToPreserve, false, region.getOffset() - 1);
 			editStart = region.getOffset();
 		}
 		int regionEnd = region.getOffset() + region.getLength();
-		if (regionEnd < editEnd) {
+		if (regionEnd < editEnd && isOnlyWhitespace(text)) {
 			int breaksInReplacement = this.tm.countLineBreaksBetween(text, 0, text.length());
 			int breaksOutsideRegion = this.tm.countLineBreaksBetween(this.source, regionEnd, editEnd);
 			int breaksToPreserve = breaksInReplacement - breaksOutsideRegion;
-			text = adaptReplaceText(text, breaksToPreserve, true);
+			text = adaptReplaceText(text, breaksToPreserve, true, regionEnd);
 			editEnd = regionEnd;
 		}
 		return new ReplaceEdit(editStart, editEnd - editStart, text);
 	}
 
-	private String adaptReplaceText(String text, int breaksToPreserve, boolean preserveFrontLines) {
-		int i = preserveFrontLines ? 0 : text.length() - 1;
-		int direction = preserveFrontLines ? 1 : -1;
+	private boolean isOnlyWhitespace(String text) {
+		for (int i = 0; i < text.length(); i++)
+			if (!ScannerHelper.isWhitespace(text.charAt(i)))
+				return false;
+		return true;
+	}
+
+	private String adaptReplaceText(String text, int breaksToPreserve, boolean isRegionEnd, int regionEdge) {
+		int i = isRegionEnd ? 0 : text.length() - 1;
+		int direction = isRegionEnd ? 1 : -1;
 		int preservedBreaks = 0;
-		theLoop:
-		while (i >= 0 && i < text.length()) {
-			for (int j = 0; j < 2; j++) {
-				if (text.charAt(i) == BREAK_CHARS[j]) {
-					if (preservedBreaks >= breaksToPreserve)
-						break theLoop;
-					preservedBreaks++;
-					int i2 = i + direction;
-					if (i2 >= 0 && i2 < text.length() && text.charAt(i2) == BREAK_CHARS[1 - j])
+		for (;i >= 0 && i < text.length(); i += direction) {
+			assert ScannerHelper.isWhitespace(text.charAt(i));
+			char c1 = text.charAt(i);
+			if (c1 == '\r' || c1 == '\n') {
+				if (preservedBreaks >= breaksToPreserve)
+					break;
+				preservedBreaks++;
+				int i2 = i + direction;
+				if (i2 >= 0 && i2 < text.length()) {
+					char c2 = text.charAt(i2);
+					if ((c2 == '\r' || c2 == '\n') && c2 != c1)
 						i = i2;
 				}
 			}
-			i += direction;
 		}
-		if (preserveFrontLines)
-			return text.substring(0, i);
-		return text.substring(i + 1, text.length());
+		text = isRegionEnd ? text.substring(0, i) : text.substring(i + 1);
+
+		// cut out text if the source outside region is a matching whitespace
+		int textPos = isRegionEnd ? text.length() - 1 : 0;
+		int sourcePos = regionEdge;
+		theLoop:
+		while (textPos >= 0 && textPos < text.length() && sourcePos >= 0 && sourcePos < this.source.length()) {
+			char c1 = text.charAt(textPos);
+			char c2 = this.source.charAt(sourcePos);
+			if (c1 == c2 && (c1 == ' ' || c1 == '\t')) {
+				textPos -= direction;
+				sourcePos += direction;
+			} else if (c1 == '\t' && c2 == ' ') {
+				for (i = 0; i < this.options.tab_size; i++) {
+					sourcePos += direction;
+					if (i < this.options.tab_size - 1
+							&& (sourcePos < 0 || sourcePos >= this.source.length() || this.source.charAt(sourcePos) != ' '))
+						continue theLoop;
+				}
+				textPos -= direction;
+			} else if (c2 == '\t' && c1 == ' ') {
+				for (i = 0; i < this.options.tab_size; i++) {
+					textPos -= direction;
+					if (i < this.options.tab_size - 1
+							&& (textPos < 0 || textPos >= text.length() || text.charAt(textPos) != ' '))
+						continue theLoop;
+				}
+				sourcePos += direction;
+			} else {
+				break;
+			}
+		}
+		if (isRegionEnd) {
+			text = text.substring(0, textPos + 1);
+		} else {
+			text = text.substring(textPos);
+		}
+
+		return text;
 	}
 
 	private void handleSingleLineComment(Token lineComment, int index) {
