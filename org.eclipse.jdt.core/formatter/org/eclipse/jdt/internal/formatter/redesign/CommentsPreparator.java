@@ -474,7 +474,6 @@ public class CommentsPreparator extends ASTVisitor {
 						Token line = new Token(commentToken.originalStart + lineStart,
 								commentToken.originalStart + i - 1,
 								firstLine ? commentToken.tokenType : TokenNameNotAToken);
-						line.setWrapPolicy(WrapPolicy.DISABLE_WRAP);
 						line.breakAfter();
 						lines.add(line);
 					} else if (!lines.isEmpty()) {
