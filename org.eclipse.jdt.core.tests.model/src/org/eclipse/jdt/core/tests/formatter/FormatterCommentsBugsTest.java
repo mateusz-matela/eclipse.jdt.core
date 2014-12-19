@@ -5367,11 +5367,11 @@ public void testBug260381_wksp2_06() throws JavaModelException {
 		"	 *             occurrences of the element\n" + 
 		"	 * @throws NullPointerException\n" + 
 		"	 *             if {@code element} is null and this implementation does not\n" + 
-		"	 *             permit null elements. Note that if {@code occurrences} is\n" + 
+		"	 *             permit null elements. Note that if {@code\n" + 
 		"	 *     occurrences} is zero, the implementation may opt to return\n" + 
 		"	 *             normally.\n" + 
 		"	 */\n" + 
-		"	boolean /* int */add(E element, int occurrences);\n" + 
+		"	boolean /* int */ add(E element, int occurrences);\n" + 
 		"}\n"
 	);
 }
@@ -5406,7 +5406,8 @@ public void testBug260381_wksp2_07() throws JavaModelException {
 		"	 * comparator. All elements inserted into the multiset must be <i>mutually\n" + 
 		"	 * comparable</i> by the specified comparator: {@code comparator.compare(e1,\n" + 
 		"	 * e2)} must not throw a {@code ClassCastException} for any elements\n" + 
-		"	 * {@code e1} and {@code e2} in the multiset. If the user attempts to add an\n" + 
+		"	 * {@code\n" + 
+		"	 * e1} and {@code e2} in the multiset. If the user attempts to add an\n" + 
 		"	 * element to the multiset that violates this constraint, the\n" + 
 		"	 * {@code add(Object)} call will throw a {@code ClassCastException}.\n" + 
 		"	 *\n" + 
@@ -6437,10 +6438,10 @@ public void testBug305518_wksp2_01() {
 		"	 * the example above with the API.\n" + 
 		"	 * \n" + 
 		"	 * <PRE>\n" + 
-		"	 * \n" + 
-		"	 * 	NetworkServerControl serverControl = new NetworkServerControl(InetAddress.getByName(\"myhost\"),1621)\n" + 
-		"	 * \n" + 
-		"	 * 	serverControl.shutdown();\n" + 
+		"	\n" + 
+		"	NetworkServerControl serverControl = new NetworkServerControl(InetAddress.getByName(\"myhost\"),1621)\n" + 
+		"	\n" + 
+		"	serverControl.shutdown();\n" + 
 		"	 * </PRE>\n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
@@ -6491,7 +6492,7 @@ public void testBug305518_wksp2_03() {
 		"	 * <PRE>\n" + 
 		"	*  String s = ... ; // get string from somewhere\n" + 
 		"	*  byte [] compressed = UnicodeCompressor.compress(s);\n" + 
-		"	* </PRE>\n" + 
+		"	 * </PRE>\n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
