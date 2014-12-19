@@ -323,6 +323,17 @@ public class TextEditsBuilder extends TokenTraverser {
 
 	private TextEdit getReplaceEdit(int editStart, int editEnd, String text) {
 		IRegion region = this.regions.get(this.currentRegion);
+		int regionEnd = region.getOffset() + region.getLength();
+		if (editStart < region.getOffset() && regionEnd < editEnd) {
+			int breaksInReplacement = this.tm.countLineBreaksBetween(text, 0, text.length());
+			int breaksBeforeRegion = this.tm.countLineBreaksBetween(this.source, editStart, region.getOffset());
+			int breaksAfterRegion = this.tm.countLineBreaksBetween(this.source, regionEnd, editEnd);
+			if (breaksBeforeRegion + breaksAfterRegion > breaksInReplacement) {
+				text = ""; //$NON-NLS-1$
+				editStart = region.getOffset();
+				editEnd = regionEnd;
+			}
+		}
 		if (region.getOffset() > editStart && isOnlyWhitespace(text)) {
 			int breaksInReplacement = this.tm.countLineBreaksBetween(text, 0, text.length());
 			int breaksOutsideRegion = this.tm.countLineBreaksBetween(this.source, editStart, region.getOffset());
@@ -330,7 +341,6 @@ public class TextEditsBuilder extends TokenTraverser {
 			text = adaptReplaceText(text, breaksToPreserve, false, region.getOffset() - 1);
 			editStart = region.getOffset();
 		}
-		int regionEnd = region.getOffset() + region.getLength();
 		if (regionEnd < editEnd && isOnlyWhitespace(text)) {
 			int breaksInReplacement = this.tm.countLineBreaksBetween(text, 0, text.length());
 			int breaksOutsideRegion = this.tm.countLineBreaksBetween(this.source, regionEnd, editEnd);
