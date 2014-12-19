@@ -6443,6 +6443,8 @@ public void testBug305518_wksp2_01() {
 		"	\n" + 
 		"	serverControl.shutdown();\n" + 
 		"	 * </PRE>\n" + 
+		"	 * \n" + 
+		"	 * \n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
