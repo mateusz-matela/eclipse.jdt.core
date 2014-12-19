@@ -6203,7 +6203,8 @@ public void testBug300379() {
 		"	/**\n" + 
 		"	 * <pre>\n" + 
 		"	 * {\n" + 
-		"	 * 	&#064;code\n" + 
+		"	 * 	&#64;code\n" + 
+		"	 * \n" + 
 		"	 * 	public class X {\n" + 
 		"	 * 	}\n" + 
 		"	 * }\n" + 
@@ -6229,7 +6230,8 @@ public void testBug300379b() {
 		"	/**\n" + 
 		"	 * <pre>\n" + 
 		"	 * {\n" + 
-		"	 * 	&#064;code\n" + 
+		"	 * 	&#64;code\n" + 
+		"	 * \n" + 
 		"	 * 	public class X {\n" + 
 		"	 * 	}\n" + 
 		"	 * }\n" + 
