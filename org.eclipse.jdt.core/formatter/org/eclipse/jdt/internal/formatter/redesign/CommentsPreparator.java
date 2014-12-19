@@ -452,6 +452,7 @@ public class CommentsPreparator extends ASTVisitor {
 			commentStartPosition = this.tm.findSourcePositionInLine(commentToken.originalStart);
 		int positionInLine = commentStartPosition;
 		int lineStart = 0;
+		int breaksBeforeFirstLine = 0;
 		boolean firstLine = true; // all lines except first will be NotAToken to disable asterisk adding
 
 		for (int i = 0; i < commentText.length(); i++) {
@@ -475,10 +476,14 @@ public class CommentsPreparator extends ASTVisitor {
 								commentToken.originalStart + i - 1,
 								firstLine ? commentToken.tokenType : TokenNameNotAToken);
 						line.breakAfter();
+						if (lines.isEmpty())
+							line.putLineBreaksBefore(breaksBeforeFirstLine);
 						lines.add(line);
 					} else if (!lines.isEmpty()) {
 						Token previousLine = lines.get(lines.size() - 1);
 						previousLine.putLineBreaksAfter(previousLine.getLineBreaksAfter() + 1);
+					} else {
+						breaksBeforeFirstLine++;
 					}
 					if (i + 1 < commentText.length() && commentText.charAt(i + 1) == (c == '\r' ? '\n' : '\r'))
 						i++;
