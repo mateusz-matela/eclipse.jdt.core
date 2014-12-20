@@ -217,8 +217,10 @@ public class TokenManager implements Iterable<Token> {
 				this.isNLSTagInLine = false;
 				return false;
 			}
-			if (traversed.hasNLSTag())
-				this.isNLSTagInLine = traversed.tokenType == TokenNameStringLiteral;
+			if (traversed.hasNLSTag()) {
+				assert traversed.tokenType == TokenNameStringLiteral;
+				this.isNLSTagInLine = true;
+			}
 			if (traversed.getAlign() > 0)
 				this.counter = traversed.getAlign();
 			List<Token> internalStructure = traversed.getInternalStructure();

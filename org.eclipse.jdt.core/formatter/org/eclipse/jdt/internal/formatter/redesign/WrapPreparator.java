@@ -718,8 +718,10 @@ public class WrapPreparator extends ASTVisitor {
 		boolean isNLSTagInLine = false;
 		for (int i = 0; i < this.tm.size(); i++) {
 			Token token = this.tm.get(i);
-			if (token.hasNLSTag())
-				isNLSTagInLine = token.tokenType == TokenNameStringLiteral;
+			if (token.hasNLSTag()) {
+				assert token.tokenType == TokenNameStringLiteral;
+				isNLSTagInLine = true;
+			}
 			List<Token> structure = token.getInternalStructure();
 			if (structure != null && !structure.isEmpty() && !isNLSTagInLine) {
 				int startPosition = this.tm.getPositionInLine(i);
