@@ -647,11 +647,11 @@ public class CommentsPreparator extends ASTVisitor {
 		ASTNode parent = node.getParent();
 		if ((parent instanceof TagElement) && ((TagElement) parent).isNested()) {
 			int firstIndex = tokenStartingAt(node.getStartPosition());
-			int nodeEndPosition = node.getStartPosition() + node.getLength() - 1;
-			for (int i = firstIndex; i <= this.ctm.size(); i++) {
+			int lastIndex = tokenEndingAt(node.getStartPosition() + node.getLength() - 1);
+			if (this.ctm.charAt(this.ctm.get(lastIndex + 1).originalStart) == '}')
+				lastIndex++;
+			for (int i = firstIndex; i <= lastIndex; i++) {
 				Token token = this.ctm.get(i);
-				if (token.originalStart > nodeEndPosition)
-					break;
 				token.setWrapPolicy(WrapPolicy.DISABLE_WRAP);
 			}
 		}
