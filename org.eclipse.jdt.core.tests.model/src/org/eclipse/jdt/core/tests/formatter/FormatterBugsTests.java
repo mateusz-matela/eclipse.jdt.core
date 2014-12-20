@@ -2851,9 +2851,8 @@ public void testBug286601_massive_02() {
 		"					/*\n" + 
 		"					 * (non-Javadoc)\n" + 
 		"					 * \n" + 
-		"					 * @see\n" + 
-		"					 * org.eclipse.ant.internal.ui.editor.outline.ILocationProvider\n" + 
-		"					 * #getLocation()\n" + 
+		"					 * @see org.eclipse.ant.internal.ui.editor.outline.\n" + 
+		"					 * ILocationProvider#getLocation()\n" + 
 		"					 */\n" + 
 		"					public IPath getLocation()\n" + 
 		"					{\n" + 
@@ -5158,9 +5157,8 @@ public void testBug295238() {
 		"		/*\n" + 
 		"		 * (non-Javadoc)\n" + 
 		"		 * \n" + 
-		"		 * @see\n" + 
-		"		 * org.eclipse.jface.text.TextViewer#customizeDocumentCommand(org.eclipse\n" + 
-		"		 * .jface.text.DocumentCommand)\n" + 
+		"		 * @see org.eclipse.jface.text.TextViewer#customizeDocumentCommand(org.\n" + 
+		"		 * eclipse.jface.text.DocumentCommand)\n" + 
 		"		 */\n" + 
 		"		protected void foo() {\n" + 
 		"		}\n" + 
