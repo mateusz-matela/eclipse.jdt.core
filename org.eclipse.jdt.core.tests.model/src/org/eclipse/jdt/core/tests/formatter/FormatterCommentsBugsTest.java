@@ -6463,12 +6463,11 @@ public void testBug305518_wksp2_02() {
 		"	/**\n" + 
 		"	 * Represents namespace name:\n" + 
 		"	 * \n" + 
-		"	 * <pre>e.g.\n" + 
+		"	 * <pre>\n" + 
+		"	 * e.g.\n" + 
 		"	 * \n" + 
 		"	 * <pre>\n" + 
-		"	 * MyNamespace;\n" + 
-		"	 * MyProject\\Sub\\Level;\n" + 
-		"	 * namespace\\MyProject\\Sub\\Level;\n" + 
+		"	 * MyNamespace; MyProject\\Sub\\Level; namespace\\MyProject\\Sub\\Level;\n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
