@@ -4550,8 +4550,8 @@ public void testBug260274f() throws JavaModelException {
 	formatSource(source,
 		"class X {\n" + 
 		"	/*\n" + 
-		"	 * *****************************************************************************\n" + 
-		"	 * Action that allows changing the model providers sort order.\n" + 
+		"	 * *************************************************************************\n" + 
+		"	 * **** Action that allows changing the model providers sort order.\n" + 
 		"	 */\n" + 
 		"	void foo() {\n" + 
 		"	}\n" + 
@@ -4574,12 +4574,15 @@ public void testBug260274g() throws JavaModelException {
 	formatSource(source,
 		"class X {\n" + 
 		"	/*\n" + 
-		"	 * **********************************************************************************\n" + 
-		"	 * **********************************************************************************\n" + 
-		"	 * **********************************************************************************\n" + 
-		"	 * The code below was added to track the view with focus in order to support\n" + 
-		"	 * save actions from a view. Remove this experimental code if the decision\n" + 
-		"	 * is to not allow views to participate in save actions (see bug 10234)\n" + 
+		"	 * *************************************************************************\n" + 
+		"	 * *********\n" + 
+		"	 * *************************************************************************\n" + 
+		"	 * *********\n" + 
+		"	 * *************************************************************************\n" + 
+		"	 * ********* The code below was added to track the view with focus in order\n" + 
+		"	 * to support save actions from a view. Remove this experimental code if the\n" + 
+		"	 * decision is to not allow views to participate in save actions (see bug\n" + 
+		"	 * 10234)\n" + 
 		"	 */\n" + 
 		"}\n"
 	);
