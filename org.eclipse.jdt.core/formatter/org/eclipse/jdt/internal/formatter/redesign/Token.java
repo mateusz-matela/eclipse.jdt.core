@@ -12,7 +12,14 @@ public class Token {
 
 	public static class WrapPolicy {
 
+		/** Policy used for internal structure of multiline comments to mark tokens that should never be wrapped */
 		public final static WrapPolicy DISABLE_WRAP = new WrapPolicy(0, 0, false);
+
+		/**
+		 * Policy used for internal structure of multiline comments to mark tokens that can be wrapped only in lines
+		 * that have no other tokens to wrap.
+		 */
+		public final static WrapPolicy SUBSTITUTE_ONLY = new WrapPolicy(0, 0, false);
 
 		public final int extraIndent;
 		public final int wrapParentIndex;

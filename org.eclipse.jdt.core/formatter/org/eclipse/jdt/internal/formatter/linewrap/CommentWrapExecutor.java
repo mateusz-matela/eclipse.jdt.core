@@ -27,8 +27,8 @@ public class CommentWrapExecutor extends TokenTraverser {
 	private boolean simulation;
 	private boolean wrapDisabled;
 
-	private Token potentialWrapToken;
-	private int counterIfWrapped;
+	private Token potentialWrapToken, potentialWrapTokenSubstitute;
+	private int counterIfWrapped, counterIfWrappedSubstitute;
 	private int lineCounter;
 
 	public CommentWrapExecutor(TokenManager tokenManager, DefaultCodeFormatterOptions options) {
@@ -57,7 +57,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 		this.lineStartPosition = commentToken.getIndent();
 		this.simulation = simulate;
 		this.wrapDisabled = noWrap;
-		this.potentialWrapToken = null;
+		this.potentialWrapToken = this.potentialWrapTokenSubstitute = null;
 		this.blockStructure = structure;
 		traverse(structure, 0);
 
@@ -97,7 +97,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 		if (getLineBreaksBefore() > 0) {
 			this.lineCounter = Math.max(this.lineCounter + getLineBreaksBefore(), 4);
 			this.counter = positionIfNewLine;
-			this.potentialWrapToken = null;
+			this.potentialWrapToken = this.potentialWrapTokenSubstitute = null;
 
 			if (token.getWrapPolicy() == null && token.getAlign() == 0) {
 				// Indents are reserved for code inside <pre>.
@@ -107,17 +107,27 @@ public class CommentWrapExecutor extends TokenTraverser {
 			}
 		}
 
-		boolean canWrap = token.getWrapPolicy() == null && getNext() != null
-				&& getLineBreaksBefore() == 0 && getLineBreaksBefore() == 0 && index > 1
+		boolean canWrap = getNext() != null && getLineBreaksBefore() == 0 && index > 1
 				&& positionIfNewLine < this.counter;
 		if (canWrap) {
-			this.potentialWrapToken = token;
-			this.counterIfWrapped = positionIfNewLine;
+			if (token.getWrapPolicy() == null) {
+				this.potentialWrapToken = token;
+				this.counterIfWrapped = positionIfNewLine;
+			} else if (token.getWrapPolicy() == WrapPolicy.SUBSTITUTE_ONLY) {
+				this.potentialWrapTokenSubstitute = token;
+				this.counterIfWrappedSubstitute = positionIfNewLine;
+			}
 		}
 
 		this.counter += this.tm.getLength(token, this.counter);
 		this.counterIfWrapped += this.tm.getLength(token, this.counterIfWrapped);
+		this.counterIfWrappedSubstitute += this.tm.getLength(token, this.counterIfWrappedSubstitute);
 		if (shouldWrap()) {
+			if (this.potentialWrapToken == null) {
+				assert this.potentialWrapTokenSubstitute != null;
+				this.potentialWrapToken = this.potentialWrapTokenSubstitute;
+				this.counterIfWrapped = this.counterIfWrappedSubstitute;
+			}
 			this.counter = this.counterIfWrapped;
 			if (!this.simulation) {
 				this.potentialWrapToken.breakBefore();
@@ -127,7 +137,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 				this.potentialWrapToken.setIndent(0);
 			}
 			this.lineCounter = Math.max(this.lineCounter + 1, 4);
-			this.potentialWrapToken = null;
+			this.potentialWrapToken = this.potentialWrapTokenSubstitute = null;
 		}
 
 		if (isSpaceAfter()) {
@@ -139,11 +149,19 @@ public class CommentWrapExecutor extends TokenTraverser {
 	}
 
 	private boolean shouldWrap() {
-		if (this.wrapDisabled || this.counter <= this.options.comment_line_length)
+		int lineLenght = this.options.comment_line_length;
+		if (this.wrapDisabled || this.counter <= lineLenght)
 			return false;
-		if (this.potentialWrapToken == null) {
-			boolean isFormattingEnabled = this.blockStructure.get(0).getWrapPolicy() == null;
+		if (this.potentialWrapToken != null && this.potentialWrapTokenSubstitute != null
+				&& this.counterIfWrapped > lineLenght && this.counterIfWrappedSubstitute < this.counterIfWrapped) {
+			// there is a normal token to wrap, but the line would overflow anyway - better use substitute
+			this.potentialWrapToken = null;
+		}
+		if (this.potentialWrapToken == null && this.potentialWrapTokenSubstitute == null) {
+			boolean isFormattingEnabled = this.blockStructure.size() > 1
+					&& this.blockStructure.get(1).tokenType == TokenNameNotAToken;
 			if (isFormattingEnabled) {
+				// can't wrap, but the long comment cannot stay in one line
 				this.lineCounter = Math.max(this.lineCounter, 3);
 			}
 			return false;
@@ -158,7 +176,7 @@ public class CommentWrapExecutor extends TokenTraverser {
 				// when wrapping the first line of javadoc (more asterisks in opening token), the line will
 				// move to the left so it may not need wrapping in the end
 				int openingTokenLength = this.tm.getLength(this.blockStructure.get(0), 0);
-				if (this.counter - (openingTokenLength - 2) <= this.options.comment_line_length) {
+				if (this.counter - (openingTokenLength - 2) <= lineLenght) {
 					this.counter -= (openingTokenLength - 2);
 					this.lineCounter = Math.max(this.lineCounter, 3);
 					return false;
