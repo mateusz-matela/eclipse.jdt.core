@@ -114,13 +114,27 @@ public class TokenManager implements Iterable<Token> {
 	}
 
 	public int findIndex(int positionInSource, int tokenType, boolean forward) {
-		int index = 0;
-		// TODO optimize: binary search
-		while (index < size() && get(index).originalEnd < positionInSource) {
-			index++;
+		// binary search
+		int left = 0, right = size() - 1;
+		while (left < right) {
+			int index = (right + left) / 2;
+			Token token = get(index);
+			if (token.originalStart <= positionInSource && positionInSource <= token.originalEnd) {
+				left = right = index;
+				break;
+			}
+			if (token.originalEnd < positionInSource) {
+				left = index + 1;
+			} else {
+				assert token.originalStart > positionInSource;
+				right = index - 1;
+			}
 		}
-		if (index == size() || (!forward && get(index).originalStart > positionInSource))
+		int index = left;
+		if (!forward && get(index).originalStart > positionInSource)
 			index--;
+		if (forward && get(index).originalEnd < positionInSource)
+			index++;
 		while (tokenType >= 0 && get(index).tokenType != tokenType) {
 			index += forward ? 1 : -1;
 		}
