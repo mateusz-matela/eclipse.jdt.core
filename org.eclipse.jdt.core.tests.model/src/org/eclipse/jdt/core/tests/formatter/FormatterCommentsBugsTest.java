@@ -1637,8 +1637,8 @@ public void testBug233259b() throws JavaModelException {
 	formatSource(source,
 		"public class X {\n" +
 		"	/**\n" +
-		"	 * @see <a\n"+
-		"	 *      href=\"http://0123\">Test</a>\n" +
+		"	 * @see <a href=\"http://0123\">Test\n" +
+		"	 *      </a>\n" +
 		"	 */\n" +
 		"	void foo() {\n" +
 		"	}\n" +
@@ -1658,8 +1658,8 @@ public void testBug233259c() throws JavaModelException {
 	formatSource(source,
 		"public class X {\n" +
 		"	/**\n" +
-		"	 * @see <a\n" +
-		"	 *      href=\"http://012346789\">Test</a>\n" +
+		"	 * @see <a href=\"http://012346789\">\n" +
+		"	 *      Test</a>\n" +
 		"	 */\n" +
 		"	void foo() {\n" +
 		"	}\n" +
@@ -1679,8 +1679,9 @@ public void testBug233259d() throws JavaModelException {
 	formatSource(source,
 		"public class X {\n" +
 		"	/**\n" +
-		"	 * @see <a\n" +
-		"	 *      href=\"http://012346789012346789012346789\">Test</a>\n" +
+		"	 * @see <a href=\n" +
+		"	 *      \"http://012346789012346789012346789\">\n" +
+		"	 *      Test</a>\n" +
 		"	 */\n" +
 		"	void foo() {\n" +
 		"	}\n" +
@@ -6794,9 +6795,8 @@ public void testBug309835_wksp2_01() {
 		"	/**\n" + 
 		"	 * Given a jar file, get the names of any AnnotationProcessorFactory\n" + 
 		"	 * implementations it offers. The information is based on the Sun <a href=\n" + 
-		"	 * \"http://download.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider\"\n" + 
-		"	 * > Jar Service Provider spec</a>: the jar file contains a\n" + 
-		"	 * META-INF/services\n" + 
+		"	 * \"http://download.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider\">\n" + 
+		"	 * Jar Service Provider spec</a>: the jar file contains a META-INF/services\n" + 
 		"	 */\n" + 
 		"	public void foo() {\n" + 
 		"	}\n" + 
