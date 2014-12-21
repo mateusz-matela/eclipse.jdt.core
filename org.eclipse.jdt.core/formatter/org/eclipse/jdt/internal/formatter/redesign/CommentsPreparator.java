@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MemberRef;
 import org.eclipse.jdt.core.dom.MethodRef;
 import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -43,14 +42,20 @@ public class CommentsPreparator extends ASTVisitor {
 	private final static Pattern NLS_TAG_PATTERN = Pattern.compile("//\\$NON-NLS-([0-9]+)\\$"); //$NON-NLS-1$
 	private final static Pattern STRING_LITERAL_PATTERN = Pattern.compile("\".*?(\\\\(\\\\\\\\)*\".*?)*\""); //$NON-NLS-1$
 	private final static Pattern HTML_TAG_PATTERN;
+	private final static Pattern HTML_ATTRIBUTE_PATTERN;
 	static {
+		String formatCodeTags = "(pre)?"; //$NON-NLS-1$
 		String separateLineTags = "(dl|hr|nl|p|ul|ol|table|tr)?"; //$NON-NLS-1$
 		String breakBeforeTags = "(dd|dt|li|td|th|h1|h2|h3|h4|h5|h6|q)?"; //$NON-NLS-1$
 		String breakAfterTags = "(br)?"; //$NON-NLS-1$
 		String noFormatTags = "(code|em|tt)?"; //$NON-NLS-1$
-		String formatCodeTags = "(pre)?"; //$NON-NLS-1$
-		HTML_TAG_PATTERN = Pattern.compile("<\\s*(/)?\\s*" + separateLineTags + breakBeforeTags //$NON-NLS-1$
-				+ breakAfterTags + noFormatTags + formatCodeTags + "(\\s.*?)*>", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+		String otherTags = "([^<>&&\\S]+)??"; //$NON-NLS-1$
+		String ws = "(?:[ \\t]+|[\\r\\n]+[ \\t]*\\*?)"; // whitespace or line break with optional asterisk //$NON-NLS-1$
+		String attribute = "(?:" + ws + "+[^=&&\\S]+" + ws + "*(=)" + ws + "*\"?[^\"]*\"?)"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		HTML_TAG_PATTERN = Pattern.compile("<(/)?" //$NON-NLS-1$
+				+ formatCodeTags + separateLineTags + breakBeforeTags + breakAfterTags + noFormatTags + otherTags
+				+ "(" + attribute + "*)" + ws + "*/?>", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		HTML_ATTRIBUTE_PATTERN = Pattern.compile(attribute);
 	}
 
 	private final static Pattern HTML_ENTITY_PATTERN = Pattern
@@ -558,6 +563,8 @@ public class CommentsPreparator extends ASTVisitor {
 			if (this.firstTagToken == null || (firstTagIndex = this.ctm.indexOf(this.firstTagToken)) < 0
 					|| startIndex < firstTagIndex)
 				this.firstTagToken = startTokeen;
+
+			handleHtml(node);
 		}
 
 		else if (IMMUTABLE_TAGS.contains(tagName)) {
@@ -573,40 +580,76 @@ public class CommentsPreparator extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(TextElement node) {
-		String text = this.tm.toString(node);
-		if (this.options.comment_format_html || this.options.comment_format_source) {
-			Matcher matcher = HTML_TAG_PATTERN.matcher(text);
-			while (matcher.find()) {
-				int matchedGroups = 0;
-				for (int i = 2; i <= 6; i++)
-					if (matcher.start(i) < matcher.end(i))
-						matchedGroups++;
-				if (matchedGroups != 1)
-					continue;
+	public void endVisit(TagElement node) {
+		String tagName = node.getTagName();
+		if (tagName == null || tagName.length() <= 1)
+			handleHtml(node);
 
-				boolean isOpeningTag = (matcher.start(1) == matcher.end(1));
-				int start = matcher.start() + node.getStartPosition();
-				int end = matcher.end() - 1 + node.getStartPosition();
-				if (this.options.comment_format_html) {
-					if (matcher.start(2) < matcher.end(2)) {
-						handleSeparateLineTag(start, end);
-					} else if (matcher.start(3) < matcher.end(3)) {
-						handleBreakBeforeTag(start, end, isOpeningTag);
-					} else if (matcher.start(4) < matcher.end(4)) {
-						handleBreakAfterTag(start, end);
-					} else if (matcher.start(5) < matcher.end(5)) {
-						handleNoFormatTag(start, end, isOpeningTag);
-					}
+		handleStringLiterals(this.tm.toString(node), node.getStartPosition());
+	}
+
+	private void handleHtml(TagElement node) {
+		if (!this.options.comment_format_html && !this.options.comment_format_source)
+			return;
+		String text = this.tm.toString(node);
+		Matcher matcher = HTML_TAG_PATTERN.matcher(text);
+		while (matcher.find()) {
+			int startPos = matcher.start() + node.getStartPosition();
+			int endPos = matcher.end() - 1 + node.getStartPosition();
+			boolean isOpeningTag = (matcher.start(1) == matcher.end(1));
+
+			int firstTokenIndex = 0, lastTokenIndex = 0;
+			if (this.options.comment_format_html) {
+				// make sure tokens inside the tag are wrapped only as a substitute
+				firstTokenIndex = tokenStartingAt(startPos);
+				lastTokenIndex = tokenEndingAt(endPos);
+				Token startToken = this.ctm.get(firstTokenIndex);
+				if (!isOpeningTag && startToken.getWrapPolicy() == null)
+					startToken.setWrapPolicy(WrapPolicy.SUBSTITUTE_ONLY);
+				for (int i = firstTokenIndex + 1; i <= lastTokenIndex; i++) {
+					Token token = this.ctm.get(i);
+					if (token.getWrapPolicy() == null)
+						token.setWrapPolicy(WrapPolicy.SUBSTITUTE_ONLY);
 				}
-				if (matcher.start(6) < matcher.end(6)) {
-					handleFormatCodeTag(start, end, isOpeningTag);
+				Token nextToken = this.ctm.get(lastTokenIndex + 1);
+				if (isOpeningTag && nextToken.getWrapPolicy() == null)
+					nextToken.setWrapPolicy(WrapPolicy.SUBSTITUTE_ONLY);
+
+				// never break tags on special characters
+				noSubstituteWrapping(startPos, endPos - 1);
+				// ... except for equals sign in attributes
+				String attributesText = matcher.group(8);
+				Matcher attrMatcher = HTML_ATTRIBUTE_PATTERN.matcher(attributesText);
+				final int commentStart = this.ctm.get(0).originalStart;
+				while (attrMatcher.find()) {
+					int equalPos = node.getStartPosition() + matcher.start(8) + attrMatcher.start(1);
+					assert this.tm.charAt(equalPos) == '=';
+					this.noSubstituteWrapping[equalPos - commentStart] = false;
 				}
-				noSubstituteWrapping(start, end - 1);
+			}
+
+			int matchedGroups = 0;
+			for (int i = 2; i <= 7; i++)
+				if (matcher.start(i) < matcher.end(i))
+					matchedGroups++;
+			if (matchedGroups != 1)
+				continue;
+
+			if (matcher.start(2) < matcher.end(2)) {
+				handleFormatCodeTag(startPos, endPos, isOpeningTag);
+			}
+			if (this.options.comment_format_html) {
+				if (matcher.start(3) < matcher.end(3)) {
+					handleSeparateLineTag(startPos, endPos);
+				} else if (matcher.start(4) < matcher.end(4)) {
+					handleBreakBeforeTag(startPos, endPos, isOpeningTag);
+				} else if (matcher.start(5) < matcher.end(5)) {
+					handleBreakAfterTag(startPos, endPos);
+				} else if (matcher.start(6) < matcher.end(6)) {
+					handleNoFormatTag(startPos, endPos, isOpeningTag);
+				}
 			}
 		}
-		handleStringLiterals(text, node.getStartPosition());
-		return true;
 	}
 
 	@Override
@@ -665,16 +708,17 @@ public class CommentsPreparator extends ASTVisitor {
 	private void handleBreakBeforeTag(int start, int end, boolean isOpeningTag) {
 		int firstPartIndex = tokenStartingAt(start);
 		int lastPartIndex = tokenEndingAt(end);
+		Token firstPartToken = this.ctm.get(firstPartIndex);
 		if (isOpeningTag) {
-			this.ctm.get(firstPartIndex).breakBefore();
+			firstPartToken.breakBefore();
 			this.ctm.get(lastPartIndex + 1).clearSpaceBefore();
 		} else {
-			this.ctm.get(firstPartIndex).clearSpaceBefore();
+			firstPartToken.clearSpaceBefore();
+			firstPartToken.setWrapPolicy(null);
 		}
 	}
 
 	private void handleBreakAfterTag(int start, int end) {
-		tokenStartingAt(start); // to allow break right before tag
 		int tokenIndex = tokenEndingAt(end);
 		this.ctm.get(tokenIndex).breakAfter();
 	}

@@ -99,7 +99,9 @@ public class CommentWrapExecutor extends TokenTraverser {
 			this.counter = positionIfNewLine;
 			this.potentialWrapToken = this.potentialWrapTokenSubstitute = null;
 
-			if (token.getWrapPolicy() == null && token.getAlign() == 0) {
+			boolean isFormattedCode = token.getWrapPolicy() != null
+					&& token.getWrapPolicy() != WrapPolicy.SUBSTITUTE_ONLY;
+			if (!isFormattedCode && token.getAlign() == 0) {
 				// Indents are reserved for code inside <pre>.
 				// Indentation of javadoc tags can be achieved with align
 				token.setAlign(token.getIndent());
