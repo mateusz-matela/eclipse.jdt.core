@@ -7091,8 +7091,8 @@ public void testBug313524_wksp1_11() throws JavaModelException {
 	formatSource(source,
 		"public class X11 {\n" + 
 		"	private void antFileNotFound() {\n" + 
-		"		reportError(AntLaunchConfigurationMessages\n" + 
-		"				.getString(\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$\n" + 
+		"		reportError(AntLaunchConfigurationMessages.getString(\n" + 
+		"				\"AntLaunchShortcut.Unable\"), null); //$NON-NLS-1$\n" + 
 		"	}\n" + 
 		"}\n"
 	);
@@ -7113,8 +7113,8 @@ public void testBug313524_wksp1_12() throws JavaModelException {
 		"public class X12 {\n" + 
 		"	void foo() {\n" + 
 		"		if (this.fTests.size() == 0) {\n" + 
-		"			this.addTest(TestSuite\n" +
-		"					.warning(\"No tests found in \" + theClass.getName())); //$NON-NLS-1$\n" + 
+		"			this.addTest(TestSuite.warning(\"No tests found in \" + theClass //$NON-NLS-1$\n" +
+		"					.getName()));\n" + 
 		"		}\n" + 
 		"	}\n" + 
 		"}\n"
