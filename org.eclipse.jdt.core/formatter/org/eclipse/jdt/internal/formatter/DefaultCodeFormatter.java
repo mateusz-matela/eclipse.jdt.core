@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Jesper Steen Moller - Contributions for
  *								bug 404146 - [1.7][compiler] nested try-catch-finally-blocks leads to unrunnable Java byte code
+ *     Harry Terkelsen (het@google.com) - Bug 449262 - Allow the use of third-party Java formatters
  *******************************************************************************/
 package org.eclipse.jdt.internal.formatter;
 
@@ -70,12 +71,11 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		| K_COMPILATION_UNIT
 		| K_COMMENTS_MASK;
 
-	private final DefaultCodeFormatterOptions originalOptions;
-
+	private DefaultCodeFormatterOptions originalOptions;
 	private DefaultCodeFormatterOptions workingOptions;
 
-	private final boolean oldCommentFormatOption;
-	private final String sourceLevel;
+	private boolean oldCommentFormatOption;
+	private String sourceLevel;
 
 	private String sourceString;
 	private char[] sourceArray;
@@ -97,6 +97,10 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
+		initOptions(defaultCodeFormatterOptions, options);
+	}
+
+	private void initOptions(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
 		if (options != null) {
 			this.originalOptions = new DefaultCodeFormatterOptions(options);
 			this.workingOptions = new DefaultCodeFormatterOptions(options);
@@ -423,5 +427,10 @@ public class DefaultCodeFormatter extends CodeFormatter {
 				&& this.oldCommentFormatOption && (includeComments || (kind & K_MASK) == K_MULTI_LINE_COMMENT);
 		this.workingOptions.comment_format_line_comment = this.originalOptions.comment_format_line_comment
 				&& this.oldCommentFormatOption && (includeComments || (kind & K_MASK) == K_SINGLE_LINE_COMMENT);
+	}
+
+	@Override
+	public void setOptions(Map<String, String> options) {
+		initOptions(null, options);
 	}
 }

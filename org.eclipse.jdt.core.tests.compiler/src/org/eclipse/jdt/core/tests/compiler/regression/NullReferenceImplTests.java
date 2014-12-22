@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2012 IBM Corporation and others.
+ * Copyright (c) 2005, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *								bug 345305 - [compiler][null] Compiler misidentifies a case of "variable can only be null"
  *								bug 386181 - [compiler][null] wrong transition in UnconditionalFlowInfo.mergedWith()
  *								bug 395002 - Self bound generic class doesn't resolve bounds properly for wildcards for certain parametrisation.
+ *								Bug 453635 - [compiler][null] Update NullReferenceImplTests and friends
  *******************************************************************************/
 package org.eclipse.jdt.core.tests.compiler.regression;
 
@@ -22,9 +23,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -33,6 +38,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.jdt.core.tests.compiler.regression.NullReferenceImplTests.State;
 import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.eclipse.jdt.internal.compiler.flow.UnconditionalFlowInfo;
 import org.eclipse.jdt.internal.compiler.flow.UnconditionalFlowInfo.AssertionFailedException;
@@ -47,6 +53,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
  * reference analysis. See NullReferenceTest for tests targetted at
  * the source code compiler behavior level.
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class NullReferenceImplTests extends NullReferenceTest {
 	// Static initializer to specify tests subset using TESTS_* static variables
   	// All specified tests which does not belong to the class are skipped...
@@ -171,7 +178,7 @@ public class NullReferenceImplTests extends NullReferenceTest {
 			new State(25), // 011001
 			new State(26), // 011010
 			new State(27), // 011011
-			new State(28), // 011100
+			new State(28, "pot. n & pot. nn & pot. un"), // 011100
 			new State(29), // 011101
 			new State(30), // 011110
 			new State(31), // 011111
@@ -511,6 +518,12 @@ public class NullReferenceImplTests extends NullReferenceTest {
 	}
 	public String toString() {
 		return this.name;
+	}
+	public boolean equals(Object other) {
+		return (other instanceof State) && ((State)other).value == this.value;
+	}
+	public int hashCode() {
+		return this.value;
 	}
 	}
 
@@ -1262,9 +1275,9 @@ static void copy(UnconditionalFlowInfo source, UnconditionalFlowInfo target) {
 		target.nullBit2 = source.nullBit2;
 		target.nullBit3 = source.nullBit3;
 		target.nullBit4 = source.nullBit4;
-//		target.nullBit5 = source.nullBit5;
-//		target.nullBit6 = source.nullBit6;
 	}
+	target.iNBit = source.iNBit;
+	target.iNNBit = source.iNNBit;
 	target.tagBits = source.tagBits;
 	target.maxFieldCount = source.maxFieldCount;
 	if (source.extra != null) {
@@ -1310,8 +1323,6 @@ static void init(UnconditionalFlowInfo zis, long [] nullBits, int position) {
 		zis.nullBit2 = nullBits[1] << position;
 		zis.nullBit3 = nullBits[2] << position;
 		zis.nullBit4 = nullBits[3] << position;
-//		zis.nullBit5 = nullBits[4] << position;
-//		zis.nullBit6 = nullBits[5] << position;
 	}
  	else {
 		int vectorIndex = (position / BitCacheSize) - 1,
@@ -1324,7 +1335,12 @@ static void init(UnconditionalFlowInfo zis, long [] nullBits, int position) {
 		    zis.extra[j] = new long[length];
 		    zis.extra[j][vectorIndex] = nullBits[j - 2] << position;
         }
+        // FIXME: while IN,INN are not included in nullBits:
+        Arrays.fill(zis.extra[UnconditionalFlowInfo.IN],  -1L);
+        Arrays.fill(zis.extra[UnconditionalFlowInfo.INN],  -1L);
 	}
+	zis.iNBit = -1L; // FIXME: nullBits[4] << position;
+	zis.iNNBit = -1L; // FIXME: nullBits[5] << position;
 	if (nullBits[0] != 0 || nullBits[1] != 0
 	        || nullBits[2] != 0 || nullBits[3] != 0
 	        || nullBits[4] != 0 || nullBits[5] != 0) {
@@ -1344,8 +1360,8 @@ static boolean testEquals(UnconditionalFlowInfo zis, UnconditionalFlowInfo other
 			|| zis.nullBit2 != other.nullBit2
 			|| zis.nullBit3 != other.nullBit3
 			|| zis.nullBit4 != other.nullBit4
-			/* || zis.nullBit5 != other.nullBit5
-			|| zis.nullBit6 != other.nullBit6 */) {
+			/*|| zis.iNBit != other.iNBit // FIXME: include these bits in comparison?
+			|| zis.iNNBit != other.iNNBit */) {
 		return false;
 	}
 	int left = zis.extra == null ? 0 : zis.extra[2].length,
@@ -1397,11 +1413,11 @@ static boolean testEquals(UnconditionalFlowInfo zis, UnconditionalFlowInfo other
 				((zis.nullBit3 & mask) ^
 					(other.nullBit3 & mask)) == 0 &&
 				((zis.nullBit4 & mask) ^
-					(other.nullBit4 & mask)) == 0 /* &&
-				((zis.nullBit5 & mask) ^
-					(other.nullBit5 & mask)) == 0 &&
-				((zis.nullBit6 & mask) ^
-					(other.nullBit6 & mask)) == 0 */;
+					(other.nullBit4 & mask)) == 0 /* &&  // FIXME: include these bits in comparison?
+				((zis.iNBit & mask) ^
+					(other.iNBit & mask)) == 0 &&
+				((zis.iNNBit & mask) ^
+					(other.iNNBit & mask)) == 0 */;
 	}
 	else {
 		int left = zis.extra == null ?
@@ -1449,8 +1465,8 @@ static String testString(UnconditionalFlowInfo zis, int position) {
 					+ "," + (zis.nullBit2 >> position) //$NON-NLS-1$
 					+ "," + (zis.nullBit3 >> position) //$NON-NLS-1$
 					+ "," + (zis.nullBit4 >> position) //$NON-NLS-1$
-//					+ "," + (zis.nullBit5 >> position) //$NON-NLS-1$
-//					+ "," + (zis.nullBit6 >> position) //$NON-NLS-1$
+//					+ "," + (zis.iNBit >> position) //$NON-NLS-1$
+//					+ "," + (zis.iNNBit >> position) //$NON-NLS-1$
 					+ "}"; //$NON-NLS-1$
 	}
 	else {
@@ -1479,6 +1495,7 @@ interface CodeAnalysis {
 		initializerStartMarker = "INITIALIZER START",
 		initializerEndMarker = "INITIALIZER END";
 }
+@SuppressWarnings({ "unchecked", "rawtypes" })
 class TransitiveClosureHolder {
 static class Element {
 	NullReferenceImplTests.State value;
@@ -1565,6 +1582,7 @@ public String toString() {
  * Tooling the production of those literals buys us flexibility.
  * {@link #printHelp printHelp} for details.
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 class Generator {
 static NullReferenceImplTests.State[] computeTransitiveClosure() {
 	TransitiveClosureHolder transitiveClosure = new TransitiveClosureHolder();
@@ -1688,7 +1706,13 @@ private static void reinitializeFromComputedValues(String source, String target)
 			i < length; i++) {
 		NullReferenceImplTransformations.transformations[i].hydrate();
 	}
-	NullReferenceImplTests.State[] transitiveClosure = computeTransitiveClosure();
+	NullReferenceImplTests.State[] transitiveClosure = computeTransitiveClosure(); // need for initialization?
+	transitiveClosure = addSymbolicStates(transitiveClosure); // don't rely on reachibility alone, since we don't cover all operations in these tests.
+	Arrays.sort(transitiveClosure, new Comparator() {
+		public int compare(Object o1, Object o2) {
+			return new Integer(((State)o1).value).compareTo(new Integer(((State)o2).value));
+		}
+	});
 	try {
 		BufferedReader in;
 		BufferedWriter out;
@@ -1724,6 +1748,15 @@ private static void reinitializeFromComputedValues(String source, String target)
 		t.printStackTrace(System.err);
 		System.exit(2);
 	}
+}
+private static State[] addSymbolicStates(State[] transitiveClosure) {
+	Set allStates = new HashSet();
+	for (int i = 0; i < transitiveClosure.length; i++)
+		allStates.add(transitiveClosure[i]);
+	for (int i=0; i < State.statesNb; i++)
+		if (State.states[i].symbolic)
+			allStates.add(State.states[i]);
+	return (State[]) allStates.toArray(new State[allStates.size()]);
 }
 
 private static void printHelp(boolean longText) {

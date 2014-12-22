@@ -13,11 +13,13 @@ package org.eclipse.jdt.internal.compiler.ast;
 import org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.CaptureBinding;
 import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
@@ -77,7 +79,7 @@ public class NullAnnotationMatching {
 	
 	/** Check null-ness of 'var' against a possible null annotation */
 	public static int checkAssignment(BlockScope currentScope, FlowContext flowContext,
-									   VariableBinding var, int nullStatus, Expression expression, TypeBinding providedType)
+									   VariableBinding var, FlowInfo flowInfo, int nullStatus, Expression expression, TypeBinding providedType)
 	{
 		long lhsTagBits = 0L;
 		boolean hasReported = false;
@@ -87,8 +89,8 @@ public class NullAnnotationMatching {
 			if (expression instanceof ConditionalExpression && expression.isPolyExpression()) {
 				// drill into both branches:
 				ConditionalExpression ce = ((ConditionalExpression) expression);
-				int status1 = NullAnnotationMatching.checkAssignment(currentScope, flowContext, var, ce.ifTrueNullStatus, ce.valueIfTrue, ce.valueIfTrue.resolvedType);
-				int status2 = NullAnnotationMatching.checkAssignment(currentScope, flowContext, var, ce.ifFalseNullStatus, ce.valueIfFalse, ce.valueIfFalse.resolvedType);
+				int status1 = NullAnnotationMatching.checkAssignment(currentScope, flowContext, var, flowInfo, ce.ifTrueNullStatus, ce.valueIfTrue, ce.valueIfTrue.resolvedType);
+				int status2 = NullAnnotationMatching.checkAssignment(currentScope, flowContext, var, flowInfo, ce.ifFalseNullStatus, ce.valueIfFalse, ce.valueIfFalse.resolvedType);
 				if (status1 == status2)
 					return status1;
 				return nullStatus; // if both branches disagree use the precomputed & merged nullStatus
@@ -99,7 +101,7 @@ public class NullAnnotationMatching {
 				currentScope.problemReporter().nullityMismatchingTypeAnnotation(expression, providedType, var.type, annotationStatus);
 				hasReported = true;
 			} else if (annotationStatus.isUnchecked()) {
-				flowContext.recordNullityMismatch(currentScope, expression, providedType, var.type, nullStatus);
+				flowContext.recordNullityMismatch(currentScope, expression, providedType, var.type, flowInfo, nullStatus);
 				hasReported = true;
 			} else if (annotationStatus.nullStatus != FlowInfo.UNKNOWN) {
 				return annotationStatus.nullStatus;
@@ -107,7 +109,7 @@ public class NullAnnotationMatching {
 		}
 		if (lhsTagBits == TagBits.AnnotationNonNull && nullStatus != FlowInfo.NON_NULL) {
 			if (!hasReported)
-				flowContext.recordNullityMismatch(currentScope, expression, providedType, var.type, nullStatus);
+				flowContext.recordNullityMismatch(currentScope, expression, providedType, var.type, flowInfo, nullStatus);
 			return FlowInfo.NON_NULL;
 		} else if (lhsTagBits == TagBits.AnnotationNullable && nullStatus == FlowInfo.UNKNOWN) {	// provided a legacy type?
 			return FlowInfo.POTENTIALLY_NULL;			// -> use more specific info from the annotation
@@ -136,9 +138,9 @@ public class NullAnnotationMatching {
 	 * @return a status object representing the severity of mismatching plus optionally a supertype hint
 	 */
 	public static NullAnnotationMatching analyse(TypeBinding requiredType, TypeBinding providedType, TypeBinding providedSubstitute, int nullStatus, CheckMode mode) {
+		if (!requiredType.enterRecursiveFunction())
+			return NullAnnotationMatching.NULL_ANNOTATIONS_OK;
 		try {
-			if (!requiredType.enterRecursiveFunction())
-				return NullAnnotationMatching.NULL_ANNOTATIONS_OK;
 			int severity = 0;
 			TypeBinding superTypeHint = null;
 			NullAnnotationMatching okStatus = NullAnnotationMatching.NULL_ANNOTATIONS_OK;
@@ -418,8 +420,8 @@ public class NullAnnotationMatching {
 	 * After a method has substituted type parameters, check if this resulted in any contradictory null annotations.
 	 * Problems are either reported directly (if scope != null) or by returning a ProblemMethodBinding.
 	 */
-	public static MethodBinding checkForContraditions(
-			final MethodBinding method, final InvocationSite invocationSite, final Scope scope) {
+	public static MethodBinding checkForContradictions(
+			final MethodBinding method, final Object location, final Scope scope) {
 		
 		class SearchContradictions extends TypeBindingVisitor {
 			ReferenceBinding typeWithContradiction;
@@ -441,19 +443,27 @@ public class NullAnnotationMatching {
 			}
 		}
 
+		int start = 0, end = 0;
+		if (location instanceof InvocationSite) {
+			start = ((InvocationSite) location).sourceStart();
+			end = ((InvocationSite) location).sourceEnd();
+		} else if (location instanceof ASTNode) {
+			start = ((ASTNode) location).sourceStart;
+			end = ((ASTNode) location).sourceEnd;
+		}
 		SearchContradictions searchContradiction = new SearchContradictions();
 		TypeBindingVisitor.visit(searchContradiction, method.returnType);
 		if (searchContradiction.typeWithContradiction != null) {
 			if (scope == null)
 				return new ProblemMethodBinding(method, method.selector, method.parameters, ProblemReasons.ContradictoryNullAnnotations);
-			scope.problemReporter().contradictoryNullAnnotationsInferred(method, invocationSite);
+			scope.problemReporter().contradictoryNullAnnotationsInferred(method, start, end, location instanceof FunctionalExpression);
 			// note: if needed, we might want to update the method by removing the contradictory annotations??
 			return method;
 		}
 
 		Expression[] arguments = null;
-		if (invocationSite instanceof Invocation)
-			arguments = ((Invocation)invocationSite).arguments();
+		if (location instanceof Invocation)
+			arguments = ((Invocation)location).arguments();
 		for (int i = 0; i < method.parameters.length; i++) {
 			TypeBindingVisitor.visit(searchContradiction, method.parameters[i]);
 			if (searchContradiction.typeWithContradiction != null) {
@@ -462,10 +472,53 @@ public class NullAnnotationMatching {
 				if (arguments != null && i < arguments.length)
 					scope.problemReporter().contradictoryNullAnnotationsInferred(method, arguments[i]);
 				else
-					scope.problemReporter().contradictoryNullAnnotationsInferred(method, invocationSite);
+					scope.problemReporter().contradictoryNullAnnotationsInferred(method, start, end, location instanceof FunctionalExpression);
 				return method;
 			}
 		}
 		return method;
+	}
+
+	public static TypeBinding strongerType(TypeBinding type1, TypeBinding type2, LookupEnvironment environment) {
+		if ((type1.tagBits & TagBits.AnnotationNonNull) != 0)
+			return mergeTypeAnnotations(type1, type2, true, environment);
+		return mergeTypeAnnotations(type2, type1, true, environment); // don't bother to distinguish unannotated vs. @Nullable, since both can accept null
+	}
+
+	public static TypeBinding[] weakerTypes(TypeBinding[] parameters1, TypeBinding[] parameters2, LookupEnvironment environment) {
+		TypeBinding[] newParameters = new TypeBinding[parameters1.length];
+		for (int i = 0; i < newParameters.length; i++) {
+			long tagBits1 = parameters1[i].tagBits;
+			long tagBits2 = parameters2[i].tagBits;
+			if ((tagBits1 & TagBits.AnnotationNullable) != 0)
+				newParameters[i] = mergeTypeAnnotations(parameters1[i], parameters2[i], true, environment);		// @Nullable must be preserved
+			else if ((tagBits2 & TagBits.AnnotationNullable) != 0)
+				newParameters[i] = mergeTypeAnnotations(parameters2[i], parameters1[i], true, environment);		// @Nullable must be preserved
+			else if ((tagBits1 & TagBits.AnnotationNonNull) == 0)
+				newParameters[i] = mergeTypeAnnotations(parameters1[i], parameters2[i], true, environment);		// unannotated must be preserved
+			else
+				newParameters[i] = mergeTypeAnnotations(parameters2[i], parameters1[i], true, environment);		// either unannotated, or both are @NonNull
+		}
+		return newParameters;
+	}
+	private static TypeBinding mergeTypeAnnotations(TypeBinding type, TypeBinding otherType, boolean top, LookupEnvironment environment) {
+		TypeBinding mainType = type;
+		if (!top) {
+			// for all but the top level type superimpose other's type annotation onto type
+			AnnotationBinding[] otherAnnotations = otherType.getTypeAnnotations();
+			if (otherAnnotations != Binding.NO_ANNOTATIONS)
+				mainType = environment.createAnnotatedType(type, otherAnnotations);
+		}
+		if (mainType instanceof ParameterizedTypeBinding && otherType instanceof ParameterizedTypeBinding) {
+			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) type, otherPTB = (ParameterizedTypeBinding) otherType;
+			TypeBinding[] typeArguments = ptb.arguments;
+			TypeBinding[] otherTypeArguments = otherPTB.arguments;
+			TypeBinding[] newTypeArguments = new TypeBinding[typeArguments.length];
+			for (int i = 0; i < typeArguments.length; i++) {
+				newTypeArguments[i] = mergeTypeAnnotations(typeArguments[i], otherTypeArguments[i], false, environment);
+			}
+			return environment.createParameterizedType(ptb.genericType(), newTypeArguments, ptb.enclosingType());
+		}
+		return mainType;
 	}
 }

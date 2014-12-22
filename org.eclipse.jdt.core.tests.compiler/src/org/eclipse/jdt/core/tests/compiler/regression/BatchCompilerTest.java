@@ -56,6 +56,7 @@ import org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jdt.internal.compiler.util.ManifestAnalyzer;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BatchCompilerTest extends AbstractRegressionTest {
 	public static final String OUTPUT_DIR_PLACEHOLDER = "---OUTPUT_DIR_PLACEHOLDER---";
 	public static final String LIB_DIR_PLACEHOLDER = "---LIB_DIR_PLACEHOLDER---";
@@ -1670,7 +1671,7 @@ public void test012(){
         "    -O                 optimize for execution time (ignored)\n" +
         "\n";
 	String expandedExpectedOutput =
-		MessageFormat.format(expectedOutput, new String[] {
+		MessageFormat.format(expectedOutput, new Object[] {
 				MAIN.bind("compiler.name"),
 				MAIN.bind("compiler.version"),
 				MAIN.bind("compiler.copyright")
@@ -1810,9 +1811,11 @@ public void test012b(){
         "      unqualifiedField     unqualified reference to field\n" + 
         "      unused               macro for unusedAllocation, unusedArgument,\n" + 
         "                               unusedImport, unusedLabel, unusedLocal,\n" + 
-        "                               unusedPrivate, unusedThrown, and unusedTypeArgs\n" + 
+        "                               unusedPrivate, unusedThrown, and unusedTypeArgs,\n" + 
+        "								unusedExceptionParam\n"+
         "      unusedAllocation     allocating an object that is not used\n" + 
-        "      unusedArgument       unread method parameter\n" + 
+        "      unusedArgument       unread method parameter\n" +
+        "      unusedExceptionParam unread exception parameter\n" + 
         "      unusedImport       + unused import declaration\n" + 
         "      unusedLabel        + unused label\n" + 
         "      unusedLocal        + unread local variable\n" + 
@@ -1834,7 +1837,7 @@ public void test012b(){
         "      warningToken       + unsupported or unnecessary @SuppressWarnings\n" + 
         "\n";
 	String expandedExpectedOutput =
-		MessageFormat.format(expectedOutput, new String[] {
+		MessageFormat.format(expectedOutput, new Object[] {
 				MAIN.bind("compiler.name"),
 				MAIN.bind("compiler.version"),
 				MAIN.bind("compiler.copyright")
@@ -2000,6 +2003,7 @@ public void test012b(){
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionExemptExceptionAndThrowable\" value=\"enabled\"/>\n" + 
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionIncludeDocCommentReference\" value=\"enabled\"/>\n" + 
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionWhenOverriding\" value=\"disabled\"/>\n" + 
+			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedExceptionParameter\" value=\"ignore\"/>\n" +
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedImport\" value=\"warning\"/>\n" + 
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedLabel\" value=\"warning\"/>\n" + 
 			"		<option key=\"org.eclipse.jdt.core.compiler.problem.unusedLocal\" value=\"warning\"/>\n" + 
@@ -2042,7 +2046,7 @@ public void test012b(){
 		String normalizedExpectedLogContents =
 				MessageFormat.format(
 						expectedLogContents,
-						new String[] {
+						new Object[] {
 								File.separator,
 								MAIN.bind("compiler.name"),
 								MAIN.bind("compiler.copyright"),
@@ -14043,5 +14047,40 @@ public void testBug419351() {
 		new File(endorsedPath).delete();
 		new File(lib1Path).delete();
 	}
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=439750
+public void test439750() {
+	this.runConformTest(
+		new String[] {
+			"externalizable/warning/X.java",
+			"import java.io.FileInputStream;\n" +
+			"import java.io.IOException;\n" +
+			"class X {\n" +
+			"	public static void main(String[] args) {\n" +
+			"		FileInputStream fis = null;\n" +
+			"		try {\n" +
+			"			fis = new FileInputStream(\"xyz\");\n" +
+			"			System.out.println(\"fis\");\n" +
+			"		} catch (IOException e) {\n" +
+			"			e.printStackTrace();\n" +
+			"		} finally {\n" +
+			"			try {\n" +
+			"				if (fis != null) fis.close();\n" +
+			"			} catch (Exception e) {}\n" +
+ 			"		}\n" +
+ 			"	}\n" +
+			"}\n"
+			},
+			"\"" + OUTPUT_DIR +  File.separator + "externalizable" + File.separator + "warning" + File.separator + "X.java\""
+			+ " -1.6 -warn:unused -warn:unusedExceptionParam -d none",
+			"",
+			"----------\n" +
+			"1. WARNING in ---OUTPUT_DIR_PLACEHOLDER---/externalizable/warning/X.java (at line 14)\n" +
+			"	} catch (Exception e) {}\n" +
+			"	                   ^\n" +
+			"The value of the exception parameter e is not used\n" +
+			"----------\n" +
+			"1 problem (1 warning)\n",
+			true);
 }
 }

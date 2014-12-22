@@ -7,16 +7,18 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Stephan Herrmann - Contributions for
+ *							Bug 452788 - [1.8][compiler] Type not correctly inferred in lambda expression
  *******************************************************************************/
 package org.eclipse.jdt.internal.compiler.ast;
 
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.InferenceContext18;
 import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 
 /**
  	Contract to be implemented by all poly expressions and potential poly expressions for uniform integration into overload resolution and type inference.
@@ -43,7 +45,6 @@ public interface IPolyExpression {
 	public boolean sIsMoreSpecific(TypeBinding s, TypeBinding t, Scope skope);	
 	
 	// Pertinence checks.
-	public boolean isPertinentToApplicability(TypeVariableBinding typeVariable, MethodBinding method);
 	public boolean isPertinentToApplicability(TypeBinding targetType, MethodBinding method);
 
 	// Polyness checks
@@ -59,6 +60,6 @@ public interface IPolyExpression {
 	*/
 	public TypeBinding resolveType(BlockScope blockScope);
 	// Resolve expression tentatively - should have no lingering side-effects that may impact final resolution ! 
-	public Expression resolveExpressionExpecting(TypeBinding targetType, Scope scope);
+	public Expression resolveExpressionExpecting(TypeBinding targetType, Scope scope, InferenceContext18 inferenceContext);
 	
 }

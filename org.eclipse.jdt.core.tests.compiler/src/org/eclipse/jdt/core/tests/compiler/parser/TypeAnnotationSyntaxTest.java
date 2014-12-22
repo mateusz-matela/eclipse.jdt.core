@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 IBM Corporation and others.
+ * Copyright (c) 2009, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,7 @@ import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class TypeAnnotationSyntaxTest extends AbstractSyntaxTreeTest {
 
 	private static String  jsr308TestScratchArea = "c:\\Jsr308TestScratchArea";
@@ -220,7 +221,12 @@ void traverse (File f) throws IOException {
 			System.out.println(f.getCanonicalPath());
 			char [] contents = new char[(int) f.length()];
 			FileInputStream fs = new FileInputStream(f);
-			InputStreamReader isr = new InputStreamReader(fs);
+			InputStreamReader isr = null;
+			try {
+				isr = new InputStreamReader(fs);
+			} finally {
+				if (isr != null) isr.close();
+			}
 			isr.read(contents);
 			checkParse(contents, null, f.getCanonicalPath(), null);
 		}
@@ -3788,5 +3794,37 @@ public void test0138() throws IOException {
 			"@Target(java.lang.annotation.ElementType.TYPE_USE) @interface Marker2 {\n" + 
 			"}\n";
 	checkParse(CHECK_PARSER, source.toCharArray(), null, "test0137", expectedUnitToString);
+}
+// Support for annotations on ellipsis in lambda expression
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=432574
+public void test0139() throws IOException {
+	String source = 
+			"import java.lang.annotation.ElementType;\n" +
+			"import java.lang.annotation.Target;\n" +
+			"public class X {\n" +
+			"	FI fi = (String @T1[] @T1... x) -> {};\n" +
+			"}\n" +
+			"interface FI {\n" +
+			"	void foo(String[]... x);\n" +
+			"}\n" +
+			"@Target(ElementType.TYPE_USE)\n" +
+			"@interface T1 {\n" +
+			"}\n";
+	String expectedUnitToString = 
+			"import java.lang.annotation.ElementType;\n" +
+			"import java.lang.annotation.Target;\n" +
+			"public class X {\n" +
+			"  FI fi = (String @T1 [] @T1 ... x) ->   {\n" +
+			"  };\n" +
+			"  public X() {\n" +
+			"    super();\n" +
+			"  }\n" +
+			"}\n" +
+			"interface FI {\n" +
+			"  void foo(String[]... x);\n" +
+			"}\n" +
+			"@Target(ElementType.TYPE_USE) @interface T1 {\n" +
+			"}\n";
+	checkParse(CHECK_PARSER, source.toCharArray(), null, "test0139", expectedUnitToString);
 }
 }

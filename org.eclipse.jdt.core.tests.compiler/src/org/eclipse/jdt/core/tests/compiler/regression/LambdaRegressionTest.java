@@ -11,6 +11,7 @@
 package org.eclipse.jdt.core.tests.compiler.regression;
 
 import junit.framework.Test;
+@SuppressWarnings({ "rawtypes" })
 public class LambdaRegressionTest extends AbstractRegressionTest {
 
 static {
@@ -508,6 +509,96 @@ public void _test451677() {
 			"	}\n" +
 			"}\n"
 	});
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=451840
+// [1.8] java.lang.BootstrapMethodError when running code with constructor reference
+public void testBug451840() {
+	runNegativeTest(new String [] {
+		"X.java",
+		"public class X {\n" +  
+		"    public static void main(String[] args) {\n" + 
+		"    	X test = new X();\n" + 
+		"    	MySupplier<X> s = test::new; // incorrect\n" + 
+		"    }\n" + 
+		"    public interface MySupplier<T> {\n" + 
+		"        T create();\n" + 
+		"    }\n" + 
+		"}"},
+		"----------\n" + 
+		"1. ERROR in X.java (at line 4)\n" + 
+		"	MySupplier<X> s = test::new; // incorrect\n" + 
+		"	                  ^^^^\n" + 
+		"test cannot be resolved to a type\n" + 
+		"----------\n");
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=448556
+// [1.8][compiler] Invalid compiler error about effectively final variable outside the context of a lambda.
+public void testBug4448556() {
+	this.runConformTest(new String [] {
+		"X.java",
+		"import java.io.Serializable;\n" + 
+		"import java.util.Arrays;\n" + 
+		"import java.util.List;\n" + 
+		"public class X {\n" + 
+		"    private static final List<Integer> INTEGERS = Arrays.asList(1, 2, 3, 4);\n" + 
+		"    public static void main(String[] args) {\n" + 
+		"        for (int i = 0; i < INTEGERS.size(); i++) {\n" + 
+		"            MyPredicate<Integer> predicate = INTEGERS.get(i)::equals;\n" + 
+		"        }\n" + 
+		"    }  \n" + 
+		"    public interface MyPredicate<T> extends Serializable {\n" + 
+		"        boolean accept(T each);\n" + 
+		"    }\n" + 
+		"}"
+	},
+	"");
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=448556
+// [1.8][compiler] Invalid compiler error about effectively final variable outside the context of a lambda.
+public void testBug4448556a() {
+	this.runConformTest(new String [] {
+		"X.java",
+		"import java.io.Serializable;\n" + 
+		"import java.util.Arrays;\n" + 
+		"import java.util.List;\n" + 
+		"public class X {\n" + 
+		"	int value = 0; \n" + 
+		"    private static final List<Integer> INTEGERS = Arrays.asList(1, 2, 3, 4);\n" + 
+		"    public Integer next() {\n" + 
+		"    	return new Integer(++value);\n" + 
+		"    }\n" + 
+		"    public static void main(String[] args) {\n" + 
+		"    	X t = new X();\n" + 
+		"        MyPredicate<Integer> predicate = t.next()::equals;\n" + 
+		"        System.out.println(\"Value \" + t.value + \" accept \" + predicate.accept(t.value));\n" + 
+		"    }\n" + 
+		"    public interface MyPredicate<T> extends Serializable {\n" + 
+		"        boolean accept(T each);\n" + 
+		"    }\n" + 
+		"}"
+	},
+	"Value 1 accept true");
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=453687
+// [1.8][compiler]Incorrect errors when compiling code with Method References
+public void testBug453687() {
+	this.runConformTest(new String [] {
+		"X.java",
+		"import static java.util.stream.Collectors.groupingBy;\n" + 
+		"import static java.util.stream.Collectors.mapping;\n" + 
+		"import static java.util.stream.Collectors.toSet;\n" + 
+		"import java.util.Locale;\n" + 
+		"import java.util.Map;\n" + 
+		"import java.util.Set;\n" + 
+		"import java.util.stream.Stream;\n" + 
+		"public class X {\n" + 
+		"	public static void main(String[] args) {\n" + 
+		"		Map<String, Set<String>> countryLanguagesMap = Stream.of(Locale.getAvailableLocales()).collect(\n" + 
+		"				groupingBy(Locale::getDisplayCountry, mapping(Locale::getDisplayLanguage, toSet())));\n" + 
+		"	}\n" + 
+		"} "
+	},
+	"");
 }
 public static Class testClass() {
 	return LambdaRegressionTest.class;

@@ -35,6 +35,9 @@
  *							bug 384380 - False positive on a "Potential null pointer access" after a continue
  *							bug 406384 - Internal error with I20130413
  *							Bug 364326 - [compiler][null] NullPointerException is not found by compiler. FindBugs finds that one
+ *							Bug 453483 - [compiler][null][loop] Improve null analysis for loops
+ *							Bug 195638 - [compiler][null][refactoring] Wrong error : "Null pointer access: The variable xxx can only be null at this location " with try..catch in loop
+ *							Bug 454031 - [compiler][null][loop] bug in null analysis; wrong "dead code" detection
  *******************************************************************************/
 package org.eclipse.jdt.core.tests.compiler.regression;
 
@@ -52,6 +55,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /* See also NullReferenceImplTests for low level, implementation dependent
  * tests. */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class NullReferenceTest extends AbstractRegressionTest {
 
 public NullReferenceTest(String name) {
@@ -63,9 +67,12 @@ public NullReferenceTest(String name) {
 // Only the highest compliance level is run; add the VM argument
 // -Dcompliance=1.4 (for example) to lower it if needed
 static {
-//		TESTS_NAMES = new String[] { "test0037_autounboxing_3" };
-//		TESTS_NAMES = new String[] { "testBug401088" };
-//		TESTS_NAMES = new String[] { "testBug402993" };
+//		TESTS_NAMES = new String[] { "test0525_try_finally_unchecked_exception" };
+//		TESTS_NAMES = new String[] { "testBug441737" };
+//		TESTS_NAMES = new String[] { "testBug453305" };
+//		TESTS_NAMES = new String[] { "testBug431016" };
+//		TESTS_NAMES = new String[] { "testBug432109" };
+//		TESTS_NAMES = new String[] { "testBug418500" }; 
 //		TESTS_NUMBERS = new int[] { 561 };
 //		TESTS_RANGE = new int[] { 1, 2049 };
 }
@@ -5650,7 +5657,7 @@ public void test0524_try_finally() {
 
 // null analysis -- try/finally
 // https://bugs.eclipse.org/bugs/show_bug.cgi?id=150082
-public void test0525_try_finally_unchecked_exception() {
+public void _test0525_try_finally_unchecked_exception() {
 	this.runNegativeTest(
 		new String[] {
 			"X.java",
@@ -8501,7 +8508,7 @@ public void test0744_for_infinite() {
 
 // null analysis - for
 // https://bugs.eclipse.org/bugs/show_bug.cgi?id=195638
-public void _test0746_for_try_catch() {
+public void test0746_for_try_catch() {
 	runTest(
 		new String[] {
 			"X.java",
@@ -11706,7 +11713,7 @@ public void testBug291418a() {
 						"  void foo(int[] argArray) {\n" +
 						"    int[] array = {2};\n" +
 						"    int[] collectionVar = {1,2};\n" +
-						"	 if(argArray == null) return;" +
+						"	 if(argArray == null) return;\n" +
 						"    for(int x:collectionVar) {\n" +
 						"        if (collectionVar == null);\n" +	// collectionVar cannot be null here
 						"        if (array == null);\n" +				// array is not null here
@@ -11718,6 +11725,8 @@ public void testBug291418a() {
 						"        if (array == null);\n" +				// array is not null here
 						"		 if (argArray == null);\n" +		// argArray cannot be null here
 						"    } while (count<10);\n" +
+						"	 array = new int[0];\n" + 			// reset tainting by null check
+						"	 if (argArray == null) return;\n" + // reset tainting by null check
 						"    for (int i=0; i<2; i++) {\n" +
 						"        if (array == null);\n" +				// array is not null here
 						"		 if (argArray == null);\n" +		// argArray cannot be null here
@@ -11729,47 +11738,47 @@ public void testBug291418a() {
 						"  }\n" +
 						"}"},
 				"----------\n" +
-				"1. ERROR in X.java (at line 6)\n" +
+				"1. ERROR in X.java (at line 7)\n" +
 				"	if (collectionVar == null);\n" +
 				"	    ^^^^^^^^^^^^^\n" +
 				"Null comparison always yields false: The variable collectionVar cannot be null at this location\n" +
 				"----------\n" +
-				"2. ERROR in X.java (at line 7)\n" +
+				"2. ERROR in X.java (at line 8)\n" +
 				"	if (array == null);\n" +
 				"	    ^^^^^\n" +
 				"Null comparison always yields false: The variable array cannot be null at this location\n" +
 				"----------\n" +
-				"3. ERROR in X.java (at line 8)\n" +
+				"3. ERROR in X.java (at line 9)\n" +
 				"	if (argArray == null);\n" +
 				"	    ^^^^^^^^\n" +
 				"Null comparison always yields false: The variable argArray cannot be null at this location\n" +
 				"----------\n" +
-				"4. ERROR in X.java (at line 13)\n" +
+				"4. ERROR in X.java (at line 14)\n" +
 				"	if (array == null);\n" +
 				"	    ^^^^^\n" +
 				"Null comparison always yields false: The variable array cannot be null at this location\n" +
 				"----------\n" +
-				"5. ERROR in X.java (at line 14)\n" +
+				"5. ERROR in X.java (at line 15)\n" +
 				"	if (argArray == null);\n" +
 				"	    ^^^^^^^^\n" +
 				"Null comparison always yields false: The variable argArray cannot be null at this location\n" +
 				"----------\n" +
-				"6. ERROR in X.java (at line 17)\n" +
+				"6. ERROR in X.java (at line 20)\n" +
 				"	if (array == null);\n" +
 				"	    ^^^^^\n" +
 				"Null comparison always yields false: The variable array cannot be null at this location\n" +
 				"----------\n" +
-				"7. ERROR in X.java (at line 18)\n" +
+				"7. ERROR in X.java (at line 21)\n" +
 				"	if (argArray == null);\n" +
 				"	    ^^^^^^^^\n" +
 				"Null comparison always yields false: The variable argArray cannot be null at this location\n" +
 				"----------\n" +
-				"8. ERROR in X.java (at line 21)\n" +
+				"8. ERROR in X.java (at line 24)\n" +
 				"	if (array == null);\n" +
 				"	    ^^^^^\n" +
 				"Null comparison always yields false: The variable array cannot be null at this location\n" +
 				"----------\n" +
-				"9. ERROR in X.java (at line 22)\n" +
+				"9. ERROR in X.java (at line 25)\n" +
 				"	if (argArray == null);\n" +
 				"	    ^^^^^^^^\n" +
 				"Null comparison always yields false: The variable argArray cannot be null at this location\n" +
@@ -14699,12 +14708,38 @@ public void testBug336428d() {
 		"	o1 = null;\n" + 
 		"	^^\n" + 
 		"Redundant assignment: The variable o1 can only be null at this location\n" + 
+/* In general it's safer *not* to assume that o1 is null on every iteration (see also testBug336428d2):
 		"----------\n" + 
 		"2. ERROR in DoWhileBug.java (at line 8)\n" + 
 		"	if ((o2 = o1) == null) break;\n" + 
 		"	    ^^^^^^^^^\n" + 
 		"Redundant null check: The variable o2 can only be null at this location\n" + 
-		"----------\n");
+ */
+		"----------\n"
+		);
+}
+
+// Bug 336428 - [compiler][null] bogus warning "redundant null check" in condition of do {} while() loop
+// variant after Bug 454031 to demonstrate:
+// - previously we would believe that o1 is always null in the assignment to o2 -> bogus warning re redundant null check
+// - with improved analysis we don't claim to know the value of o1 in this assignment -> no warning
+public void testBug336428d2() {
+	this.runConformTest(
+		new String[] {
+	"DoWhileBug.java",
+			"public class DoWhileBug {\n" + 
+			"	void test(boolean b1) {\n" + 
+			"		Object o1 = null;\n" + 
+			"		Object o2 = null;\n" + 
+			"		do {\n" +
+			"           if (b1)\n" + 
+			"				o1 = null;\n" +
+			"           if ((o2 = o1) == null) System.out.println(\"null\");\n" +
+			"			o1 = new Object();\n" +
+			"		} while (true);\n" + 
+			"	}\n" + 
+			"}"	
+		});
 }
 
 //Bug 336428 - [compiler][null] bogus warning "redundant null check" in condition of do {} while() loop
@@ -14731,11 +14766,13 @@ public void testBug336428e() {
 			"	o1 = null;\n" + 
 			"	^^\n" + 
 			"Redundant assignment: The variable o1 can only be null at this location\n" + 
+/* In general it's safer *not* to assume that o1 is null on every iteration:
 			"----------\n" +
 			"2. ERROR in DoWhileBug.java (at line 8)\n" + 
 			"	assert (o2 = o1) != null : \"bug\";\n" + 
 			"	       ^^^^^^^^^\n" + 
 			"Null comparison always yields false: The variable o2 can only be null at this location\n" + 
+ */
 			"----------\n");
 	}
 }
@@ -16398,8 +16435,8 @@ public void testBug345305_4() {
 }
 
 // Bug 345305 - [compiler][null] Compiler misidentifies a case of "variable can only be null"
-// DISABLED: block-less if involved - info about pot.nn. is lost when checking against loop's info (deferred check)
-public void _testBug345305_6() {
+// block-less if involved - info about pot.nn. was lost when checking against loop's info (deferred check)
+public void testBug345305_6() {
 	runNegativeTest(
 		new String[] {
 			"X.java",
@@ -17009,6 +17046,386 @@ public void testBug402993a() {
 		"	if (exc == null) // No warning here ??\n" + 
 		"	    ^^^\n" + 
 		"Redundant null check: The variable exc can only be null at this location\n" + 
+		"----------\n");
+}
+public void testBug453305() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_5) return; // uses foreach loop
+	runConformTest(
+		new String[] {
+			"NullTest.java",
+			"import java.util.*;\n" + 
+			"public class NullTest {\n" + 
+			"    class SomeOtherClass {\n" + 
+			"\n" + 
+			"        public SomeOtherClass m() {\n" + 
+			"            return new SomeOtherClass();\n" + 
+			"        }\n" + 
+			"\n" + 
+			"        public void doSomething() {\n" + 
+			"        }\n" + 
+			"    }\n" + 
+			"\n" + 
+			"    public Object m1() {\n" + 
+			"        SomeOtherClass result = null;\n" + 
+			"        List<Object> list = new ArrayList<Object>();\n" + 
+			"        for (Object next : list) {\n" + 
+			"            System.out.println(next);\n" + 
+			"            boolean bool = false;\n" + 
+			"            if (bool) {\n" + 
+			"                SomeOtherClass something = new SomeOtherClass();\n" + 
+			"                result = something.m();\n" + 
+			"            } else {\n" + 
+			"                result = new SomeOtherClass();\n" + 
+			"            }\n" + 
+			"            result.doSomething(); // warning is here\n" + 
+			"            break;\n" + 
+			"        }\n" + 
+			"        return null;\n" + 
+			"    }\n" + 
+			"}\n"
+		});
+}
+public void testBug431016() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_5) return; // uses foreach loop
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"public class Test {\n" + 
+			"  void test(Object[] values) {\n" + 
+			"    Object first = null;\n" + 
+			"    for (Object current : values) {\n" + 
+			"        if (first == null) {\n" + 
+			"            first = current;\n" + 
+			"        }\n" + 
+			"\n" + 
+			"        if (current.hashCode() > 0) {\n" + 
+			"            System.out.println(first.hashCode());\n" + 
+			"        }\n" + 
+			"\n" + 
+			"        System.out.println(first.hashCode());\n" + 
+			"      }\n" + 
+			"  }\n" + 
+			"}\n"
+		});
+}
+// originally created for documentation purpose, see https://bugs.eclipse.org/453483#c9
+public void testBug431016_simplified() {
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"public class Test {\n" + 
+			"  void test(Object input, boolean b) {\n" + 
+			"    Object o = null;\n" + 
+			"    while (true) {\n" + 
+			"      if (o == null)\n" + 
+			"        o = input;\n" + 
+			"      if (b)\n" + 
+			"        o.toString();\n" + 
+			"      o.toString();\n" + 
+			"    }\n" + 
+			"  }\n" + 
+			"}\n"
+		});
+}
+public void testBug432109() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_5) return; // uses generics & foreach loop
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"import java.util.Collection;\n" +
+			"public class Test {\n" +
+			"  public void test(Collection <Object> values)\n" + 
+			"  {\n" + 
+			"      boolean condition = false;\n" + 
+			"      \n" + 
+			"      for(Object value : values)\n" + 
+			"      {\n" + 
+			"                  \n" + 
+			"          if(value == null)\n" + 
+			"          {\n" + 
+			"              if( condition )\n" + 
+			"              {\n" + 
+			"                  // without this continue statement, \n" + 
+			"                  // there is no warning below\n" + 
+			"                  continue; \n" + 
+			"              }\n" + 
+			"              \n" + 
+			"              value = getDefaultValue();\n" + 
+			"          }\n" + 
+			"          \n" + 
+			"          // IDE complains here about potential null pointer access\n" + 
+			"          value.toString();\n" + 
+			"      }\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  public String getDefaultValue() { return \"<empty>\"; }\n" +
+			"}\n"
+		});
+}
+public void testBug435528() {
+	runNegativeTest(
+		new String[] {
+			"Test.java",
+			"public class Test\n" + 
+			"{\n" + 
+			"   static final String a = \"A\";\n" + 
+			"\n" + 
+			"   static void main(String args[])\n" + 
+			"   {\n" + 
+			"      String x = null;\n" + 
+			"      while (true) {\n" + 
+			"         x = Math.random() < 0.5 ? a : \"BB\";\n" + 
+			"         if (a != null) {\n" + 
+			"            System.out.println(\"s2 value: \" + x);\n" + 
+			"         }\n" + 
+			"         if (x.equals(\"A\")) {\n" + 
+			"            break;\n" + 
+			"         } else {\n" + 
+			"            x = null;\n" + 
+			"         }\n" + 
+			"      }\n" + 
+			"   }\n" + 
+			"}\n"
+		},
+		"----------\n" + 
+		"1. WARNING in Test.java (at line 15)\n" + 
+		"	} else {\n" + 
+		"            x = null;\n" + 
+		"         }\n" + 
+		"	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n" + 
+		"Statement unnecessarily nested within else clause. The corresponding then clause does not complete normally\n" + 
+		"----------\n");
+}
+public void testBug418500() {
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"import java.util.*;\n" +
+			"public class Test {\n" +
+			(this.complianceLevel < ClassFileConstants.JDK1_5 ? "\n" : "  @SuppressWarnings(\"unchecked\")\n" ) +
+			"  void method() {\n" + 
+			"    Map topMap = new HashMap();\n" + 
+			"    List targets = null;\n" + 
+			"    \n" + 
+			"    for (int idx = 1; idx < 100; idx++) {\n" + 
+			"      String[] targetArray = (String[]) topMap.get(\"a\");\n" + 
+			"      if (targetArray != null) {\n" + 
+			"        targets = Arrays.asList(targetArray);\n" + 
+			"      } else {\n" + 
+			"        targets = new ArrayList(64);\n" + 
+			"      }\n" + 
+			"      if (targets.size() > 0) {\n" + 
+			"        topMap.put(\"b\", targets.toArray(new String[1]));\n" + 
+			"      } else {\n" + 
+			"        topMap.remove(\"b\");\n" + 
+			"      }\n" + 
+			"\n" + 
+			"      // BUG - this statement causes null analysis to\n" + 
+			"      // report that at the targets.size() statement above\n" + 
+			"      // targets must be null. Commenting this line eliminates the error.\n" + 
+			"      targets = null;\n" + 
+			"    }\n" + 
+			"  }\n" +
+			"}\n"
+		});
+}
+public void testBug441737() {
+	runConformTest(
+		new String[] {
+			"Bogus.java",
+			"public class Bogus {\n" + 
+			"    static boolean ok = true;\n" + 
+			"    static int count = 0;\n" + 
+			"    public static void main(String[] args) {\n" + 
+			"        Thing x = new Thing();\n" + 
+			"        // if y is left uninitialized here, the warning below disappears\n" + 
+			"        Thing y = null;\n" + 
+			"        do {\n" + 
+			"            y = x;\n" + 
+			"            if (ok) {\n" + 
+			"                // if this assignment is moved out of the if statement\n" + 
+			"                // or commented out, the warning below disappears\n" + 
+			"                x = y.resolve();\n" + 
+			"            }\n" + 
+			"            // a warning about y being potentially null occurs here:\n" + 
+			"            x = y.resolve();\n" + 
+			"        } while (x != y);\n" + 
+			"    }\n" + 
+			"\n" + 
+			"    static class Thing {\n" + 
+			"        public Thing resolve() {\n" + 
+			"            return count++ > 2 ? this : new Thing();\n" + 
+			"        }\n" + 
+			"    }\n" + 
+			"}\n"
+		});
+}
+// fixed in 3.6.2, likely via bug 332637.
+public void testBug195638_comment3() {
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"import java.sql.Connection;\n" +
+			"import java.sql.SQLException;\n" +
+			"public class Test {\n" + 
+			"  void m() throws SQLException\n" + 
+			"  {\n" + 
+			"    Connection conn = null;\n" + 
+			"    try\n" + 
+			"    {\n" + 
+			"      conn = createConnection();\n" + 
+			"\n" + 
+			"      for (; ; )\n" + 
+			"      {\n" + 
+			"        throwSomething();\n" + 
+			"      }\n" + 
+			"    }\n" + 
+			"    catch (MyException e)\n" + 
+			"    {\n" + 
+			"      conn.rollback(); //The variable can never be null here...\n" + 
+			"    }\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  private void throwSomething() throws MyException\n" + 
+			"  {\n" + 
+			"    throw new MyException();\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  class MyException extends Exception\n" + 
+			"  {\n" + 
+			"\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  private Connection createConnection()\n" + 
+			"  {\n" + 
+			"    return null;\n" + 
+			"  }\n" +
+			"}\n"
+		});
+}
+public void testBug195638_comment6() {
+	runNegativeTest(
+		new String[] {
+			"CanOnlyBeNullShouldBeMayBeNull.java",
+			"public class CanOnlyBeNullShouldBeMayBeNull {\n" + 
+			"\n" + 
+			"	private void method() {\n" + 
+			"		String tblVarRpl = null;\n" + 
+			"		while (true) {\n" + 
+			"			boolean isOpenVariableMortageRateProduct = true;\n" + 
+			"			boolean tblVarRplAllElementAddedIndicator = false;\n" + 
+			"			if (isOpenVariableMortageRateProduct) {\n" + 
+			"				if (tblVarRplAllElementAddedIndicator == false)\n" + 
+			"					tblVarRpl = \"\";\n" + 
+			"				tblVarRpl.substring(1);	//Can only be null???\n" + 
+			"				return; \n" + 
+			"			}\n" + 
+			"		}\n" + 
+			"	}\n" + 
+			"}\n"
+		},
+		"----------\n" + 
+		"1. WARNING in CanOnlyBeNullShouldBeMayBeNull.java (at line 3)\n" + 
+		"	private void method() {\n" + 
+		"	             ^^^^^^^^\n" + 
+		"The method method() from the type CanOnlyBeNullShouldBeMayBeNull is never used locally\n" + 
+		"----------\n" + 
+		"2. ERROR in CanOnlyBeNullShouldBeMayBeNull.java (at line 11)\n" + 
+		"	tblVarRpl.substring(1);	//Can only be null???\n" + 
+		"	^^^^^^^^^\n" + 
+		"Potential null pointer access: The variable tblVarRpl may be null at this location\n" + 
+		"----------\n");
+}
+public void testBug195638_comment14() {
+	runNegativeTest(
+		new String[] {
+			"Test.java",
+			"public class Test {\n" + 
+			"    private void test() {\n" + 
+			"        boolean x = true;\n" + 
+			"        Object o = null;\n" + 
+			"        \n" + 
+			"        for (;;) {\n" + 
+			"            if (x) o = new Object();\n" + 
+			"            \n" + 
+			"            o.toString(); // warning here\n" + // bug was: Null pointer access: The variable o can only be null at this location
+			"            \n" + 
+			"            o = null;\n" + 
+			"        }\n" + 
+			"    }\n" + 
+			"}\n"
+		},
+		"----------\n" + 
+		"1. WARNING in Test.java (at line 2)\n" + 
+		"	private void test() {\n" + 
+		"	             ^^^^^^\n" + 
+		"The method test() from the type Test is never used locally\n" + 
+		"----------\n" + 
+		"2. ERROR in Test.java (at line 9)\n" + 
+		"	o.toString(); // warning here\n" + 
+		"	^\n" + 
+		"Potential null pointer access: The variable o may be null at this location\n" + 
+		"----------\n");
+}
+public void testBug195638_comment19() {
+	runConformTest(
+		new String[] {
+			"Test.java",
+			"public class Test {\n" + 
+			"    public void testIt() {\n" + 
+			"      Object aRole = null;\n" + 
+			"      for (;;) {\n" + 
+			"        aRole = new Object();\n" + 
+			"        if (aRole.toString() == null) {\n" + 
+			"          aRole = getObject(); // changing to \"new Object()\" makes warning disappear.\n" + 
+			"        }\n" + 
+			"        aRole.toString();\n" + 
+			"        // above line gets: \"Null pointer access: The variable aRole can only be null at this location\"\n" + 
+			"        break;\n" + 
+			"      }\n" + 
+			"    }\n" + 
+			"    private Object getObject() {\n" + 
+			"      return new Object();\n" + 
+			"    }\n" + 
+			"}\n"
+		});
+}
+public void testBug454031() {
+	runNegativeTest(
+		new String[] {
+			"xy/Try.java",
+			"package xy;\n" + 
+			"\n" + 
+			"public class Try {\n" + 
+			"    public static void main(String[] args) {\n" + 
+			"        foo(new Node());\n" + 
+			"    }\n" + 
+			"    static void foo(Node n) {\n" + 
+			"        Node selectedNode= n;\n" + 
+			"        if (selectedNode == null) {\n" + 
+			"            return;\n" + 
+			"        }\n" + 
+			"        while (selectedNode != null && !(selectedNode instanceof Cloneable)) {\n" + 
+			"            selectedNode= selectedNode.getParent();\n" + 
+			"        }\n" + 
+			"        if (selectedNode == null) { //wrong problem: Null comparison always yields false: The variable selectedNode cannot be null at this location\n" + 
+			"            // wrong problem: dead code\n" + 
+			"            System.out.println(selectedNode.hashCode());\n" + 
+			"        }\n" + 
+			"    }\n" + 
+			"}\n" +
+			"\n" + 
+			"class Node {\n" + 
+			"    Node getParent() {\n" + 
+			"        return null;\n" + 
+			"    }\n" + 
+			"}\n"
+		},
+		"----------\n" + 
+		"1. ERROR in xy\\Try.java (at line 17)\n" + 
+		"	System.out.println(selectedNode.hashCode());\n" + 
+		"	                   ^^^^^^^^^^^^\n" + 
+		"Null pointer access: The variable selectedNode can only be null at this location\n" + 
 		"----------\n");
 }
 }

@@ -101,6 +101,7 @@
  *     Jesper S Moller   - Contributions for bug 381345 : [1.8] Take care of the Java 8 major version
  *                       - added the following constants:
  *									COMPILER_CODEGEN_METHOD_PARAMETERS_ATTR
+ *     Harry Terkelsen (het@google.com) - Bug 449262 - Allow the use of third-party Java formatters
  *     
  *******************************************************************************/
 
@@ -452,6 +453,19 @@ public final class JavaCore extends Plugin {
 	 * @category CompilerOptionID
 	 */
 	public static final String COMPILER_PB_UNUSED_PARAMETER = PLUGIN_ID + ".compiler.problem.unusedParameter"; //$NON-NLS-1$
+	/**
+	 * Compiler option ID: Reporting Unused Exception Parameter.
+	 * <p>When enabled, the compiler will issue an error or a warning for unused exception
+	 *    parameters (that is, the thrown exception is never read from).</p>
+	 * <dl>
+	 * <dt>Option id:</dt><dd><code>"org.eclipse.jdt.core.compiler.problem.unusedExceptionParameter"</code></dd>
+	 * <dt>Possible values:</dt><dd><code>{ "error", "warning", "ignore" }</code></dd>
+	 * <dt>Default:</dt><dd><code>"ignore"</code></dd>
+	 * </dl>
+	 * @category CompilerOptionID
+	 * @since 3.11
+	 */
+	public static final String COMPILER_PB_UNUSED_EXCEPTION_PARAMETER = PLUGIN_ID + ".compiler.problem.unusedExceptionParameter"; //$NON-NLS-1$
 	/**
 	 * Compiler option ID: Reporting Unused Parameter if Implementing Abstract Method.
 	 * <p>When enabled, the compiler will signal unused parameters in abstract method implementations.</p>
@@ -2275,6 +2289,19 @@ public final class JavaCore extends Plugin {
 	public static final String TIMEOUT_FOR_PARAMETER_NAME_FROM_ATTACHED_JAVADOC = PLUGIN_ID + ".timeoutForParameterNameFromAttachedJavadoc"; //$NON-NLS-1$
 
 	/**
+	 * Core option ID: The ID of the formatter to use in formatting operations.
+	 * <dl>
+	 * <dt>Option id:</dt><dd><code>"org.eclipse.jdt.core.javaFormatter"</code></dd>
+	 * <dt>Default:</dt><dd><code>"org.eclipse.jdt.core.defaultJavaFormatter"</code></dd>
+	 * </dl>
+	 * @see #DEFAULT_JAVA_FORMATTER
+	 * @see #JAVA_FORMATTER_EXTENSION_POINT_ID
+	 * @since 3.11
+	 * @category CoreOptionID
+	 */
+	public static final String JAVA_FORMATTER = PLUGIN_ID + ".javaFormatter"; //$NON-NLS-1$
+
+	/**
 	 * @since 2.0
 	 * @deprecated Use {@link org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants#FORMATTER_BRACE_POSITION_FOR_ANONYMOUS_TYPE_DECLARATION},
 	 * {@link org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants#FORMATTER_BRACE_POSITION_FOR_BLOCK} ,
@@ -2829,6 +2856,23 @@ public final class JavaCore extends Plugin {
 	 * @since 3.2
 	 */
 	public static final String JAVA_SOURCE_CONTENT_TYPE = JavaCore.PLUGIN_ID+".javaSource" ; //$NON-NLS-1$
+
+	/**
+	 * The ID of the Eclipse built-in formatter.
+	 *
+	 * @see #JAVA_FORMATTER
+	 * @see #JAVA_FORMATTER_EXTENSION_POINT_ID
+	 * @since 3.11
+	 */
+	public static final String DEFAULT_JAVA_FORMATTER = PLUGIN_ID + ".defaultJavaFormatter"; //$NON-NLS-1$
+
+	/**
+	 * Name of the extension point for contributing a source code formatter
+	 * @see #JAVA_FORMATTER
+	 * @see #DEFAULT_JAVA_FORMATTER
+	 * @since 3.11
+	 */
+	public static final String JAVA_FORMATTER_EXTENSION_POINT_ID = "javaFormatter" ;  //$NON-NLS-1$
 
 	/**
 	 * Creates the Java core plug-in.
@@ -5637,6 +5681,7 @@ public final class JavaCore extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		try {
+			JavaModelManager.unregisterDebugOptionsListener();
 			JavaModelManager.getJavaModelManager().shutdown();
 		} finally {
 			// ensure we call super.stop as the last thing
@@ -5655,6 +5700,7 @@ public final class JavaCore extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		JavaModelManager.registerDebugOptionsListener(context);
 		JavaModelManager.getJavaModelManager().startup();
 	}
 }

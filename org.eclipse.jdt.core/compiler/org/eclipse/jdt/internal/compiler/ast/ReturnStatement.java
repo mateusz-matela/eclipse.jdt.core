@@ -31,6 +31,8 @@
  *								Bug 427438 - [1.8][compiler] NPE at org.eclipse.jdt.internal.compiler.ast.ConditionalExpression.generateCode(ConditionalExpression.java:280)
  *								Bug 430150 - [1.8][null] stricter checking against type variables
  *								Bug 435805 - [1.8][compiler][null] Java 8 compiler does not recognize declaration style null annotations
+ *								Bug 452788 - [1.8][compiler] Type not correctly inferred in lambda expression
+ *								Bug 453483 - [compiler][null][loop] Improve null analysis for loops
  *     Jesper S Moller - Contributions for
  *								bug 382701 - [1.8][compiler] Implement semantic analysis of Lambda expressions & Reference expression
  *******************************************************************************/
@@ -192,7 +194,7 @@ void checkAgainstNullAnnotation(BlockScope scope, FlowContext flowContext, FlowI
 	} else if (nullStatus != FlowInfo.NON_NULL) {
 		// if we can't prove non-null check against declared null-ness of the enclosing method:
 		if ((tagBits & TagBits.AnnotationNonNull) != 0) {
-			flowContext.recordNullityMismatch(scope, this.expression, this.expression.resolvedType, methodBinding.returnType, nullStatus);
+			flowContext.recordNullityMismatch(scope, this.expression, this.expression.resolvedType, methodBinding.returnType, flowInfo, nullStatus);
 		}
 	}
 }
@@ -347,7 +349,7 @@ public void resolve(BlockScope scope) {
 	if (TypeBinding.notEquals(methodType, expressionType)) // must call before computeConversion() and typeMismatchError()
 		scope.compilationUnitScope().recordTypeConversion(methodType, expressionType);
 	if (this.expression.isConstantValueOfTypeAssignableToType(expressionType, methodType)
-			|| expressionType.isCompatibleWith(methodType)) {
+			|| expressionType.isCompatibleWith(methodType, scope)) {
 
 		this.expression.computeConversion(scope, methodType, expressionType);
 		if (expressionType.needsUncheckedConversion(methodType)) {

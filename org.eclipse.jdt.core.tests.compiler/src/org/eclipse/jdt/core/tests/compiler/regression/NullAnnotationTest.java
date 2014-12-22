@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 // see bug 186342 - [compiler][null] Using annotations for null checking
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class NullAnnotationTest extends AbstractNullAnnotationTest {
 
 private String TEST_JAR_SUFFIX = ".jar";
@@ -36,7 +37,7 @@ public NullAnnotationTest(String name) {
 // Static initializer to specify tests subset using TESTS_* static variables
 // All specified tests which do not belong to the class are skipped...
 static {
-//		TESTS_NAMES = new String[] { "testBug412076" };
+//		TESTS_NAMES = new String[] { "test_default_nullness_003a" };
 //		TESTS_NUMBERS = new int[] { 561 };
 //		TESTS_RANGE = new int[] { 1, 2049 };
 }
@@ -6663,7 +6664,7 @@ public void testBug415413() {
 		"1. ERROR in ClassF.java (at line 13)\n" + 
 		"	needNonNull(o);\n" + 
 		"	            ^\n" + 
-		"Null type mismatch: required \'@NonNull Object\' but the provided value is inferred as @Nullable\n" + 
+		"Null type mismatch: required \'@NonNull Object\' but the provided value is null\n" + 
 		"----------\n");
 }
 // Bug 415413 - [compiler][null] NullpointerException in Null Analysis caused by interaction of LoopingFlowContext and FinallyFlowContext
@@ -7583,7 +7584,7 @@ public void testBug443347c() {
 		"----------\n");
 }
 // https://bugs.eclipse.org/bugs/show_bug.cgi?id=444024, Type mismatch error in annotation generics assignment which happens "sometimes"
-public void _test444024() {
+public void test444024() {
 		this.runConformTest(
 		   new String[] {
 			   "ViewpointOrganisationEntity.java",
@@ -7651,5 +7652,261 @@ public void testBug435805() {
 		"Potential null pointer access: The variable theValue may be null at this location\n" + 
 		"----------\n",
 		JavacTestOptions.Excuse.EclipseWarningConfiguredAsError);
+}
+public void testBug445147() {
+	runConformTestWithLibs(
+		new String[] {
+			"foobar/Bar.java",
+			"package foobar;\n" + 
+			"@org.eclipse.jdt.annotation.NonNullByDefault\n" + 
+			"interface Bar<B extends Bar<B, F>, F extends Foo<F, B>> {}",
+			"foobar/Foo.java",
+			"package foobar;\n" + 
+			"@org.eclipse.jdt.annotation.NonNullByDefault\n" + 
+			"interface Foo<F extends Foo<F, B>, B extends Bar<B, F>> {}"
+		},
+		getCompilerOptions(),
+		"");
+}
+public void testBug445708() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_7) return; // uses switch on string.
+	runNegativeTestWithLibs(
+		new String[] {
+			"SwitchTest.java",
+			"import org.eclipse.jdt.annotation.Nullable;\n" + 
+			"\n" + 
+			"public class SwitchTest\n" + 
+			"{\n" + 
+			"   private enum EnumValue\n" + 
+			"   {\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   public static void main(String[] args)\n" + 
+			"   {\n" + 
+			"      // Should be flagged as \"Potential null pointer access,\" but is not.\n" + 
+			"      switch (computeStringValue())\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      @Nullable String stringValue = null;\n" + 
+			"      \n" + 
+			"      // Properly flagged as \"Null pointer access.\"\n" + 
+			"      switch (stringValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      stringValue = computeStringValue();\n" + 
+			"      \n" + 
+			"      // Should be flagged as \"Potential null pointer access,\" but is not.\n" + 
+			"      switch (stringValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      // Should also be flagged, but is not.\n" + 
+			"      switch (computeEnumValue())\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      @Nullable EnumValue enumValue = null;\n" + 
+			"      \n" + 
+			"      // Fixed in bug #403674.\n" + 
+			"      switch (enumValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   private static @Nullable String computeStringValue()\n" + 
+			"   {\n" + 
+			"      return null;\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   private static @Nullable EnumValue computeEnumValue()\n" + 
+			"   {\n" + 
+			"      return null;\n" + 
+			"   }\n" + 
+			"}\n"
+		}, 
+		"----------\n" + 
+		"1. ERROR in SwitchTest.java (at line 12)\n" + 
+		"	switch (computeStringValue())\n" + 
+		"	        ^^^^^^^^^^^^^^^^^^^^\n" + 
+		"Potential null pointer access: The method computeStringValue() may return null\n" + 
+		"----------\n" + 
+		"2. ERROR in SwitchTest.java (at line 19)\n" + 
+		"	switch (stringValue)\n" + 
+		"	        ^^^^^^^^^^^\n" + 
+		"Null pointer access: The variable stringValue can only be null at this location\n" + 
+		"----------\n" + 
+		"3. ERROR in SwitchTest.java (at line 26)\n" + 
+		"	switch (stringValue)\n" + 
+		"	        ^^^^^^^^^^^\n" +
+		(this.complianceLevel < ClassFileConstants.JDK1_8
+		? "Potential null pointer access: The variable stringValue may be null at this location\n"
+		: "Potential null pointer access: this expression has a \'@Nullable\' type\n" ) +
+		"----------\n" + 
+		"4. ERROR in SwitchTest.java (at line 31)\n" + 
+		"	switch (computeEnumValue())\n" + 
+		"	        ^^^^^^^^^^^^^^^^^^\n" + 
+		"Potential null pointer access: The method computeEnumValue() may return null\n" + 
+		"----------\n" + 
+		"5. ERROR in SwitchTest.java (at line 38)\n" + 
+		"	switch (enumValue)\n" + 
+		"	        ^^^^^^^^^\n" + 
+		"Null pointer access: The variable enumValue can only be null at this location\n" + 
+		"----------\n");
+}
+// same as above but 1.8 with declaration annotations
+public void testBug445708b() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_8) return; // only one combination tested
+	Map customOptions = getCompilerOptions();
+	customOptions.put(JavaCore.COMPILER_NONNULL_ANNOTATION_NAME, "org.foo.NonNull");
+	customOptions.put(JavaCore.COMPILER_NULLABLE_ANNOTATION_NAME, "org.foo.Nullable");
+	runNegativeTestWithLibs(
+		new String[] {
+			CUSTOM_NULLABLE_NAME,
+			CUSTOM_NULLABLE_CONTENT,
+			"SwitchTest.java",
+			"import org.eclipse.jdt.annotation.Nullable;\n" + 
+			"\n" + 
+			"public class SwitchTest\n" + 
+			"{\n" + 
+			"   private enum EnumValue\n" + 
+			"   {\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   public static void main(String[] args)\n" + 
+			"   {\n" + 
+			"      // Should be flagged as \"Potential null pointer access,\" but is not.\n" + 
+			"      switch (computeStringValue())\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      @Nullable String stringValue = null;\n" + 
+			"      \n" + 
+			"      // Properly flagged as \"Null pointer access.\"\n" + 
+			"      switch (stringValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      stringValue = computeStringValue();\n" + 
+			"      \n" + 
+			"      // Should be flagged as \"Potential null pointer access,\" but is not.\n" + 
+			"      switch (stringValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      // Should also be flagged, but is not.\n" + 
+			"      switch (computeEnumValue())\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"      \n" + 
+			"      @Nullable EnumValue enumValue = null;\n" + 
+			"      \n" + 
+			"      // Fixed in bug #403674.\n" + 
+			"      switch (enumValue)\n" + 
+			"      {\n" + 
+			"      }\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   private static @Nullable String computeStringValue()\n" + 
+			"   {\n" + 
+			"      return null;\n" + 
+			"   }\n" + 
+			"   \n" + 
+			"   private static @Nullable EnumValue computeEnumValue()\n" + 
+			"   {\n" + 
+			"      return null;\n" + 
+			"   }\n" + 
+			"}\n"
+		}, 
+		"----------\n" + 
+		"1. ERROR in SwitchTest.java (at line 12)\n" + 
+		"	switch (computeStringValue())\n" + 
+		"	        ^^^^^^^^^^^^^^^^^^^^\n" + 
+		"Potential null pointer access: The method computeStringValue() may return null\n" + 
+		"----------\n" + 
+		"2. ERROR in SwitchTest.java (at line 19)\n" + 
+		"	switch (stringValue)\n" + 
+		"	        ^^^^^^^^^^^\n" + 
+		"Null pointer access: The variable stringValue can only be null at this location\n" + 
+		"----------\n" + 
+		"3. ERROR in SwitchTest.java (at line 26)\n" + 
+		"	switch (stringValue)\n" + 
+		"	        ^^^^^^^^^^^\n" +
+		"Potential null pointer access: this expression has a \'@Nullable\' type\n" +
+		"----------\n" + 
+		"4. ERROR in SwitchTest.java (at line 31)\n" + 
+		"	switch (computeEnumValue())\n" + 
+		"	        ^^^^^^^^^^^^^^^^^^\n" + 
+		"Potential null pointer access: The method computeEnumValue() may return null\n" + 
+		"----------\n" + 
+		"5. ERROR in SwitchTest.java (at line 38)\n" + 
+		"	switch (enumValue)\n" + 
+		"	        ^^^^^^^^^\n" + 
+		"Null pointer access: The variable enumValue can only be null at this location\n" + 
+		"----------\n");
+}
+// https://bugs.eclipse.org/bugs/show_bug.cgi?id=452780 - Internal compiler error: arrayIndexOutOfBounds
+public void testBug452780() {
+	if (this.complianceLevel < ClassFileConstants.JDK1_8) return;
+	runConformTestWithLibs(
+		new String[] {
+			"Tools2.java",
+			"import java.util.Arrays;\n" + 
+			"import java.util.List;\n" + 
+			"import java.util.Set;\n" + 
+			"import java.util.stream.Collector;\n" + 
+			"import java.util.stream.Collectors;\n" + 
+			"import org.eclipse.jdt.annotation.NonNull;\n" + 
+			"public class Tools2 {\n" + 
+			"	@SafeVarargs\n" + 
+			"	public static <T> List<@NonNull T> asList(T... ts) {\n" + 
+			"		@SuppressWarnings(\"null\")\n" + 
+			"		@NonNull\n" + 
+			"		List<@NonNull T> res = Arrays.asList(ts);\n" + 
+			"		return res;\n" + 
+			"	}\n" + 
+			"	@SuppressWarnings(\"null\")\n" + 
+			"	public static <T> Collector<@NonNull T, @NonNull ?, @NonNull Set<@NonNull T>> toSet() {\n" + 
+			"		@NonNull\n" + 
+			"		Collector<@NonNull T, ?, @NonNull Set<@NonNull T>> res = Collectors\n" + 
+			"				.toSet();\n" + 
+			"		return res;\n" + 
+			"	}\n" + 
+			"}"
+		},
+		getCompilerOptions(),
+		"");
+}
+public void testBug455557() {
+	runConformTestWithLibs(
+		new String[] {
+			"X.java",
+			"import java.util.List;\n" + 
+			"\n" + 
+			"import org.eclipse.jdt.annotation.NonNull;\n" + 
+			"\n" + 
+			"\n" + 
+			"public class X {\n" + 
+			"	void test(List<String> list, boolean b) {\n" + 
+			"		if (b) {\n" + 
+			"			while (true) {\n" + 
+			"				for (@NonNull Object y : list) { \n" + 
+			"				}\n" + 
+			"			}\n" + 
+			"		}\n" + 
+			"	}\n" + 
+			"}\n"
+		},
+		null,
+		"----------\n" + 
+		"1. WARNING in X.java (at line 10)\n" + 
+		"	for (@NonNull Object y : list) { \n" + 
+		"	                         ^^^^\n" + 
+		(this.complianceLevel < ClassFileConstants.JDK1_8
+		? "Null type safety: The expression of type \'String\' needs unchecked conversion to conform to \'@NonNull Object\'\n"
+		: "Null type safety (type annotations): The expression of type \'String\' needs unchecked conversion to conform to \'@NonNull Object\'\n"
+		) +
+		"----------\n");
 }
 }

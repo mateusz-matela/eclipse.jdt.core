@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import junit.framework.Test;
  * Creation date: (8/2/00 12:04:53 PM)
  * @author Dennis Conway
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class LookupTest extends AbstractRegressionTest {
 public LookupTest(String name) {
 	super(name);
@@ -2563,8 +2564,6 @@ public void test075() {
 				"        public int size() {\n" +
 				"                return 0;\n" +
 				"        }\n" +
-				getCollectionAndListRawImplJRE8() +
-				getIterableRawImplJRE8() +
 				"}", // =================
 			},
 			"");

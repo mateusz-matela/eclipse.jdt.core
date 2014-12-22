@@ -32,6 +32,7 @@
  *							Bug 434483 - [1.8][compiler][inference] Type inference not picked up with method reference
  *							Bug 441734 - [1.8][inference] Generic method with nested parameterized type argument fails on method reference
  *							Bug 438945 - [1.8] NullPointerException InferenceContext18.checkExpression in java 8 with generics, primitives, and overloading
+ *							Bug 452788 - [1.8][compiler] Type not correctly inferred in lambda expression
  *        Andy Clement (GoPivotal, Inc) aclement@gopivotal.com - Contribution for
  *                          Bug 383624 - [1.8][compiler] Revive code generation support for type annotations (from Olivier's work)
  *******************************************************************************/
@@ -62,12 +63,14 @@ import org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.eclipse.jdt.internal.compiler.lookup.InferenceContext18;
 import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReasons;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -80,7 +83,10 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeIds;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class ReferenceExpression extends FunctionalExpression implements IPolyExpression, InvocationSite {
-	
+	// secret variable name
+	private static final String SecretReceiverVariableName = " receiver_"; //$NON-NLS-1$
+	// secret variable for codegen
+	public LocalVariableBinding receiverVariable;
 	public Expression lhs;
 	public TypeReference [] typeArguments;
 	public char [] selector;
@@ -130,6 +136,34 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 		return copy;
 	}
  
+	private boolean shouldGenerateSecretReceiverVariable() {
+		if (isMethodReference() && this.haveReceiver) {
+			if (this.lhs instanceof Invocation)
+				return true;
+			else {
+				return new ASTVisitor() {
+					boolean accessesnonFinalOuterLocals;
+
+					public boolean visit(SingleNameReference name, BlockScope skope) {
+						Binding local = skope.getBinding(name.getName(), ReferenceExpression.this);
+						if (local instanceof LocalVariableBinding) {
+							LocalVariableBinding localBinding = (LocalVariableBinding) local;
+							if (!localBinding.isFinal() && !localBinding.isEffectivelyFinal()) {
+								this.accessesnonFinalOuterLocals = true;
+							}
+						}
+						return false;
+					}
+
+					public boolean accessesnonFinalOuterLocals() {
+						ReferenceExpression.this.lhs.traverse(this, ReferenceExpression.this.enclosingScope);
+						return this.accessesnonFinalOuterLocals;
+					}
+				}.accessesnonFinalOuterLocals();
+			}
+		}
+		return false;
+	}
 	public void generateImplicitLambda(BlockScope currentScope, CodeStream codeStream, boolean valueRequired) {
 		
 		ReferenceExpression copy = copy();
@@ -150,10 +184,17 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 			String name = "arg" + (i + parameterShift); //$NON-NLS-1$
 			argv[i] = new SingleNameReference(name.toCharArray(), 0);
 		}
+		boolean generateSecretReceiverVariable = shouldGenerateSecretReceiverVariable();
 		if (isMethodReference()) {
+			if (generateSecretReceiverVariable) {
+				this.lhs.generateCode(currentScope, codeStream, true);
+				codeStream.store(this.receiverVariable, false);
+				codeStream.addVariable(this.receiverVariable);
+			}
 			MessageSend message = new MessageSend();
 			message.selector = this.selector;
-			message.receiver = this.receiverPrecedesParameters ? new SingleNameReference("arg0".toCharArray(), 0) : copy.lhs; //$NON-NLS-1$
+			Expression receiver = generateSecretReceiverVariable ? new SingleNameReference(this.receiverVariable.name, 0) : copy.lhs;
+			message.receiver = this.receiverPrecedesParameters ? new SingleNameReference("arg0".toCharArray(), 0) : receiver; //$NON-NLS-1$
 			message.typeArguments = copy.typeArguments;
 			message.arguments = argv;
 			implicitLambda.setBody(message);
@@ -203,6 +244,10 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 			implicitLambda.addSyntheticArgument(outerLocals[i].actualOuterLocalVariable);
 		
 		implicitLambda.generateCode(currentScope, codeStream, valueRequired);
+		if (generateSecretReceiverVariable) {
+			codeStream.removeVariable(this.receiverVariable);
+			this.receiverVariable = null;
+		}
 	}	
 	
 	private boolean shouldGenerateImplicitLambda(BlockScope currentScope) {
@@ -429,6 +474,12 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 			if (this.lhs instanceof NameReference) {
 				if ((this.lhs.bits & ASTNode.RestrictiveFlagMASK) == Binding.TYPE) {
 					this.haveReceiver = false;
+				} else if (isConstructorReference()) {
+					scope.problemReporter().invalidType(
+							this.lhs,
+							new ProblemReferenceBinding(((NameReference) this.lhs).getName(), null,
+									ProblemReasons.NotFound));
+					return this.resolvedType = null;
 				}
 			} else if (this.lhs instanceof TypeReference) {
 				this.haveReceiver = false;
@@ -460,6 +511,14 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 	            }
 	        	this.binding = this.exactMethodBinding = scope.getExactConstructor(lhsType, this);
 	        }
+			if (isMethodReference() && this.haveReceiver) {
+				this.receiverVariable = new LocalVariableBinding(
+						(SecretReceiverVariableName + this.nameSourceStart).toCharArray(), this.lhs.resolvedType,
+						ClassFileConstants.AccDefault, false);
+				scope.addLocalVariable(this.receiverVariable);
+				this.receiverVariable.setConstant(Constant.NotAConstant); // not inlinable
+				this.receiverVariable.useFlag = LocalVariableBinding.USED;
+			}
 
 	    	if (this.expectedType == null && this.expressionContext == INVOCATION_CONTEXT) {
 	    		return new PolyTypeBinding(this);
@@ -759,7 +818,7 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 		return this.inferenceContexts.get(method);
 	}
 	
-	public ReferenceExpression resolveExpressionExpecting(TypeBinding targetType, Scope scope) {
+	public ReferenceExpression resolveExpressionExpecting(TypeBinding targetType, Scope scope, InferenceContext18 inferenceContext) {
 		if (this.exactMethodBinding != null) { // We may see inference variables in target type.
 			MethodBinding functionType = targetType.getSingleAbstractMethod(scope, true);
 			if (functionType == null)
@@ -803,7 +862,7 @@ public class ReferenceExpression extends FunctionalExpression implements IPolyEx
 	public InferenceContext18 freshInferenceContext(Scope scope) {
 		if (this.expressionContext != ExpressionContext.VANILLA_CONTEXT) {
 			Expression[] arguments = createPseudoExpressions(this.freeParameters);
-			return new InferenceContext18(scope, arguments, this);
+			return new InferenceContext18(scope, arguments, this, null);
 		}
 		return null; // shouldn't happen, actually
 	}

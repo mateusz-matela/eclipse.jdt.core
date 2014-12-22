@@ -39,7 +39,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.element.TypeElement;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -58,172 +65,32 @@ import org.eclipse.jdt.core.tests.util.Util;
 import org.eclipse.jdt.core.util.ClassFileBytesDisassembler;
 import org.eclipse.jdt.core.util.ClassFormatException;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
+import org.eclipse.jdt.internal.compiler.AbstractAnnotationProcessorManager;
 import org.eclipse.jdt.internal.compiler.Compiler;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
+import org.eclipse.jdt.internal.compiler.apt.dispatch.BaseAnnotationProcessorManager;
+import org.eclipse.jdt.internal.compiler.apt.dispatch.BaseProcessingEnvImpl;
+import org.eclipse.jdt.internal.compiler.apt.dispatch.ProcessorInfo;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.core.search.JavaSearchParticipant;
 import org.eclipse.jdt.internal.core.search.indexing.BinaryIndexer;
 import org.osgi.framework.Bundle;
+
 import java.util.regex.Pattern;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class AbstractRegressionTest extends AbstractCompilerTest implements StopableTestCase {
-
-	// for compiling against JRE 8:
-	static final boolean IS_JRE_8;
-	static final String COMPARATOR_IMPL_JRE8;
-	static final String COMPARATOR_RAW_IMPL_JRE8;
-	static final String COLLECTION_IMPL_JRE8;
-	static final String COLLECTION_RAW_IMPL_JRE8;
-	static final String LIST_IMPL_JRE8;
-	static final String COLLECTION_AND_LIST_IMPL_JRE8;
-	static final String COLLECTION_AND_LIST_RAW_IMPL_JRE8;
-	static final String LIST_RAW_IMPL_JRE8;
-	static final String ITERABLE_IMPL_JRE8;
-	static final String ITERABLE_RAW_IMPL_JRE8;
-	static final String ITERATOR_IMPL_JRE8;
-	static final String ITERATOR_RAW_IMPL_JRE8;
-	static final String MAP_IMPL_JRE8;
-	static final String MAP_RAW_IMPL_JRE8;
-			
-	static {
-		String javaVersion = System.getProperty("java.specification.version");
-		IS_JRE_8 = "1.8".equals(javaVersion);
-		if (IS_JRE_8) { // TODO(stephan) accommodate future versions ...
-			COMPARATOR_IMPL_JRE8 = // replace '*' with T, '%' with U, $ with S
-				"	public java.util.Comparator<*> reverseOrder() { return null;}\n" +
-				"	public java.util.Comparator<*> reversed() { return null;}\n" +
-				"	public java.util.Comparator<*> thenComparing(java.util.Comparator<? super *> other) { return null;}\n" +
-				"	public <%> java.util.Comparator<*> thenComparing(java.util.function.Function<? super *, ? extends %> keyExtractor, java.util.Comparator<? super %> keyComparator) { return null;}\n" +
-				"	public <% extends java.lang.Comparable<? super %>> java.util.Comparator<*> thenComparing(java.util.function.Function<? super *, ? extends %> keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator<*> thenComparingInt(java.util.function.ToIntFunction<? super *> keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator<*> thenComparingLong(java.util.function.ToLongFunction<? super *> keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator<*> thenComparingDouble(java.util.function.ToDoubleFunction<? super *> keyExtractor) { return null;}\n";
-			COMPARATOR_RAW_IMPL_JRE8 =
-				"	public java.util.Comparator reverseOrder() { return null;}\n" +
-				"	public java.util.Comparator reversed() { return null;}\n" +
-				"	public java.util.Comparator thenComparing(java.util.Comparator other) { return null;}\n" +
-				"	public java.util.Comparator thenComparing(java.util.function.Function keyExtractor, java.util.Comparator keyComparator) { return null;}\n" +
-				"	public java.util.Comparator thenComparing(java.util.function.Function keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator thenComparingInt(java.util.function.ToIntFunction keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator thenComparingLong(java.util.function.ToLongFunction keyExtractor) { return null;}\n" +
-				"	public java.util.Comparator thenComparingDouble(java.util.function.ToDoubleFunction keyExtractor) { return null;}\n";
-			COLLECTION_IMPL_JRE8 =
-				"	public boolean removeAll(java.util.function.Predicate<? super *> filter) { return false;}\n" +
-				"	public boolean removeIf(java.util.function.Predicate<? super *> filter) { return false;}\n" +
-				"	public java.util.stream.Stream<*> stream() { return null;}\n" +
-				"	public java.util.stream.Stream<*> parallelStream() { return null;}\n";
-			COLLECTION_AND_LIST_IMPL_JRE8 =
-				"	public boolean removeAll(java.util.function.Predicate<? super *> filter) { return false;}\n" +
-				"	public boolean removeIf(java.util.function.Predicate<? super *> filter) { return false;}\n" +
-				"	public java.util.stream.Stream<*> stream() { return null;}\n" +
-				"	public java.util.stream.Stream<*> parallelStream() { return null;}\n" +
-				"	public void sort(java.util.Comparator<? super *> comparator) {}\n" +
-				"	public void parallelSort(java.util.Comparator<? super *> comparator) {}\n" +
-				"	public void replaceAll(java.util.function.UnaryOperator<*> operator) {}\n";
-			COLLECTION_RAW_IMPL_JRE8 =
-				"	public @SuppressWarnings(\"rawtypes\") boolean removeAll(java.util.function.Predicate filter) { return false;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") boolean removeIf(java.util.function.Predicate filter) { return false;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") java.util.stream.Stream stream() { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") java.util.stream.Stream parallelStream() { return null;}\n";
-			LIST_IMPL_JRE8 = // replace '*' with your concrete type argument
-				"	public void sort(java.util.Comparator<? super *> comparator) {}\n" +
-				"	public void parallelSort(java.util.Comparator<? super *> comparator) {}\n" +
-				"	public void replaceAll(java.util.function.UnaryOperator<*> operator) {}\n";
-			LIST_RAW_IMPL_JRE8 =
-				"	public @SuppressWarnings(\"rawtypes\") void sort(java.util.Comparator comparator) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void parallelSort(java.util.Comparator comparator) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void replaceAll(java.util.function.UnaryOperator operator) {}\n";
-			COLLECTION_AND_LIST_RAW_IMPL_JRE8 =
-				"	public @SuppressWarnings(\"rawtypes\") boolean removeAll(java.util.function.Predicate filter) { return false;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") boolean removeIf(java.util.function.Predicate filter) { return false;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") java.util.stream.Stream stream() { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") java.util.stream.Stream parallelStream() { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void sort(java.util.Comparator comparator) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void parallelSort(java.util.Comparator comparator) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void replaceAll(java.util.function.UnaryOperator operator) {}\n";
-			ITERABLE_IMPL_JRE8 = // replace '*' with your concrete type argument
-				"	public void forEach(java.util.function.Consumer<? super *> block){}\n" +
-				"	public void forEachRemaining(java.util.function.Consumer<? super *> action) {}\n" +
-				"	public java.util.Spliterator<*> spliterator() {return null;}\n";
-			ITERABLE_RAW_IMPL_JRE8 =
-				"	public @SuppressWarnings(\"rawtypes\") void forEach(java.util.function.Consumer action) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void forEachRemaining(java.util.function.Consumer action) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") java.util.Spliterator spliterator() {return null;}\n";
-			ITERATOR_IMPL_JRE8 = // replace '*' with your concrete type argument
-					"public void forEach(java.util.function.Consumer<? super *> action) {}\n" +
-					"public void forEachRemaining(java.util.function.Consumer<? super *> action) {}\n";
-			ITERATOR_RAW_IMPL_JRE8 =
-				"	public @SuppressWarnings(\"rawtypes\") void forEach(java.util.function.Consumer block) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void forEachRemaining(java.util.function.Consumer action) {}\n";
-			MAP_IMPL_JRE8 = // '*' for 'K', '%' for 'V'
-				"	public boolean remove(Object key, Object value) { return false;}\n" +
-				"	public % getOrDefault(Object key, % defaultValue) {return defaultValue;}\n" +
-				"	public void forEach(java.util.function.BiConsumer<? super *, ? super %> block) {}\n" +
-				"	public void replaceAll(java.util.function.BiFunction<? super *, ? super %, ? extends %> function) {}\n" +
-				"	public % putIfAbsent(* key, % value) { return null;}\n" +
-				"	public boolean replace(* key, % oldValue, % newValue) { return false;}\n" +
-				"	public % replace(* key, % value) { return null;}\n" +
-				"	public % computeIfAbsent(* key, java.util.function.Function<? super *, ? extends %> mappingFunction) { return null;}\n" +
-				"	public % computeIfPresent(* key, java.util.function.BiFunction<? super *, ? super %, ? extends %> remappingFunction) { return null;}\n" +
-				"	public % compute(* key, java.util.function.BiFunction<? super *, ? super %, ? extends %> remappingFunction) { return null;}\n" +
-				"	public % merge(* key, % value, java.util.function.BiFunction<? super %, ? super %, ? extends %> remappingFunction) { return null;}\n";
-			MAP_RAW_IMPL_JRE8 =
-				"	public boolean remove(Object key, Object value) { return false;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") Object getOrDefault(Object key, Object defaultValue) { return defaultValue;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void forEach(java.util.function.BiConsumer block) {}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") void replaceAll(java.util.function.BiFunction function) {}\n" +
-				"	public Object putIfAbsent(Object key, Object value) { return null;}\n" +
-				"	public boolean replace(Object key, Object oldValue, Object newValue) { return false;}\n" +
-				"	public Object replace(Object key, Object value) { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") Object computeIfAbsent(Object key, java.util.function.Function mappingFunction) { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") Object computeIfPresent(Object key, java.util.function.BiFunction remappingFunction) { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") Object compute(Object key, java.util.function.BiFunction remappingFunction) { return null;}\n" +
-				"	public @SuppressWarnings(\"rawtypes\") Object merge(Object key, Object value, java.util.function.BiFunction remappingFunction) { return null;}\n";
-		} else {
-			COMPARATOR_IMPL_JRE8 = "";			
-			COMPARATOR_RAW_IMPL_JRE8 = "";
-			COLLECTION_IMPL_JRE8 = "";
-			COLLECTION_RAW_IMPL_JRE8 = "";
-			LIST_IMPL_JRE8 = "";
-			COLLECTION_AND_LIST_IMPL_JRE8 = "";
-			COLLECTION_AND_LIST_RAW_IMPL_JRE8 = "";
-			LIST_RAW_IMPL_JRE8 = "";
-			ITERABLE_IMPL_JRE8 = "";
-			ITERABLE_RAW_IMPL_JRE8 = "";
-			ITERATOR_IMPL_JRE8 = "\n\n";
-			ITERATOR_RAW_IMPL_JRE8 = "\n\n";
-			MAP_IMPL_JRE8 = "";
-			MAP_RAW_IMPL_JRE8 = "";
-		}
-	}
-	String getCollectionAndListRawImplJRE8() {
-		if (this.complianceLevel < ClassFileConstants.JDK1_5)
-			return COLLECTION_AND_LIST_RAW_IMPL_JRE8.replaceAll("@SuppressWarnings\\(\"rawtypes\"\\)", "");
-		return COLLECTION_AND_LIST_RAW_IMPL_JRE8;
-	} 
-	String getListRawImplJRE8() {
-		if (this.complianceLevel < ClassFileConstants.JDK1_5)
-			return LIST_RAW_IMPL_JRE8.replaceAll("@SuppressWarnings\\(\"rawtypes\"\\)", "");
-		return LIST_RAW_IMPL_JRE8;
-	}
-	String getIterableRawImplJRE8() {
-		if (this.complianceLevel < ClassFileConstants.JDK1_5)
-			return ITERABLE_RAW_IMPL_JRE8.replaceAll("@SuppressWarnings\\(\"rawtypes\"\\)", "");
-		return ITERABLE_RAW_IMPL_JRE8;
-	}
-	String getCollectionRawImplJRE8() {
-		if (this.complianceLevel < ClassFileConstants.JDK1_5)
-			return COLLECTION_RAW_IMPL_JRE8.replaceAll("@SuppressWarnings\\(\"rawtypes\"\\)", "");
-		return COLLECTION_RAW_IMPL_JRE8;
-	}
 
 	// javac comparison related types, fields and methods - see runJavac for
 	// details
@@ -2605,6 +2472,9 @@ protected void runNegativeTest(String[] testFiles, String expectedCompilerLog, b
 					}
 				}
 			};
+		if (this.enableAPT) {
+			batchCompiler.annotationProcessorManager = getAnnotationProcessorManager(batchCompiler);
+		}
 		compilerOptions.produceReferenceInfo = true;
 		Throwable exception = null;
 		try {
@@ -2702,6 +2572,70 @@ protected void runNegativeTest(String[] testFiles, String expectedCompilerLog, b
 		}
 	}
 
+	class DummyAnnotationProcessingManager extends BaseAnnotationProcessorManager {
+
+		ProcessorInfo processorInfo = null;
+		public ProcessorInfo discoverNextProcessor() {
+			ProcessorInfo temp = this.processorInfo;
+			this.processorInfo = null;
+			return temp;
+		}
+
+		public void reportProcessorException(Processor p, Exception e) {
+			throw new AbortCompilation(null, e);
+		}
+
+		@Override
+		public void setProcessors(Object[] processors) {
+			// Nothing to do here
+		}
+
+		@Override
+		public void configure(Object batchCompiler, String[] options) {
+			this._processingEnv = new DummyEnvironmentImpl((Compiler) batchCompiler);
+		}
+		public void processAnnotations(CompilationUnitDeclaration[] units, ReferenceBinding[] referenceBindings, boolean isLastRound) {
+			if (this.processorInfo == null) {
+				this.processorInfo = new ProcessorInfo(new DummyProcessor());
+			}
+			super.processAnnotations(units, referenceBindings, isLastRound);
+		}
+
+		@Override
+		public void configureFromPlatform(Compiler compiler, Object compilationUnitLocator, Object javaProject) {
+			// Nothing to do here
+		}
+		@SupportedAnnotationTypes("*")
+		class DummyProcessor extends AbstractProcessor {
+			@Override
+			public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+				return true;
+			}
+		}
+
+		class DummyEnvironmentImpl extends BaseProcessingEnvImpl {
+			public DummyEnvironmentImpl(Compiler compiler) {
+				this._compiler = compiler;
+			}
+			@Override
+			public Locale getLocale() {
+				return Locale.getDefault();
+			}
+		}
+	}
+
+	protected AbstractAnnotationProcessorManager getAnnotationProcessorManager(Compiler compiler) {
+		try {
+			AbstractAnnotationProcessorManager annotationManager = new DummyAnnotationProcessingManager();
+			annotationManager.configure(compiler, new String[0]);
+			annotationManager.setErr(new PrintWriter(System.err));
+			annotationManager.setOut(new PrintWriter(System.out));
+			return annotationManager;
+		} catch(UnsupportedClassVersionError e) {
+			System.err.println(e);
+		}
+		return null;
+	}
 //	runConformTest(
 //		// test directory preparation
 //		new String[] { /* test files */
