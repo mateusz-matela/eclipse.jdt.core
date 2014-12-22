@@ -1,4 +1,4 @@
-package org.eclipse.jdt.internal.formatter.redesign;
+package org.eclipse.jdt.internal.formatter;
 
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameAT;
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOLON;
@@ -54,7 +54,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
-import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 
 public class LineBreaksPreparator extends ASTVisitor {
 	final private TokenManager tm;

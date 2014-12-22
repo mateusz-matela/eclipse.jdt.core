@@ -1,4 +1,4 @@
-package org.eclipse.jdt.internal.formatter.redesign;
+package org.eclipse.jdt.internal.formatter;
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.*;
 
 import java.util.List;
@@ -72,7 +72,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
-import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 
 public class SpacePreparator extends ASTVisitor {
 	TokenManager tm;

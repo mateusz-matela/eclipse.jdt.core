@@ -1,4 +1,4 @@
-package org.eclipse.jdt.internal.formatter.redesign;
+package org.eclipse.jdt.internal.formatter;
 
 import java.util.List;
 

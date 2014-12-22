@@ -4,16 +4,16 @@ import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameC
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOMMENT_LINE;
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameNotAToken;
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameWHITESPACE;
-import static org.eclipse.jdt.internal.formatter.redesign.CommentsPreparator.COMMENT_LINE_SEPARATOR_LENGTH;
+import static org.eclipse.jdt.internal.formatter.CommentsPreparator.COMMENT_LINE_SEPARATOR_LENGTH;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
-import org.eclipse.jdt.internal.formatter.redesign.Token;
-import org.eclipse.jdt.internal.formatter.redesign.Token.WrapPolicy;
-import org.eclipse.jdt.internal.formatter.redesign.TokenManager;
-import org.eclipse.jdt.internal.formatter.redesign.TokenTraverser;
+import org.eclipse.jdt.internal.formatter.Token;
+import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.eclipse.jdt.internal.formatter.TokenTraverser;
+import org.eclipse.jdt.internal.formatter.Token.WrapPolicy;
 
 public class CommentWrapExecutor extends TokenTraverser {
 

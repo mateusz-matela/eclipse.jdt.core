@@ -1,4 +1,4 @@
-package org.eclipse.jdt.internal.formatter.redesign;
+package org.eclipse.jdt.internal.formatter;
 
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.*;
 
@@ -14,7 +14,6 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
-import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.linewrap.CommentWrapExecutor;
 
 public class TokenManager implements Iterable<Token> {

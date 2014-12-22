@@ -14,9 +14,9 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
-import org.eclipse.jdt.internal.formatter.redesign.Token;
-import org.eclipse.jdt.internal.formatter.redesign.TokenManager;
-import org.eclipse.jdt.internal.formatter.redesign.TokenTraverser;
+import org.eclipse.jdt.internal.formatter.Token;
+import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.eclipse.jdt.internal.formatter.TokenTraverser;
 
 public class FieldAligner {
 	private class PositionCounter extends TokenTraverser {

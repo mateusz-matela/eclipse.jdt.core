@@ -11,10 +11,10 @@ import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
-import org.eclipse.jdt.internal.formatter.redesign.Token;
-import org.eclipse.jdt.internal.formatter.redesign.TokenManager;
-import org.eclipse.jdt.internal.formatter.redesign.TokenTraverser;
-import org.eclipse.jdt.internal.formatter.redesign.Token.WrapPolicy;
+import org.eclipse.jdt.internal.formatter.Token;
+import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.eclipse.jdt.internal.formatter.TokenTraverser;
+import org.eclipse.jdt.internal.formatter.Token.WrapPolicy;
 
 public class WrapExecutor {
 

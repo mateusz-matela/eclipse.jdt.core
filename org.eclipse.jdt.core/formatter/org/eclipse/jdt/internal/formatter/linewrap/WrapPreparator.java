@@ -1,4 +1,4 @@
-package org.eclipse.jdt.internal.formatter.redesign;
+package org.eclipse.jdt.internal.formatter.linewrap;
 
 import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.*;
 
@@ -43,11 +43,11 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
+import org.eclipse.jdt.internal.formatter.Token;
+import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.eclipse.jdt.internal.formatter.TokenTraverser;
+import org.eclipse.jdt.internal.formatter.Token.WrapPolicy;
 import org.eclipse.jdt.internal.formatter.align.Alignment;
-import org.eclipse.jdt.internal.formatter.linewrap.CommentWrapExecutor;
-import org.eclipse.jdt.internal.formatter.linewrap.FieldAligner;
-import org.eclipse.jdt.internal.formatter.linewrap.WrapExecutor;
-import org.eclipse.jdt.internal.formatter.redesign.Token.WrapPolicy;
 
 public class WrapPreparator extends ASTVisitor {
 
