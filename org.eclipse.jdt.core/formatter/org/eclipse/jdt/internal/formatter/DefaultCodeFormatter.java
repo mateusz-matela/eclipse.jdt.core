@@ -152,10 +152,10 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if ((kind & K_COMMENTS_MASK) != 0)
 			return formatComments(source, kind & K_COMMENTS_MASK, regions);
 
-		MultiTextEdit result = new MultiTextEdit();
 		if (prepareFormattedCode(source, kind) == null)
-			return result;
+			return this.tokens.isEmpty() ? new MultiTextEdit() : null;
 
+		MultiTextEdit result = new MultiTextEdit();
 		TextEditsBuilder resultBuilder = new TextEditsBuilder(this.sourceString, regions, this.tokenManager,
 				this.workingOptions);
 		this.tokenManager.traverse(0, resultBuilder);
@@ -287,11 +287,11 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			case K_COMPILATION_UNIT:
 				return parseSourceCode(parser, ASTParser.K_COMPILATION_UNIT, true);
 			case K_CLASS_BODY_DECLARATIONS:
-				return parseSourceCode(parser, ASTParser.K_CLASS_BODY_DECLARATIONS, true);
+				return parseSourceCode(parser, ASTParser.K_CLASS_BODY_DECLARATIONS, false);
 			case K_STATEMENTS:
-				return parseSourceCode(parser, ASTParser.K_STATEMENTS, true);
+				return parseSourceCode(parser, ASTParser.K_STATEMENTS, false);
 			case K_EXPRESSION:
-				return parseSourceCode(parser, ASTParser.K_EXPRESSION, true);
+				return parseSourceCode(parser, ASTParser.K_EXPRESSION, false);
 			case K_UNKNOWN:
 				int[] parserModes = { ASTParser.K_COMPILATION_UNIT, ASTParser.K_EXPRESSION,
 						ASTParser.K_CLASS_BODY_DECLARATIONS, ASTParser.K_STATEMENTS};
