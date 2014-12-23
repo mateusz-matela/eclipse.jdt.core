@@ -485,7 +485,7 @@ public class WrapPreparator extends ASTVisitor {
 			Token token = this.tm.get(i);
 			if ((token.getLineBreaksBefore() > 0 || (previous != null && previous.getLineBreaksAfter() > 0))
 					&& token.getWrapPolicy() == null) {
-				int indent = (token.getIndent() - wrapParent.getIndent()) / this.options.indentation_size;
+				int indent = (token.getIndent() - wrapParent.getIndent());
 				token.setWrapPolicy(new WrapPolicy(indent, parentIndex, true));
 			}
 			previous = token;
@@ -643,6 +643,7 @@ public class WrapPreparator extends ASTVisitor {
 		if (isAlreadyWrapped)
 			isTopPriority = false; // to avoid triggering top priority wrapping
 		int topPriorityGroupEnd = isTopPriority ? this.wrapGroupEnd : -1;
+		extraIndent *= this.options.indentation_size;
 		return new WrapPolicy(extraIndent, this.wrapParentIndex, this.currentDepth, penaltyMultiplier, isFirst,
 				indentOnColumn, topPriorityGroupEnd, false);
 	}

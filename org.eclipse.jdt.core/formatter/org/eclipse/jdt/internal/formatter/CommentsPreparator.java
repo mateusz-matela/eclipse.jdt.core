@@ -138,21 +138,34 @@ public class CommentsPreparator extends ASTVisitor {
 		}
 
 		handleNLSTags(commentToken, commentIndex);
+
+		int positionInLine = this.tm.findSourcePositionInLine(commentToken.originalStart);
+		boolean isContinuation =  commentIndex > 0 && this.tm.get(commentIndex - 1) == this.lastLineComment
+				&& (positionInLine >= this.lastLineCommentPosition - this.options.indentation_size + 1)
+				&& this.tm.countLineBreaksBetween(this.lastLineComment, commentToken) == 1;
+
 		boolean isHeader = this.tm.isInHeader(commentIndex);
 		boolean formattingEnabled = (this.options.comment_format_line_comment && !isHeader)
 				|| (this.options.comment_format_header && isHeader);
 		if (!formattingEnabled) {
 			preserveWhitespace(commentToken, commentIndex);
+			if (isContinuation) {
+				WrapPolicy policy = this.lastLineComment.getWrapPolicy();
+				if (policy == null) {
+					int lineStart = this.tm.getPositionInLine(this.tm.findFirstTokenInLine(commentIndex - 1));
+					int commentStart = this.tm.getPositionInLine(commentIndex - 1);
+					policy = new WrapPolicy(commentStart - lineStart, commentIndex - 1, true);
+				}
+				commentToken.setWrapPolicy(policy);
+				this.lastLineComment = commentToken;
+			} else if (commentToken.getLineBreaksBefore() == 0) {
+				this.lastLineComment = commentToken;
+				this.lastLineCommentPosition = positionInLine;
+			}
 			return;
 		}
 
-		int positionInLine = this.tm.findSourcePositionInLine(commentToken.originalStart);
 		List<Token> structure =  tokenizeLineComment(commentToken);
-
-		boolean isContinuation = this.lastLineComment != null
-				&& commentIndex > 0 && this.tm.get(commentIndex - 1).tokenType == TokenNameCOMMENT_LINE
-				&& (positionInLine >= this.lastLineCommentPosition - this.options.indentation_size + 1)
-				&& this.tm.countLineBreaksBetween(this.lastLineComment, commentToken) == 1;
 		if (isContinuation) {
 			Token first = structure.get(0);
 			first.breakBefore();
@@ -391,7 +404,7 @@ public class CommentsPreparator extends ASTVisitor {
 			if (previous != null && previous.getLineBreaksAfter() == 0
 					&& next != null && next.getLineBreaksBefore() == 0
 					&& Arrays.binarySearch(NO_INDENT_AFTER_COMMENT, next.tokenType) < 0) {
-				int policyIndent = (commentToken.getIndent() - previous.getIndent()) / this.options.indentation_size;
+				int policyIndent = (commentToken.getIndent() - previous.getIndent());
 				WrapPolicy wrapPolicy = new WrapPolicy(policyIndent, commentIndex - 1, true);
 				if (this.tm.countLineBreaksBetween(previous, commentToken) == 1)
 					commentToken.setWrapPolicy(wrapPolicy);

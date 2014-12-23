@@ -640,7 +640,7 @@ public class WrapExecutor {
 			if (wrapParent.isSpaceAfter() || this.tm.get(policy.wrapParentIndex + 1).isSpaceBefore())
 				wrapIndent++;
 		}
-		wrapIndent += policy.extraIndent * this.options.indentation_size;
+		wrapIndent += policy.extraIndent;
 		return this.tm.toIndent(wrapIndent, true);
 	}
 }

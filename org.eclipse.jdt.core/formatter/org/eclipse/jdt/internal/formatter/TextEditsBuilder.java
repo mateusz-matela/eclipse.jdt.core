@@ -217,7 +217,7 @@ public class TextEditsBuilder extends TokenTraverser {
 			indent = wrapRootIndent;
 
 			if (wrapPolicy != null && wrapPolicy.isForced) {
-				int extraIndent = wrapPolicy.extraIndent * this.options.indentation_size;
+				int extraIndent = wrapPolicy.extraIndent;
 				additionalSpaces -= extraIndent;
 				indent += extraIndent;
 			}
