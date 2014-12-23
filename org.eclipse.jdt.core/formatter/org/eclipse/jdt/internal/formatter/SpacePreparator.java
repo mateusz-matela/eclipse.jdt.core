@@ -532,6 +532,7 @@ public class SpacePreparator extends ASTVisitor {
 			handleCommas(node.fragments(), this.options.insert_space_before_comma_in_multiple_local_declarations,
 					this.options.insert_space_after_comma_in_multiple_local_declarations);
 		}
+		this.tm.firstTokenAfter(node.getType(), -1).spaceBefore();
 		return true;
 	}
 
