@@ -245,17 +245,19 @@ public class SpacePreparator extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(SingleVariableDeclaration node) {
+	public void endVisit(SingleVariableDeclaration node) {
+		// this must be endVisit in case a space added by a visit on a child node needs to be cleared
 		if (node.isVarargs()) {
 			handleTokenBefore(node.getName(), TokenNameELLIPSIS, this.options.insert_space_before_ellipsis,
 					this.options.insert_space_after_ellipsis);
 			List<Annotation> varargsAnnotations = node.varargsAnnotations();
-			if (!varargsAnnotations.isEmpty())
+			if (!varargsAnnotations.isEmpty()) {
 				this.tm.firstTokenIn(varargsAnnotations.get(0), TokenNameAT).spaceBefore();
+				this.tm.lastTokenIn(varargsAnnotations.get(varargsAnnotations.size() - 1), -1).clearSpaceAfter();
+			}
 		} else {
 			handleToken(node.getName(), TokenNameIdentifier, true, false);
 		}
-		return true;
 	}
 
 	@Override
@@ -439,10 +441,9 @@ public class SpacePreparator extends ASTVisitor {
 			handleToken(node, TokenNameRPAREN, this.options.insert_space_before_closing_paren_in_annotation, false);
 		}
 
-		int lastIndex = this.tm.lastIndexIn(node, -1);
-		int nextTokenType = this.tm.get(lastIndex + 1).tokenType;
-		if (nextTokenType != TokenNameELLIPSIS && nextTokenType != TokenNameRPAREN && nextTokenType != TokenNameCOMMA)
-			this.tm.get(lastIndex).spaceAfter();
+		ASTNode parent = node.getParent();
+		if (!(parent instanceof Annotation) && !(parent instanceof ArrayInitializer))
+			this.tm.lastTokenIn(node, -1).spaceAfter();
 	}
 
 	@Override
