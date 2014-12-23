@@ -483,8 +483,10 @@ public class LineBreaksPreparator extends ASTVisitor {
 
 		boolean keepThenOnSameLine = this.options.keep_then_statement_on_same_line
 				|| (this.options.keep_simple_if_on_one_line && elseNode == null);
-		if (!keepThenOnSameLine)
-			handleLoopBody(thenNode);
+		if (!keepThenOnSameLine && !(thenNode instanceof Block)) {
+			breakLineBefore(thenNode);
+			indent(thenNode);
+		}
 
 		return true;
 	}
