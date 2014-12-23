@@ -425,18 +425,21 @@ public class CommentsPreparator extends ASTVisitor {
 		int lineStart = 0;
 		int breaksBeforeFirstLine = 0;
 		boolean firstLine = true; // all lines except first will be NotAToken to disable asterisk adding
+		boolean emptyLine = true;
 
 		for (int i = 0; i < commentText.length(); i++) {
 			char c = commentText.charAt(i);
 			switch (c) {
 				case ' ':
-					if (lineStart == i && positionInLine < commentStartPosition)
-						lineStart++;
+					if ((lineStart == i && positionInLine < commentStartPosition)
+							|| (emptyLine && positionInLine == commentToken.getIndent() - 1))
+						lineStart = i + 1;
 					positionInLine++;
 					break;
 				case '\t':
-					if (lineStart == i && positionInLine < commentStartPosition)
-						lineStart++;
+					if ((lineStart == i && positionInLine < commentStartPosition)
+							|| (emptyLine && positionInLine == commentToken.getIndent() - 1))
+						lineStart = i + 1;
 					if (tab > 0)
 						positionInLine += tab - positionInLine % tab;
 					break;
@@ -461,9 +464,11 @@ public class CommentsPreparator extends ASTVisitor {
 					lineStart = i + 1;
 					positionInLine = 0;
 					firstLine = false;
+					emptyLine = true;
 					break;
 				default:
 					positionInLine++;
+					emptyLine = false;
 			}
 		}
 		if (lineStart < commentText.length()) {
