@@ -975,7 +975,6 @@ public long getAnnotationTagBits() {
 		}
 		if ((this.tagBits & TagBits.AnnotationDeprecated) != 0)
 			this.modifiers |= ClassFileConstants.AccDeprecated;
-		evaluateNullAnnotations(this.tagBits);
 	}
 	return this.tagBits;
 }
@@ -2009,25 +2008,29 @@ private void createArgumentBindings(MethodBinding method, CompilerOptions compil
 	}
 }
 
-private void evaluateNullAnnotations(long annotationTagBits) {
+public void evaluateNullAnnotations(Scope skope) {
 	
 	if (!isPrototype()) throw new IllegalStateException();
+
+	if (this.scope != null)
+		skope = this.scope;
 	
-	if (this.nullnessDefaultInitialized > 0 || !this.scope.compilerOptions().isAnnotationBasedNullAnalysisEnabled)
+	if (this.nullnessDefaultInitialized > 0 || !skope.compilerOptions().isAnnotationBasedNullAnalysisEnabled)
 		return;
 	boolean isPackageInfo = CharOperation.equals(this.sourceName, TypeConstants.PACKAGE_INFO_NAME);
 	PackageBinding pkg = getPackage();
 	boolean isInDefaultPkg = (pkg.compoundName == CharOperation.NO_CHAR_CHAR);
 	if (!isPackageInfo) {
 		boolean isInNullnessAnnotationPackage = 
-				pkg == this.scope.environment().nonnullAnnotationPackage
-				|| pkg == this.scope.environment().nullableAnnotationPackage
-				|| pkg == this.scope.environment().nonnullByDefaultAnnotationPackage;
+				pkg == skope.environment().nonnullAnnotationPackage
+				|| pkg == skope.environment().nullableAnnotationPackage
+				|| pkg == skope.environment().nonnullByDefaultAnnotationPackage;
 		if (pkg.defaultNullness == NO_NULL_DEFAULT && !isInDefaultPkg && !isInNullnessAnnotationPackage && !(this instanceof NestedTypeBinding)) {
 			ReferenceBinding packageInfo = pkg.getType(TypeConstants.PACKAGE_INFO_NAME);
 			if (packageInfo == null) {
 				// no pkgInfo - complain
-				this.scope.problemReporter().missingNonNullByDefaultAnnotation(this.scope.referenceContext);
+				if (this.scope != null)
+					this.scope.problemReporter().missingNonNullByDefaultAnnotation(this.scope.referenceContext);
 				pkg.defaultNullness = NULL_UNSPECIFIED_BY_DEFAULT;
 			} else {
 				// if pkgInfo has no default annot. - complain
@@ -2036,8 +2039,8 @@ private void evaluateNullAnnotations(long annotationTagBits) {
 		}
 	}
 	this.nullnessDefaultInitialized = 1;
-	boolean usesNullTypeAnnotations = this.scope.environment().usesNullTypeAnnotations();
-	if (usesNullTypeAnnotations) {
+	boolean usesNullTypeAnnotations = skope.environment().usesNullTypeAnnotations();
+	if (usesNullTypeAnnotations && this.scope != null) {
 		if (this.defaultNullness != 0) {
 			if (isPackageInfo) {
 				pkg.defaultNullness = this.defaultNullness;
@@ -2052,6 +2055,7 @@ private void evaluateNullAnnotations(long annotationTagBits) {
 		}
 	} else {
 		// transfer nullness info from tagBits to this.defaultNullness
+		long annotationTagBits = this.tagBits;
 		int newDefaultNullness = NO_NULL_DEFAULT;
 		if ((annotationTagBits & TagBits.AnnotationNullUnspecifiedByDefault) != 0) {
 			newDefaultNullness = NULL_UNSPECIFIED_BY_DEFAULT;
@@ -2067,19 +2071,21 @@ private void evaluateNullAnnotations(long annotationTagBits) {
 				newDefaultNullness = NONNULL_BY_DEFAULT;
 			}
 		}
-		if (newDefaultNullness != NO_NULL_DEFAULT) {
-			if (isPackageInfo) {
-				pkg.defaultNullness = newDefaultNullness;
-			} else {
-				this.defaultNullness = newDefaultNullness;
-				TypeDeclaration typeDecl = this.scope.referenceContext;
-				long nullDefaultBits = annotationTagBits & (TagBits.AnnotationNullUnspecifiedByDefault|TagBits.AnnotationNonNullByDefault);
-				checkRedundantNullnessDefaultRecurse(typeDecl, typeDecl.annotations, nullDefaultBits, false);
+		if (this.scope != null) {
+			if (newDefaultNullness != NO_NULL_DEFAULT) {
+				if (isPackageInfo) {
+					pkg.defaultNullness = newDefaultNullness;
+				} else {
+					this.defaultNullness = newDefaultNullness;
+					TypeDeclaration typeDecl = this.scope.referenceContext;
+					long nullDefaultBits = annotationTagBits & (TagBits.AnnotationNullUnspecifiedByDefault|TagBits.AnnotationNonNullByDefault);
+					checkRedundantNullnessDefaultRecurse(typeDecl, typeDecl.annotations, nullDefaultBits, false);
+				}
+			} else if (isPackageInfo || (isInDefaultPkg && !(this instanceof NestedTypeBinding))) {
+				this.scope.problemReporter().missingNonNullByDefaultAnnotation(this.scope.referenceContext);
+				if (!isInDefaultPkg)
+					pkg.defaultNullness = NULL_UNSPECIFIED_BY_DEFAULT;
 			}
-		} else if (isPackageInfo || (isInDefaultPkg && !(this instanceof NestedTypeBinding))) {
-			this.scope.problemReporter().missingNonNullByDefaultAnnotation(this.scope.referenceContext);
-			if (!isInDefaultPkg)
-				pkg.defaultNullness = NULL_UNSPECIFIED_BY_DEFAULT;
 		}
 	}
 	maybeMarkTypeParametersNonNull();
