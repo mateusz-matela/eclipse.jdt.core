@@ -77,7 +77,7 @@ public class TokenManager implements Iterable<Token> {
 
 	/**
 	 * Removes the token at given index.
-	 * Warning: never call this method after wrap policies have been added to tokens
+	 * <p>Warning: never call this method after wrap policies have been added to tokens
 	 * since wrap parent indexes may become invalid.
 	 */
 	public void remove(int tokenIndex) {
@@ -86,7 +86,7 @@ public class TokenManager implements Iterable<Token> {
 
 	/**
 	 * Adds given token at given index.
-	 * Warning: never call this method after wrap policies have been added to tokens
+	 * <p>Warning: never call this method after wrap policies have been added to tokens
 	 * since wrap parent indexes may become invalid.
 	 */
 	public void insert(int tokenIndex, Token token) {
@@ -320,7 +320,7 @@ public class TokenManager implements Iterable<Token> {
 	 */
 	public int getLength(Token token, int startPosition) {
 		int length = getLength(token.originalStart, token.originalEnd, startPosition);
-		if  (token.isToEscape()) {
+		if (token.isToEscape()) {
 			if (token.getLineBreaksBefore() > 0 && charAt(token.originalStart) == '@') {
 				length += 4; // 4 = "&#64;".length() - "@".length()
 			} else if (token.tokenType == TokenNameNotAToken) {

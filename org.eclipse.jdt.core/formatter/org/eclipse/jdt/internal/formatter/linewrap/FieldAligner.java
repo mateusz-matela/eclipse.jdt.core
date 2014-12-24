@@ -62,7 +62,6 @@ public class FieldAligner {
 		}
 	}
 
-
 	private final List<List<FieldDeclaration>> fieldAlignGroups = new ArrayList<List<FieldDeclaration>>();
 
 	final TokenManager tm;

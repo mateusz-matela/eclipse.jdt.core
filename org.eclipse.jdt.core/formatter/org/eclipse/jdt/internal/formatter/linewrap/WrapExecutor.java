@@ -65,7 +65,7 @@ public class WrapExecutor {
 				return false;
 			return true;
 		}
-		
+
 	}
 
 	private static class WrapResult {
@@ -248,7 +248,7 @@ public class WrapExecutor {
 					}
 				}
 				// add all remaining tags in this line
-				// (these are currently in a future line comment but will be removed) 
+				// (these are currently in a future line comment but will be removed)
 				structure.addAll(this.nlsTags);
 
 				if (structure.isEmpty()) { // all the tags have been moved to other lines
@@ -284,8 +284,7 @@ public class WrapExecutor {
 
 	public void executeWraps() {
 		int index = 0;
-		mainLoop:
-		while (index < this.tm.size()) {
+		mainLoop: while (index < this.tm.size()) {
 			Token token = this.tm.get(index);
 			handleOnColumnIndent(index, token.getWrapPolicy());
 			// this might be a pre-existing wrap that should trigger other top priority wraps
@@ -520,8 +519,8 @@ public class WrapExecutor {
 		// Update: Actually, every token that is followed by a higher level depth wrap should be also wrapped,
 		// as long as this next wrap is not the last in line and the token is not the first in its wrap group.
 		WrapResult nextWrapResult = wrapResult;
-		boolean checkDepth = wrapToken != null && wrapToken.isWrappable() &&
-				(lineStartWrapPolicy == null || wrapPolicy.structureDepth >= lineStartWrapPolicy.structureDepth);
+		boolean checkDepth = wrapToken != null && wrapToken.isWrappable()
+				&& (lineStartWrapPolicy == null || wrapPolicy.structureDepth >= lineStartWrapPolicy.structureDepth);
 		double penaltyDiff = 0;
 		while (checkDepth && nextWrapResult.nextWrap != null) {
 			WrapPolicy nextPolicy = this.tm.get(nextWrapResult.nextWrap.wrapTokenIndex).getWrapPolicy();

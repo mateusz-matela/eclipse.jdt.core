@@ -43,9 +43,8 @@ public class Token {
 		public final boolean indentOnColumn;
 		public final int topPriorityGroupEnd;
 		/**
-		 * If true, it means the token was in new line even before wrapping, but should be treaded as
-		 * wrapped token for indentation purposes. Used for anonymous class body, lambda body and comments
-		 * inside code.
+		 * If true, it means the token was in new line even before wrapping, but should be treaded as wrapped token for
+		 * indentation purposes. Used for anonymous class body, lambda body and comments inside code.
 		 */
 		public final boolean isForced;
 
@@ -70,7 +69,7 @@ public class Token {
 		}
 	}
 
-	/** Position in source of the first character. */ 
+	/** Position in source of the first character. */
 	public final int originalStart;
 	/** Position in source of the last character (this position is included in the token). */
 	public final int originalEnd;
@@ -97,7 +96,7 @@ public class Token {
 	}
 
 	public Token(Token tokenToCopy) {
-		this (tokenToCopy, tokenToCopy.originalStart, tokenToCopy.originalEnd, tokenToCopy.tokenType);
+		this(tokenToCopy, tokenToCopy.originalStart, tokenToCopy.originalEnd, tokenToCopy.tokenType);
 	}
 
 	public Token(Token tokenToCopy, int newOriginalStart, int newOriginalEnd, int newTokenType) {
@@ -286,7 +285,7 @@ public class Token {
 
 	/*
 	 * Conceptually, Token abstracts away from the source so it doesn't need to know how
-	 * the source looks like. However, it's useful to see actual token contents while debugging.
+	 * the source looks like. However, it's useful to see the actual token contents while debugging.
 	 * Uncomment this field, commented code in toString() below and in DefaultCodeFormatter.init(String source)
 	 * during debugging sessions to easily recognize tokens.
 	 */

@@ -201,10 +201,10 @@ public class SpacePreparator extends ASTVisitor {
 
 			beforeComma = node.isConstructor()
 					? this.options.insert_space_before_comma_in_constructor_declaration_throws
-							: this.options.insert_space_before_comma_in_method_declaration_throws;
+					: this.options.insert_space_before_comma_in_method_declaration_throws;
 			afterComma = node.isConstructor()
 					? this.options.insert_space_after_comma_in_constructor_declaration_throws
-							: this.options.insert_space_after_comma_in_method_declaration_throws;
+					: this.options.insert_space_after_comma_in_method_declaration_throws;
 			handleCommas(thrownExceptionTypes, beforeComma, afterComma);
 		}
 
@@ -539,7 +539,7 @@ public class SpacePreparator extends ASTVisitor {
 		ASTNode parent = node.getParent();
 		if (parent instanceof ForStatement) {
 			handleCommas(node.fragments(), this.options.insert_space_before_comma_in_for_inits,
-				this.options.insert_space_after_comma_in_for_inits);
+					this.options.insert_space_after_comma_in_for_inits);
 		} else if (parent instanceof ExpressionStatement) {
 			handleCommas(node.fragments(), this.options.insert_space_before_comma_in_multiple_local_declarations,
 					this.options.insert_space_after_comma_in_multiple_local_declarations);
@@ -991,4 +991,3 @@ public class SpacePreparator extends ASTVisitor {
 		});
 	}
 }
-

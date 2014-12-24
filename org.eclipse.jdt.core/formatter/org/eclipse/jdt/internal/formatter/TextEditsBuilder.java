@@ -29,8 +29,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
 /**
- * Creates the formatter's result TextEdit by scanning through the tokens and comparing
- * them with the original source.
+ * Creates the formatter's result TextEdit by scanning through the tokens and comparing them with the original source.
  */
 public class TextEditsBuilder extends TokenTraverser {
 
@@ -221,7 +220,7 @@ public class TextEditsBuilder extends TokenTraverser {
 			// use indentation of wrap-line start token and add spaces to match current token
 			WrapPolicy wrapPolicy = token.getWrapPolicy();
 			int wrapRootIndent = indent;
-			if (index == -1) { // this means we print a line separator in a multi-line comment 
+			if (index == -1) { // this means we print a line separator in a multi-line comment
 				TokenManager tm2 = this.parent.tm;
 				wrapRootIndent = tm2.get(tm2.findFirstTokenInLine(this.parentTokenIndex, true)).getIndent();
 			} else if (wrapPolicy != null) {
@@ -236,8 +235,7 @@ public class TextEditsBuilder extends TokenTraverser {
 				indent += extraIndent;
 			}
 		}
-		appendIndentationString(this.buffer, this.options.tab_char, this.options.tab_size, indent,
-				additionalSpaces);
+		appendIndentationString(this.buffer, this.options.tab_char, this.options.tab_size, indent, additionalSpaces);
 	}
 
 	public static void appendIndentationString(StringBuilder target, int tabChar, int tabSize, int indent,
@@ -375,7 +373,7 @@ public class TextEditsBuilder extends TokenTraverser {
 		int i = isRegionEnd ? 0 : text.length() - 1;
 		int direction = isRegionEnd ? 1 : -1;
 		int preservedBreaks = 0;
-		for (;i >= 0 && i < text.length(); i += direction) {
+		for (; i >= 0 && i < text.length(); i += direction) {
 			assert ScannerHelper.isWhitespace(text.charAt(i));
 			char c1 = text.charAt(i);
 			if (c1 == '\r' || c1 == '\n') {
@@ -395,8 +393,7 @@ public class TextEditsBuilder extends TokenTraverser {
 		// cut out text if the source outside region is a matching whitespace
 		int textPos = isRegionEnd ? text.length() - 1 : 0;
 		int sourcePos = regionEdge;
-		theLoop:
-		while (textPos >= 0 && textPos < text.length() && sourcePos >= 0 && sourcePos < this.source.length()) {
+		theLoop: while (textPos >= 0 && textPos < text.length() && sourcePos >= 0 && sourcePos < this.source.length()) {
 			char c1 = text.charAt(textPos);
 			char c2 = this.source.charAt(sourcePos);
 			if (c1 == c2 && (c1 == ' ' || c1 == '\t')) {
@@ -458,7 +455,7 @@ public class TextEditsBuilder extends TokenTraverser {
 				int tagNumber = this.stringLiteralsInLine.indexOf(fragment.getNLSTag());
 				assert tagNumber >= 0;
 				this.buffer.append("//$NON-NLS-").append(tagNumber + 1).append("$"); //$NON-NLS-1$ //$NON-NLS-2$
-			}  else if (fragment.originalStart < this.counter) {
+			} else if (fragment.originalStart < this.counter) {
 				// Comment line prefix may be a copy of earlier code
 				this.buffer.append(this.tm.toString(fragment));
 			} else {

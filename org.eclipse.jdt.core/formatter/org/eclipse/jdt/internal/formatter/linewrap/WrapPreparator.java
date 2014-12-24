@@ -91,8 +91,8 @@ public class WrapPreparator extends ASTVisitor {
 	int importsStart = -1, importsEnd = -1;
 
 	/*
-	 * temporary values used when calling {@link #handleWrap(int)} to avoid ArrayList initialization
-	 * and long lists of parameters
+	 * temporary values used when calling {@link #handleWrap(int)} to avoid ArrayList initialization and long lists of
+	 * parameters
 	 */
 	private List<Integer> wrapIndexes = new ArrayList<Integer>();
 	private List<Float> wrapPenalties = new ArrayList<Float>();
@@ -581,7 +581,7 @@ public class WrapPreparator extends ASTVisitor {
 			for (int i = index - 1; i >= 0; i--) {
 				Token previous = this.tm.get(i);
 				if (!previous.isComment())
-					break;				
+					break;
 				if (previous.getLineBreaksAfter() == 0 && i == index - 1)
 					index = i;
 				if (previous.getLineBreaksBefore() > 0)
@@ -629,7 +629,6 @@ public class WrapPreparator extends ASTVisitor {
 			extraIndent = this.options.continuation_indentation_for_array_initializer;
 		}
 
-		
 		boolean isTopPriority = false;
 		switch (wrappingOption & Alignment.SPLIT_MASK) {
 			case Alignment.M_NO_ALIGNMENT:

@@ -82,7 +82,7 @@ public class CommentsPreparator extends ASTVisitor {
 
 	private final static List<String> IMMUTABLE_TAGS = Arrays.asList("@code", "@literal"); //$NON-NLS-1$ //$NON-NLS-2$
 
-	private final static int[] NO_INDENT_AFTER_COMMENT = {  TokenNameRPAREN, TokenNameLBRACE, TokenNameRBRACE };
+	private final static int[] NO_INDENT_AFTER_COMMENT = { TokenNameRPAREN, TokenNameLBRACE, TokenNameRBRACE };
 	static {
 		Arrays.sort(NO_INDENT_AFTER_COMMENT);
 	}
@@ -150,7 +150,7 @@ public class CommentsPreparator extends ASTVisitor {
 		handleNLSTags(commentToken, commentIndex);
 
 		int positionInLine = this.tm.findSourcePositionInLine(commentToken.originalStart);
-		boolean isContinuation =  commentIndex > 0 && this.tm.get(commentIndex - 1) == this.lastLineComment
+		boolean isContinuation = commentIndex > 0 && this.tm.get(commentIndex - 1) == this.lastLineComment
 				&& (positionInLine >= this.lastLineCommentPosition - this.options.indentation_size + 1)
 				&& this.tm.countLineBreaksBetween(this.lastLineComment, commentToken) == 1;
 
@@ -175,7 +175,7 @@ public class CommentsPreparator extends ASTVisitor {
 			return;
 		}
 
-		List<Token> structure =  tokenizeLineComment(commentToken);
+		List<Token> structure = tokenizeLineComment(commentToken);
 		if (isContinuation) {
 			Token first = structure.get(0);
 			first.breakBefore();
@@ -212,8 +212,7 @@ public class CommentsPreparator extends ASTVisitor {
 				return;
 			if (structure == null || structure.isEmpty()) {
 				structure = new ArrayList<Token>();
-				structure.add(new Token(previous.originalEnd + 1, commentToken.originalEnd,
-						TokenNameCOMMENT_LINE));
+				structure.add(new Token(previous.originalEnd + 1, commentToken.originalEnd, TokenNameCOMMENT_LINE));
 			} else {
 				structure.add(0, new Token(previous.originalEnd + 1, commentToken.originalStart - 1,
 						TokenNameWHITESPACE));
@@ -229,7 +228,7 @@ public class CommentsPreparator extends ASTVisitor {
 			return false;
 		String commentString = this.tm.toString(commentToken);
 		int offIndex = this.formatDisableTag != null ? commentString.lastIndexOf(this.formatDisableTag) : -1;
-		int onIndex = this.formatEnableTag != null ? commentString.lastIndexOf(this.formatEnableTag ) : -1;
+		int onIndex = this.formatEnableTag != null ? commentString.lastIndexOf(this.formatEnableTag) : -1;
 		if (this.lastFormatOffComment == null) {
 			if (offIndex > onIndex)
 				this.lastFormatOffComment = commentToken;
@@ -1091,7 +1090,7 @@ public class CommentsPreparator extends ASTVisitor {
 
 		while (position + startPos <= endPos) {
 			int lineStart = position + startPos;
-			for (int i = lineStart; ; i++) {
+			for (int i = lineStart;; i++) {
 				c = this.ctm.charAt(i);
 				if (c == '\r' || c == '\n') {
 					sb.append(c);

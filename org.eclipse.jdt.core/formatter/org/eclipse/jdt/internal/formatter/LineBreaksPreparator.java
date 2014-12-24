@@ -145,7 +145,8 @@ public class LineBreaksPreparator extends ASTVisitor {
 					blankLines = this.options.blank_lines_before_field;
 				else if (bodyDeclaration instanceof AbstractTypeDeclaration)
 					blankLines = this.options.blank_lines_before_member_type;
-				else blankLines = this.options.blank_lines_before_method;
+				else
+					blankLines = this.options.blank_lines_before_method;
 
 				if (!sameChunk(previous, bodyDeclaration))
 					blankLines = Math.max(blankLines, this.options.blank_lines_before_new_chunk);
@@ -319,7 +320,7 @@ public class LineBreaksPreparator extends ASTVisitor {
 	@Override
 	public boolean visit(DoStatement node) {
 		Statement body = node.getBody();
-		handleLoopBody(body); 
+		handleLoopBody(body);
 		if (this.options.insert_new_line_before_while_in_do_statement
 				|| (!(body instanceof Block) && !(body instanceof EmptyStatement))) {
 			Token whileToken = this.tm.firstTokenBefore(node.getExpression(), TokenNamewhile);
@@ -475,7 +476,7 @@ public class LineBreaksPreparator extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(IfStatement node) {			
+	public boolean visit(IfStatement node) {
 		Statement elseNode = node.getElseStatement();
 		Statement thenNode = node.getThenStatement();
 		if (elseNode != null) {
@@ -573,7 +574,7 @@ public class LineBreaksPreparator extends ASTVisitor {
 	private void unindent(ASTNode node) {
 		int startIndex = this.tm.firstIndexIn(node, -1);
 		// no symmetry with indent(): unindent is only used in switch statement
-		// and should not include preceding comments 
+		// and should not include preceding comments
 		this.tm.get(startIndex).unindent();
 		int lastIndex = this.tm.lastIndexIn(node, -1);
 		if (lastIndex + 1 < this.tm.size())
@@ -590,4 +591,3 @@ public class LineBreaksPreparator extends ASTVisitor {
 		}
 	}
 }
-

@@ -137,7 +137,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	 * @see org.eclipse.jdt.core.formatter.CodeFormatter#format(int, java.lang.String, int, int, int, java.lang.String)
 	 */
 	public TextEdit format(int kind, String source, int offset, int length, int indentationLevel, String lineSeparator) {
-		return format(kind, source, new IRegion[] {new Region(offset, length)}, indentationLevel, lineSeparator);
+		return format(kind, source, new IRegion[] { new Region(offset, length) }, indentationLevel, lineSeparator);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		this.sourceArray = source.toCharArray();
 		this.tokens.clear();
 		this.tokenManager = new TokenManager(this.tokens, source, this.workingOptions);
-		
+
 		tokenizeSource();
 		return !this.tokens.isEmpty();
 	}
@@ -225,7 +225,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 				for (Token token : this.tokens) {
 					if (token.tokenType == TokenNameCOMMENT_JAVADOC) {
 						parser.setSourceRange(token.originalStart, token.countChars());
-						CompilationUnit cu = (CompilationUnit) parseSourceCode(parser, ASTParser.K_COMPILATION_UNIT, true);
+						CompilationUnit cu = (CompilationUnit) parseSourceCode(parser, ASTParser.K_COMPILATION_UNIT,
+								true);
 						Javadoc javadoc = (Javadoc) cu.getCommentList().get(0);
 						javadoc.accept(commentsPreparator);
 						int startPosition = this.tokenManager.findSourcePositionInLine(token.originalStart);
@@ -271,7 +272,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			if (structure != null && !structure.isEmpty())
 				resultBuilder.processComment(token);
 		}
-		
+
 		for (TextEdit edit : resultBuilder.getEdits()) {
 			result.addChild(edit);
 		}
@@ -296,7 +297,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 				return parseSourceCode(parser, ASTParser.K_EXPRESSION, false);
 			case K_UNKNOWN:
 				int[] parserModes = { ASTParser.K_COMPILATION_UNIT, ASTParser.K_EXPRESSION,
-						ASTParser.K_CLASS_BODY_DECLARATIONS, ASTParser.K_STATEMENTS};
+						ASTParser.K_CLASS_BODY_DECLARATIONS, ASTParser.K_STATEMENTS };
 				for (int parserMode : parserModes) {
 					ASTNode astNode = parseSourceCode(parser, parserMode, false);
 					if (astNode != null)
@@ -376,9 +377,9 @@ public class DefaultCodeFormatter extends CodeFormatter {
 
 	/**
 	 * True if
-	 * 1. All regions are within maxLength
-	 * 2. regions are sorted
-	 * 3. regions are not overlapping
+	 * <li>1. All regions are within maxLength
+	 * <li>2. regions are sorted
+	 * <li>3. regions are not overlapping
 	 */
 	private boolean regionsSatisfiesPreconditions(IRegion[] regions, int maxLength) {
 		int regionsLength = regions == null ? 0 : regions.length;
@@ -392,13 +393,14 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 
 		int lastOffset = first.getOffset() + first.getLength() - 1;
-		for (int i= 1; i < regionsLength; i++) {
+		for (int i = 1; i < regionsLength; i++) {
 			IRegion current = regions[i];
 			if (lastOffset > current.getOffset()) {
 				return false;
 			}
 
-			if (current.getOffset() < 0 || current.getLength() < 0 || current.getOffset() + current.getLength() > maxLength) {
+			if (current.getOffset() < 0 || current.getLength() < 0
+					|| current.getOffset() + current.getLength() > maxLength) {
 				return false;
 			}
 
