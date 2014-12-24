@@ -21,6 +21,10 @@ public class SingleLineTestCase extends CommentTestCase {
 
 	protected static final String PREFIX= "// "; //$NON-NLS-1$
 
+	static {
+//		TESTS_NAMES = new String[] { "test109581" } ;
+	}
+
 	public static Test suite() {
 		return buildTestSuite(SingleLineTestCase.class);
 	}
