@@ -19,7 +19,6 @@ import java.util.Map;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.compiler.util.Util;
-import org.eclipse.jdt.internal.formatter.align.Alignment;
 
 /**
  * This is still subject to changes before 3.0.
@@ -28,6 +27,65 @@ import org.eclipse.jdt.internal.formatter.align.Alignment;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultCodeFormatterOptions {
+
+	/** Internal constants related to wrapping alignment settings */
+	public static class Alignment {
+
+		/*
+		 * Alignment modes
+		 */
+		public static final int M_FORCE = 1; // if bit set, then alignment will be non-optional (default is optional)
+		public static final int M_INDENT_ON_COLUMN = 2; // if bit set, broken fragments will be aligned on current location column (default is to break at current indentation level)
+		public static final int	M_INDENT_BY_ONE = 4; // if bit set, broken fragments will be indented one level below current (not using continuation indentation)
+
+		// split modes can be combined either with M_FORCE or M_INDENT_ON_COLUMN
+
+		/** foobar(#fragment1, #fragment2, <ul>
+		 *  <li>    #fragment3, #fragment4 </li>
+		 * </ul>
+		 */
+		public static final int M_COMPACT_SPLIT = 16; // fill each line with all possible fragments
+
+		/** foobar(<ul>
+		 * <li>    #fragment1, #fragment2,  </li>
+		 * <li>     #fragment3, #fragment4, </li>
+		 * </ul>
+		 */
+		public static final int M_COMPACT_FIRST_BREAK_SPLIT = 32; //  compact mode, but will first try to break before first fragment
+
+		/** foobar(<ul>
+		 * <li>     #fragment1,  </li>
+		 * <li>     #fragment2,  </li>
+		 * <li>     #fragment3 </li>
+		 * <li>     #fragment4,  </li>
+		 * </ul>
+		 */
+		public static final int M_ONE_PER_LINE_SPLIT = 32+16; // one fragment per line
+
+		/**
+		 * foobar(<ul>
+		 * <li>     #fragment1,  </li>
+		 * <li>        #fragment2,  </li>
+		 * <li>        #fragment3 </li>
+		 * <li>        #fragment4,  </li>
+		 * </ul>
+		 */
+		public static final int M_NEXT_SHIFTED_SPLIT = 64; // one fragment per line, subsequent are indented further
+
+		/** foobar(#fragment1, <ul>
+		 * <li>      #fragment2,  </li>
+		 * <li>      #fragment3 </li>
+		 * <li>      #fragment4,  </li>
+		 * </ul>
+		 */
+		public static final int M_NEXT_PER_LINE_SPLIT = 64+16; // one per line, except first fragment (if possible)
+
+		public static final int M_NO_ALIGNMENT = 0;
+
+		public static final int SPLIT_MASK = M_ONE_PER_LINE_SPLIT | M_NEXT_SHIFTED_SPLIT | M_COMPACT_SPLIT | M_COMPACT_FIRST_BREAK_SPLIT | M_NEXT_PER_LINE_SPLIT;
+	}
+
+
 	public static final int TAB = 1;
 	public static final int SPACE = 2;
 	public static final int MIXED = 4;
@@ -769,9 +827,9 @@ public class DefaultCodeFormatterOptions {
 			try {
 				this.alignment_for_enum_constants = Integer.parseInt((String) alignmentForEnumConstantsOption);
 			} catch (NumberFormatException e) {
-				this.alignment_for_enum_constants = Alignment.NONE;
+				this.alignment_for_enum_constants = Alignment.M_NO_ALIGNMENT;
 			} catch (ClassCastException e) {
-				this.alignment_for_enum_constants = Alignment.NONE;
+				this.alignment_for_enum_constants = Alignment.M_NO_ALIGNMENT;
 			}
 		}
 		final Object alignmentForExpressionsInArrayInitializerOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_EXPRESSIONS_IN_ARRAY_INITIALIZER);
@@ -2212,7 +2270,7 @@ public class DefaultCodeFormatterOptions {
 		this.alignment_for_binary_expression = Alignment.M_COMPACT_SPLIT;
 		this.alignment_for_compact_if = Alignment.M_ONE_PER_LINE_SPLIT | Alignment.M_INDENT_BY_ONE;
 		this.alignment_for_conditional_expression = Alignment.M_ONE_PER_LINE_SPLIT;
-		this.alignment_for_enum_constants = Alignment.NONE;
+		this.alignment_for_enum_constants = Alignment.M_NO_ALIGNMENT;
 		this.alignment_for_expressions_in_array_initializer = Alignment.M_COMPACT_SPLIT;
 		this.alignment_for_method_declaration = Alignment.M_NO_ALIGNMENT;
 		this.alignment_for_multiple_fields = Alignment.M_COMPACT_SPLIT;
@@ -2503,7 +2561,7 @@ public class DefaultCodeFormatterOptions {
 		this.alignment_for_binary_expression = Alignment.M_COMPACT_SPLIT;
 		this.alignment_for_compact_if = Alignment.M_COMPACT_SPLIT;
 		this.alignment_for_conditional_expression = Alignment.M_NEXT_PER_LINE_SPLIT;
-		this.alignment_for_enum_constants = Alignment.NONE;
+		this.alignment_for_enum_constants = Alignment.M_NO_ALIGNMENT;
 		this.alignment_for_expressions_in_array_initializer = Alignment.M_COMPACT_SPLIT;
 		this.alignment_for_method_declaration = Alignment.M_NO_ALIGNMENT;
 		this.alignment_for_multiple_fields = Alignment.M_COMPACT_SPLIT;

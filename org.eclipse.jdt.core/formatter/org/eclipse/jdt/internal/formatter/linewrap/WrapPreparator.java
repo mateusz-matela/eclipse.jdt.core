@@ -47,7 +47,7 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.eclipse.jdt.internal.formatter.TokenTraverser;
 import org.eclipse.jdt.internal.formatter.Token.WrapPolicy;
-import org.eclipse.jdt.internal.formatter.align.Alignment;
+import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions.Alignment;
 
 public class WrapPreparator extends ASTVisitor {
 
