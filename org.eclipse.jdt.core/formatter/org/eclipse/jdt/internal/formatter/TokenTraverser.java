@@ -12,6 +12,10 @@ package org.eclipse.jdt.internal.formatter;
 
 import java.util.List;
 
+/**
+ * Helper class that can be subclassed every time an algorithm needs to swipe through
+ * all or part of the tokens and easily keep track or previous and future tokens and whitespace.
+ */
 public abstract class TokenTraverser {
 		/** General purpose field that can be used by subclasses to count things */
 		protected int counter = 0;
@@ -25,6 +29,10 @@ public abstract class TokenTraverser {
 
 		protected abstract boolean token(Token token, int index);
 
+		/**
+		 * Must be called every time tokens are added or removed from the list
+		 * that is currently being traversed so that cached data can be refreshed.
+		 */
 		protected void structureChanged() {
 			this.structureChanged = true;
 		}

@@ -17,7 +17,11 @@ import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameC
 import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
+import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 
+/**
+ * Stores a token's type, position and all its properties like surrounding whitespace, wrapping behavior and so on.
+ */
 public class Token {
 
 	public static class WrapPolicy {
@@ -66,7 +70,11 @@ public class Token {
 		}
 	}
 
-	public final int originalStart, originalEnd;
+	/** Position in source of the first character. */ 
+	public final int originalStart;
+	/** Position in source of the last character (this position is included in the token). */
+	public final int originalEnd;
+	/** Type of this token. See {@link TerminalTokens} for constants definition. */
 	public final int tokenType;
 	private boolean spaceBefore, spaceAfter;
 	private int lineBreaksBefore, lineBreaksAfter;
@@ -124,10 +132,12 @@ public class Token {
 		return token;
 	}
 
+	/** Adds space before this token */
 	public void spaceBefore() {
 		this.spaceBefore = true;
 	}
 
+	/** Removes space before this token */
 	public void clearSpaceBefore() {
 		this.spaceBefore = false;
 	}
@@ -136,10 +146,12 @@ public class Token {
 		return this.spaceBefore;
 	}
 
+	/** Adds space after this token */
 	public void spaceAfter() {
 		this.spaceAfter = true;
 	}
 
+	/** Removes space after this token */
 	public void clearSpaceAfter() {
 		this.spaceAfter = false;
 	}
@@ -149,7 +161,7 @@ public class Token {
 	}
 
 	public void breakBefore() {
-		this.lineBreaksBefore = Math.max(this.lineBreaksBefore, 1);
+		putLineBreaksBefore(1);
 	}
 
 	public void putLineBreaksBefore(int lineBreaks) {
@@ -165,7 +177,7 @@ public class Token {
 	}
 
 	public void breakAfter() {
-		this.lineBreaksAfter = Math.max(this.lineBreaksAfter, 1);
+		putLineBreaksAfter(1);
 	}
 
 	public void putLineBreaksAfter(int lineBreaks) {
@@ -180,10 +192,12 @@ public class Token {
 		this.lineBreaksAfter = 0;
 	}
 
+	/** Increases this token's indentation by one position */
 	public void indent() {
 		this.indent++;
 	}
 
+	/** Decreses this token's indentation by one position */
 	public void unindent() {
 		this.indent--;
 	}
@@ -270,12 +284,17 @@ public class Token {
 		return this.originalEnd - this.originalStart + 1;
 	}
 
-	//FIXME this is useful for debugging, but should not be left in production
-	public static String source;
+	/*
+	 * Conceptually, Token abstracts away from the source so it doesn't need to know how
+	 * the source looks like. However, it's useful to see actual token contents while debugging.
+	 * Uncomment this field, commented code in toString() below and in DefaultCodeFormatter.init(String source)
+	 * during debugging sessions to easily recognize tokens.
+	 */
+//	public static String source;
 
 	public String toString() {
-		if (source != null)
-			return toString(source);
-		return super.toString();
+//		if (source != null)  // see comment above
+//			return toString(source);
+		return "[" + this.originalStart + "-" + this.originalEnd + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 }

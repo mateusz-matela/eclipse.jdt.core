@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.eclipse.jdt.internal.formatter.TokenTraverser;
 
+/** Implementation of the "Align fields on columns" feature */
 public class FieldAligner {
 	private class PositionCounter extends TokenTraverser {
 		int stoppingIndex;

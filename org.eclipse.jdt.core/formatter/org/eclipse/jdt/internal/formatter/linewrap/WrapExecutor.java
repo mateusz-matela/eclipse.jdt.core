@@ -286,9 +286,9 @@ public class WrapExecutor {
 		int index = 0;
 		mainLoop:
 		while (index < this.tm.size()) {
-			// this might be a pre-existing wrap that should trigger other top priority wraps
 			Token token = this.tm.get(index);
 			handleOnColumnIndent(index, token.getWrapPolicy());
+			// this might be a pre-existing wrap that should trigger other top priority wraps
 			int jumpToIndex = handleTopPriorityWraps(index);
 			if (jumpToIndex >= 0) {
 				index = jumpToIndex;

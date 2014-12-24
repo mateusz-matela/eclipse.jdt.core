@@ -26,6 +26,10 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.internal.formatter.linewrap.CommentWrapExecutor;
 
+/**
+ * A helper class that can be used to easily access source code and find tokens on any position.
+ * It also has some other methods that are useful on multiple stages of formatting.
+ */
 public class TokenManager implements Iterable<Token> {
 
 	private static final Pattern COMMENT_LINE_ANNOTATION_PATTERN = Pattern.compile("^(\\s*\\*?\\s*)(@)"); //$NON-NLS-1$
@@ -64,6 +68,9 @@ public class TokenManager implements Iterable<Token> {
 		return this.tokens.get(index);
 	}
 
+	/**
+	 * @return total number of tokens
+	 */
 	public int size() {
 		return this.tokens.size();
 	}
@@ -86,6 +93,10 @@ public class TokenManager implements Iterable<Token> {
 		this.tokens.add(tokenIndex, token);
 	}
 
+	/**
+	 * Gets token text with characters escaped as HTML entities where necessary.
+	 * @param tokenIndex index of the token to get.
+	 */
 	public String toString(int tokenIndex) {
 		return toString(get(tokenIndex));
 	}
@@ -99,6 +110,9 @@ public class TokenManager implements Iterable<Token> {
 		return token.toString(this.source);
 	}
 
+	/**
+	 * @return part of the source code defined by given node's position and length.
+	 */
 	public String toString(ASTNode node) {
 		return this.source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
 	}
@@ -299,6 +313,11 @@ public class TokenManager implements Iterable<Token> {
 		return token.toString(this.source);
 	}
 
+	/**
+	 * @param token the token to measure
+	 * @param startPosition position in line of the first character (affects tabs calculation)
+	 * @return actual length of given token, considering tabs and escaping characters as HTML entities
+	 */
 	public int getLength(Token token, int startPosition) {
 		int length = getLength(token.originalStart, token.originalEnd, startPosition);
 		if  (token.isToEscape()) {
@@ -314,6 +333,13 @@ public class TokenManager implements Iterable<Token> {
 		return length;
 	}
 
+	/**
+	 * Calculates the length of a source code fragment.
+	 * @param originalStart the first position of the source code fragment
+	 * @param originalEnd the last position of the source code fragment 
+	 * @param startPosition position in line of the first character (affects tabs calculation)
+	 * @return length, considering tabs and escaping characters as HTML entities
+	 */
 	public int getLength(int originalStart, int originalEnd, int startPosition) {
 		int position = startPosition;
 		for (int i = originalStart; i <= originalEnd; i++) {
@@ -333,14 +359,19 @@ public class TokenManager implements Iterable<Token> {
 		return position - startPosition;
 	}
 
-	public int toIndent(int position, boolean isWrapped) {
+	/**
+	 * @param indent desired indentation (in positions, not in levels)
+	 * @param isWrapped whether indented element is wrapped
+	 * @return actual indentation that can be achieved with current settings
+	 */
+	public int toIndent(int indent, boolean isWrapped) {
 		if (this.tabChar == DefaultCodeFormatterOptions.TAB && !(isWrapped && this.wrapWithSpaces)) {
 			int tab = this.tabSize;
 			if (tab <= 0)
 				return 0;
-			position = ((position + tab - 1) / tab) * tab;
+			indent = ((indent + tab - 1) / tab) * tab;
 		}
-		return position;
+		return indent;
 	}
 
 	public int traverse(int startIndex, TokenTraverser traverser) {

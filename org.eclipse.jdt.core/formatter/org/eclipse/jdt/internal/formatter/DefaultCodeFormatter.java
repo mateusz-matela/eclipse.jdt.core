@@ -167,8 +167,10 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private boolean init(String source) {
-		//if (Token.source == null)
-			Token.source = source;
+
+		// this is convenient for debugging (see Token.toString())
+		// Token.source = source;
+
 		this.sourceString = source;
 		this.sourceArray = source.toCharArray();
 		this.tokens.clear();
@@ -178,8 +180,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		return !this.tokens.isEmpty();
 	}
 
-	//TODO make package private when this class and CommentsPreparator are in the same package
-	public List<Token> prepareFormattedCode(String source, int kind) {
+	List<Token> prepareFormattedCode(String source, int kind) {
 		if (!init(source))
 			return null;
 
