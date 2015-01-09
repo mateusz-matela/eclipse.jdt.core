@@ -5227,18 +5227,15 @@ public class ASTRewritingStatementsTest extends ASTRewritingTest {
 			ListRewrite listRewrite = rewrite.getListRewrite(tryStatement, TryStatement.RESOURCES_PROPERTY);
 			listRewrite.insertLast(newVariableDeclarationExpression, null);
 
-			Document document1= new Document(cu.getSource());
-			TextEdit res= rewrite.rewriteAST(document1, null);
-			res.apply(document1);
-			String preview = document1.get();
-			
+			String preview = evaluateRewrite(cu, rewrite);
+
 			buf= new StringBuffer();
 			buf.append("package test0017;\n");
 			buf.append("\n");
 			buf.append("public class X {\n");
 			buf.append("	void foo() {\n");
 			buf.append("		try (FileReader reader1 = new FileReader(\"file1\");\n");
-			buf.append("				FileReader reader2 = new FileReader(\"file2\")) {\n");
+			buf.append("                FileReader reader2 = new FileReader(\"file2\")) {\n");
 			buf.append("			int ch;\n");
 			buf.append("			while ((ch = reader1.read()) != -1) {\n");
 			buf.append("				System.out.println(ch);\n");
@@ -5305,18 +5302,15 @@ public class ASTRewritingStatementsTest extends ASTRewritingTest {
 			ListRewrite listRewrite = rewrite.getListRewrite(tryStatement, TryStatement.RESOURCES_PROPERTY);
 			listRewrite.insertLast(newVariableDeclarationExpression, null);
 
-			Document document1= new Document(cu.getSource());
-			TextEdit res= rewrite.rewriteAST(document1, null);
-			res.apply(document1);
-			String preview = document1.get();
-			
+			String preview = evaluateRewrite(cu, rewrite);
+
 			buf= new StringBuffer();
 			buf.append("package test0017;\n");
 			buf.append("\n");
 			buf.append("public class X {\n");
 			buf.append("	void foo() {\n");
 			buf.append("		try (FileReader reader1 = new FileReader(\"file1\");\n");
-			buf.append("				FileReader reader2 = new FileReader(\"file2\");) {\n");
+			buf.append("                FileReader reader2 = new FileReader(\"file2\");) {\n");
 			buf.append("			int ch;\n");
 			buf.append("			while ((ch = reader1.read()) != -1) {\n");
 			buf.append("				System.out.println(ch);\n");
