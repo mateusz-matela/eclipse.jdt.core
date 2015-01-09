@@ -6986,6 +6986,7 @@ public class ASTRewritingStatementsTest extends ASTRewritingTest {
 
 	public void testBugASTFormatter_since_8() throws Exception {
 		IPackageFragment pack1= this.sourceFolder.createPackageFragment("test1", false, null);
+		this.project1.setOption(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_8);
 		StringBuffer buf= new StringBuffer();
 		buf.append("package test1;\n");
 		buf.append("import java.lang.annotation.ElementType;\n");
