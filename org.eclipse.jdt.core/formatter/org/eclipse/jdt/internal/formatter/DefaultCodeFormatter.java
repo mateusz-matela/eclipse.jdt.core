@@ -46,7 +46,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 
-@SuppressWarnings({ "rawtypes" })
 public class DefaultCodeFormatter extends CodeFormatter {
 
 	/**
@@ -87,23 +86,23 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		this(options, null);
 	}
 
-	public DefaultCodeFormatter(Map options) {
+	public DefaultCodeFormatter(Map<String, String> options) {
 		this(null, options);
 	}
 
-	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
+	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map<String, String> options) {
 		initOptions(defaultCodeFormatterOptions, options);
 	}
 
-	private void initOptions(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
+	private void initOptions(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map<String, String> options) {
 		if (options != null) {
 			this.originalOptions = new DefaultCodeFormatterOptions(options);
 			this.workingOptions = new DefaultCodeFormatterOptions(options);
 			this.oldCommentFormatOption = getOldCommentFormatOption(options);
-			String compilerSource = (String) options.get(CompilerOptions.OPTION_Source);
+			String compilerSource = options.get(CompilerOptions.OPTION_Source);
 			this.sourceLevel = compilerSource != null ? compilerSource : CompilerOptions.VERSION_1_8;
 		} else {
-			Map settings = DefaultCodeFormatterConstants.getJavaConventionsSettings();
+			Map<String, String> settings = DefaultCodeFormatterConstants.getJavaConventionsSettings();
 			this.originalOptions = new DefaultCodeFormatterOptions(settings);
 			this.workingOptions = new DefaultCodeFormatterOptions(settings);
 			this.oldCommentFormatOption = true;
@@ -116,7 +115,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	@Deprecated
-	private boolean getOldCommentFormatOption(Map options) {
+	private boolean getOldCommentFormatOption(Map<String, String> options) {
 		Object oldOption = options.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT);
 		return oldOption == null || DefaultCodeFormatterConstants.TRUE.equals(oldOption);
 	}
@@ -279,10 +278,9 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	private ASTNode parseSourceCode(int kind) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		Map parserOptions = JavaCore.getOptions();
+		Map<String, String> parserOptions = JavaCore.getOptions();
 		parserOptions.put(CompilerOptions.OPTION_Source, this.sourceLevel);
 		parser.setCompilerOptions(parserOptions);
 

@@ -26,7 +26,6 @@ import org.eclipse.jdt.internal.compiler.util.Util;
  * @since 3.0
  */
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultCodeFormatterOptions {
 
 	/** Internal constants related to wrapping alignment settings */
@@ -413,7 +412,7 @@ public class DefaultCodeFormatterOptions {
 		// cannot be instantiated
 	}
 
-	public DefaultCodeFormatterOptions(Map settings) {
+	public DefaultCodeFormatterOptions(Map<String, String> settings) {
 		setDefaultSettings();
 		if (settings == null) return;
 		set(settings);
@@ -423,8 +422,8 @@ public class DefaultCodeFormatterOptions {
 		return Integer.toString(alignment);
 	}
 
-	public Map getMap() {
-		Map options = new HashMap();
+	public Map<String, String> getMap() {
+		Map<String, String> options = new HashMap<String, String>();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ALLOCATION_EXPRESSION, getAlignment(this.alignment_for_arguments_in_allocation_expression));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ANNOTATION, getAlignment(this.alignment_for_arguments_in_annotation));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ENUM_CONSTANT, getAlignment(this.alignment_for_arguments_in_enum_constant));
@@ -722,7 +721,7 @@ public class DefaultCodeFormatterOptions {
 		return options;
 	}
 
-	public void set(Map settings) {
+	public void set(Map<String, String> settings) {
 		final Object alignmentForArgumentsInAllocationExpressionOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ALLOCATION_EXPRESSION);
 		if (alignmentForArgumentsInAllocationExpressionOption != null) {
 			try {
@@ -2175,7 +2174,7 @@ public class DefaultCodeFormatterOptions {
 	 * @param settings the given map
 	 * @deprecated
 	 */
-	private void setDeprecatedOptions(Map settings) {
+	private void setDeprecatedOptions(Map<String, String> settings) {
 		// backward compatibility code
 		final Object commentClearBlankLinesOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_CLEAR_BLANK_LINES);
 		if (commentClearBlankLinesOption != null) {

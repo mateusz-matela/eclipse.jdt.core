@@ -6069,7 +6069,8 @@ public void testBug280616() throws JavaModelException {
 		"	 * <pre>\n" + 
 		"	 * void solve(Executor e, Collection&lt;Callable&lt;Result&gt;&gt; solvers)\n" + 
 		"	 * 		throws InterruptedException, ExecutionException {\n" + 
-		"	 * 	CompletionService&lt;Result&gt; ecs = new ExecutorCompletionService&lt;Result&gt;(e);\n" + 
+		"	 * 	CompletionService&lt;Result&gt; ecs = new ExecutorCompletionService&lt;Result&gt;(\n" + 
+		"	 * 			e);\n" + 
 		"	 * 	for (Callable&lt;Result&gt; s : solvers)\n" + 
 		"	 * 		ecs.submit(s);\n" + 
 		"	 * 	int n = solvers.size();\n" + 
