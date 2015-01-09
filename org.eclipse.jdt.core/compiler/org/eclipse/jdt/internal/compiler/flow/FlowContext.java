@@ -18,6 +18,8 @@
  *								bug 403086 - [compiler][null] include the effect of 'assert' in syntactic null analysis for fields
  *								bug 403147 - [compiler][null] FUP of bug 400761: consolidate interaction between unboxing, NPE, and deferred checking
  *								Bug 453483 - [compiler][null][loop] Improve null analysis for loops
+ *								Bug 455723 - Nonnull argument not correctly inferred in loop
+ *								Bug 415790 - [compiler][resource]Incorrect potential resource leak warning in for loop with close in try/catch
  *******************************************************************************/
 package org.eclipse.jdt.internal.compiler.flow;
 
@@ -30,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FakedTrackingVariable;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
+import org.eclipse.jdt.internal.compiler.ast.NullAnnotationMatching;
 import org.eclipse.jdt.internal.compiler.ast.Reference;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SubRoutineStatement;
@@ -251,20 +254,22 @@ public void checkExceptionHandlers(TypeBinding raisedException, ASTNode location
 					caughtIndex < caughtCount;
 					caughtIndex++) {
 					ReferenceBinding caughtException = caughtExceptions[caughtIndex];
+					FlowInfo exceptionFlow = flowInfo;
 				    int state = caughtException == null
 				    	? Scope.EQUAL_OR_MORE_SPECIFIC /* any exception */
 				        : Scope.compareTypes(raisedException, caughtException);
 				    if (abruptlyExitedLoops != null && caughtException != null && state != Scope.NOT_RELATED) {
 				    	for (int i = 0, abruptlyExitedLoopsCount = abruptlyExitedLoops.size(); i < abruptlyExitedLoopsCount; i++) {
 							LoopingFlowContext loop = (LoopingFlowContext) abruptlyExitedLoops.get(i);
-							loop.recordCatchContextOfEscapingException(exceptionContext, caughtException);
+							loop.recordCatchContextOfEscapingException(exceptionContext, caughtException, flowInfo);
 						}
+				    	exceptionFlow = FlowInfo.DEAD_END; // don't use flow info on first round, flow info will be evaluated during loopback simulation
 					}
 					switch (state) {
 						case Scope.EQUAL_OR_MORE_SPECIFIC :
 							exceptionContext.recordHandlingException(
 								caughtException,
-								flowInfo.unconditionalInits(),
+								exceptionFlow.unconditionalInits(),
 								raisedException,
 								raisedException, // precise exception that will be caught
 								location,
@@ -275,7 +280,7 @@ public void checkExceptionHandlers(TypeBinding raisedException, ASTNode location
 						case Scope.MORE_GENERIC :
 							exceptionContext.recordHandlingException(
 								caughtException,
-								flowInfo.unconditionalInits(),
+								exceptionFlow.unconditionalInits(),
 								raisedException,
 								caughtException,
 								location,
@@ -378,20 +383,22 @@ public void checkExceptionHandlers(TypeBinding[] raisedExceptions, ASTNode locat
 					for (int raisedIndex = 0; raisedIndex < raisedCount; raisedIndex++) {
 						TypeBinding raisedException;
 						if ((raisedException = raisedExceptions[raisedIndex]) != null) {
+							FlowInfo exceptionFlow = flowInfo;
 						    int state = caughtException == null
 						    	? Scope.EQUAL_OR_MORE_SPECIFIC /* any exception */
 						        : Scope.compareTypes(raisedException, caughtException);
 						    if (abruptlyExitedLoops != null && caughtException != null && state != Scope.NOT_RELATED) {
 						    	for (int i = 0, abruptlyExitedLoopsCount = abruptlyExitedLoops.size(); i < abruptlyExitedLoopsCount; i++) {
 									LoopingFlowContext loop = (LoopingFlowContext) abruptlyExitedLoops.get(i);
-									loop.recordCatchContextOfEscapingException(exceptionContext, caughtException);
+									loop.recordCatchContextOfEscapingException(exceptionContext, caughtException, flowInfo);
 								}
+						    	exceptionFlow = FlowInfo.DEAD_END; // don't use flow info on first round, flow info will be evaluated during loopback simulation
 							}
 							switch (state) {
 								case Scope.EQUAL_OR_MORE_SPECIFIC :
 									exceptionContext.recordHandlingException(
 										caughtException,
-										flowInfo.unconditionalInits(),
+										exceptionFlow.unconditionalInits(),
 										raisedException,
 										raisedException, // precise exception that will be caught
 										location,
@@ -406,7 +413,7 @@ public void checkExceptionHandlers(TypeBinding[] raisedExceptions, ASTNode locat
 								case Scope.MORE_GENERIC :
 									exceptionContext.recordHandlingException(
 										caughtException,
-										flowInfo.unconditionalInits(),
+										exceptionFlow.unconditionalInits(),
 										raisedException,
 										caughtException, 
 										location,
@@ -990,8 +997,9 @@ public String toString() {
  * @param expectedType the declared type of the spec'ed variable, for error reporting.
  * @param flowInfo the flowInfo observed when visiting expression
  * @param nullStatus the null status of expression at the current location
+ * @param annotationStatus status from type annotation analysis, or null
  */
-public void recordNullityMismatch(BlockScope currentScope, Expression expression, TypeBinding providedType, TypeBinding expectedType, FlowInfo flowInfo, int nullStatus) {
+public void recordNullityMismatch(BlockScope currentScope, Expression expression, TypeBinding providedType, TypeBinding expectedType, FlowInfo flowInfo, int nullStatus, NullAnnotationMatching annotationStatus) {
 	if (providedType == null) {
 		return; // assume type error was already reported
 	}
@@ -1010,8 +1018,11 @@ public void recordNullityMismatch(BlockScope currentScope, Expression expression
 		}
 	}
 	// no reason to defer, so report now:
-	char[][] annotationName = currentScope.environment().getNonNullAnnotationName();
-	currentScope.problemReporter().nullityMismatch(expression, providedType, expectedType, nullStatus, annotationName);
+	if (annotationStatus != null)
+		currentScope.problemReporter().nullityMismatchingTypeAnnotation(expression, providedType, expectedType, annotationStatus);
+	else
+		currentScope.problemReporter().nullityMismatch(expression, providedType, expectedType, nullStatus,
+														currentScope.environment().getNonNullAnnotationName());
 }
 protected boolean internalRecordNullityMismatch(Expression expression, TypeBinding providedType, FlowInfo flowInfo, int nullStatus, TypeBinding expectedType, int checkType) {
 	// nop, to be overridden in subclasses

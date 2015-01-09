@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 IBM Corporation and others.
+ * Copyright (c) 2013, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *     Stephan Herrmann - Contribution for
  *								Bug 434602 - Possible error with inferred null annotations leading to contradictory null annotations
+ *								Bug 456497 - [1.8][null] during inference nullness from target type is lost against weaker hint from applicability analysis
+ *								Bug 456487 - [1.8][null] @Nullable type variant of @NonNull-constrained type parameter causes grief
  *******************************************************************************/
 package org.eclipse.jdt.internal.compiler.lookup;
 
@@ -190,7 +192,27 @@ public class TypeSystem {
 	
 		return this.types[type.id][0] = type;
 	}
-	
+
+	/**
+	 * Forcefully register the given type as a derived type.
+	 * If it itself is already registered as the key unannotated type of its family,
+	 * create a clone to play that role from now on and swap types in the types cache.
+	 */
+	public void forceRegisterAsDerived(TypeBinding derived) {
+		int id = derived.id;
+		if (id != TypeIds.NoId && this.types[id] != null) {
+			TypeBinding unannotated = this.types[id][0];
+			if (unannotated == derived) { //$IDENTITY-COMPARISON$
+				// was previously registered as unannotated, replace by a fresh clone to remain unannotated:
+				this.types[id][0] = unannotated = derived.clone(null);
+			}
+			// proceed as normal:
+			cacheDerivedType(unannotated, derived);
+		} else {
+			throw new IllegalStateException("Type was not yet registered as expected: "+derived); //$NON-NLS-1$
+		}
+	}
+
 	// Given a type, return all its variously annotated versions.
 	public TypeBinding[] getAnnotatedTypes(TypeBinding type) {
 		return Binding.NO_TYPES;
@@ -384,13 +406,8 @@ public class TypeSystem {
 			System.arraycopy(derivedTypes, 0, derivedTypes = new TypeBinding[length * 2], 0, length);
 			this.types[unannotatedWildcard.id] = derivedTypes;
 		}
-		TypeBinding capture = derivedTypes[i] = new CaptureBinding(wildcard, contextType, start, end, cud, id);
-	
-		int typesLength = this.types.length;
-		if (this.typeid == typesLength)
-			System.arraycopy(this.types, 0, this.types = new TypeBinding[typesLength * 2][], 0, typesLength);
-		this.types[this.typeid] = new TypeBinding[1];
-		return (CaptureBinding) (this.types[capture.id = this.typeid++][0] = capture);
+		return (CaptureBinding) (derivedTypes[i] = new CaptureBinding(wildcard, contextType, start, end, cud, id));
+		// the above constructor already registers the capture, don't repeat that here
 	}
 	
 	public WildcardBinding getWildcard(ReferenceBinding genericType, int rank, TypeBinding bound, TypeBinding[] otherBounds, int boundKind, AnnotationBinding[] annotations) {
