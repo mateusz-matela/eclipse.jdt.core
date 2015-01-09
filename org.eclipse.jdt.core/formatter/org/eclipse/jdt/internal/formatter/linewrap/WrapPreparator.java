@@ -568,8 +568,11 @@ public class WrapPreparator extends ASTVisitor {
 					satisfied = true;
 				}
 			}
-			if (!satisfied)
-				this.tm.get(this.wrapIndexes.get(0)).breakBefore();
+			if (!satisfied) {
+				boolean canWrapFirst = (wrappingOption & Alignment.M_NEXT_PER_LINE_SPLIT) != Alignment.M_NEXT_PER_LINE_SPLIT;
+				if (canWrapFirst)
+					this.tm.get(this.wrapIndexes.get(0)).breakBefore();
+			}
 		}
 		this.wrapIndexes.clear();
 		this.wrapPenalties.clear();
