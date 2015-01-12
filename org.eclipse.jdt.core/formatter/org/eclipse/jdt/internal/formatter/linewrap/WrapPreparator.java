@@ -109,7 +109,7 @@ public class WrapPreparator extends ASTVisitor {
 	@Override
 	public boolean preVisit2(ASTNode node) {
 		this.currentDepth++;
-		boolean isMalformed = (node.getFlags() & ASTNode.MALFORMED) > 0;
+		boolean isMalformed = (node.getFlags() & ASTNode.MALFORMED) != 0;
 		if (isMalformed) {
 			this.tm.addDisableFormatTokenPair(this.tm.firstTokenIn(node, -1), this.tm.lastTokenIn(node, -1));
 		}
@@ -311,7 +311,7 @@ public class WrapPreparator extends ASTVisitor {
 		findTokensToWrap(node, 0);
 		this.wrapParentIndex = this.wrapIndexes.remove(0);
 		this.wrapGroupEnd = this.tm.lastIndexIn(node, -1);
-		if ((this.options.alignment_for_binary_expression & Alignment.M_INDENT_ON_COLUMN) > 0)
+		if ((this.options.alignment_for_binary_expression & Alignment.M_INDENT_ON_COLUMN) != 0)
 			this.wrapParentIndex--;
 		for (int i = this.wrapParentIndex; i >= 0; i--) {
 			if (!this.tm.get(i).isComment()) {

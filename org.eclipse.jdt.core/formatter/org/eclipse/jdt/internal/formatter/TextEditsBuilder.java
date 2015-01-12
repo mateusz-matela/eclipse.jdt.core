@@ -261,6 +261,8 @@ public class TextEditsBuilder extends TokenTraverser {
 					spacesCount += indent;
 				}
 				break;
+			default:
+				throw new IllegalStateException("Unrecognized tab char: " + tabChar); //$NON-NLS-1$
 		}
 
 		char[] indentChars = new char[tabsCount + spacesCount];
@@ -304,6 +306,9 @@ public class TextEditsBuilder extends TokenTraverser {
 				while (currentPositionInLine++ < align) {
 					this.buffer.append(' ');
 				}
+				break;
+			default:
+				throw new IllegalStateException("Unrecognized align char: " + this.alignChar); //$NON-NLS-1$
 		}
 	}
 

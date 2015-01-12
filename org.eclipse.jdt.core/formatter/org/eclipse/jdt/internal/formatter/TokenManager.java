@@ -143,7 +143,7 @@ public class TokenManager implements Iterable<Token> {
 			int index = (right + left) / 2;
 			Token token = get(index);
 			if (token.originalStart <= positionInSource && positionInSource <= token.originalEnd) {
-				left = right = index;
+				left = index;
 				break;
 			}
 			if (token.originalEnd < positionInSource) {

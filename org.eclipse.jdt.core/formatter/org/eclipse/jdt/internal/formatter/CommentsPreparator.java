@@ -252,7 +252,7 @@ public class CommentsPreparator extends ASTVisitor {
 		int previousMatcherEnd = 0;
 		boolean nlsFound = false;
 		while (matcher.find()) {
-			int nlsNumber = Integer.valueOf(matcher.group(1));
+			int nlsNumber = Integer.parseInt(matcher.group(1));
 			if (nlsNumber > 0 && nlsNumber <= stringLiterals.size()) {
 				if (matcher.start() > previousMatcherEnd) {
 					Token fragment = new Token(comment.originalStart + previousMatcherEnd,
