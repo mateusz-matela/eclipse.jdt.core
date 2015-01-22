@@ -68,7 +68,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private DefaultCodeFormatterOptions originalOptions;
 	private DefaultCodeFormatterOptions workingOptions;
 
-	private boolean oldCommentFormatOption;
+	private Object oldCommentFormatOption;
 	private String sourceLevel;
 
 	private String sourceString;
@@ -105,7 +105,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			Map<String, String> settings = DefaultCodeFormatterConstants.getJavaConventionsSettings();
 			this.originalOptions = new DefaultCodeFormatterOptions(settings);
 			this.workingOptions = new DefaultCodeFormatterOptions(settings);
-			this.oldCommentFormatOption = true;
+			this.oldCommentFormatOption = DefaultCodeFormatterConstants.TRUE;
 			this.sourceLevel = CompilerOptions.VERSION_1_8;
 		}
 		if (defaultCodeFormatterOptions != null) {
@@ -115,9 +115,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	@Deprecated
-	private boolean getOldCommentFormatOption(Map<String, String> options) {
-		Object oldOption = options.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT);
-		return oldOption == null || DefaultCodeFormatterConstants.TRUE.equals(oldOption);
+	private Object getOldCommentFormatOption(Map<String, String> options) {
+		return options.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT);
 	}
 
 	public String createIndentationString(final int indentationLevel) {
@@ -416,13 +415,24 @@ public class DefaultCodeFormatter extends CodeFormatter {
 
 		this.workingOptions.initial_indentation_level = indentationLevel;
 
-		boolean includeComments = (kind & F_INCLUDE_COMMENTS) != 0 || kind == 0;
 		this.workingOptions.comment_format_javadoc_comment = this.originalOptions.comment_format_javadoc_comment
-				&& this.oldCommentFormatOption && (includeComments || (kind & K_MASK) == K_JAVA_DOC);
+				&& canFormatComment(kind, K_JAVA_DOC);
 		this.workingOptions.comment_format_block_comment = this.originalOptions.comment_format_block_comment
-				&& this.oldCommentFormatOption && (includeComments || (kind & K_MASK) == K_MULTI_LINE_COMMENT);
+				&& canFormatComment(kind, K_MULTI_LINE_COMMENT);
 		this.workingOptions.comment_format_line_comment = this.originalOptions.comment_format_line_comment
-				&& this.oldCommentFormatOption && (includeComments || (kind & K_MASK) == K_SINGLE_LINE_COMMENT);
+				&& canFormatComment(kind, K_SINGLE_LINE_COMMENT);
+	}
+
+	private boolean canFormatComment(int kind, int commentKind) {
+		if ((kind & F_INCLUDE_COMMENTS) != 0)
+			return true;
+		if (DefaultCodeFormatterConstants.FALSE.equals(this.oldCommentFormatOption))
+			return false;
+		if ((kind & K_MASK) == commentKind)
+			return true;
+		if (kind == K_UNKNOWN && DefaultCodeFormatterConstants.TRUE.equals(this.oldCommentFormatOption))
+			return true;
+		return false;
 	}
 
 	@Override
