@@ -121,7 +121,7 @@ public class DefaultCodeFormatterOptions {
 	public int alignment_for_enum_constants;
 	public int alignment_for_expressions_in_array_initializer;
 	public int alignment_for_method_declaration;
-	// TODO field is never used
+	// TODO following option cannot be set in preferences dialog (but it's used by old.CodeFormatter)
 	public int alignment_for_multiple_fields;
 	public int alignment_for_parameters_in_constructor_declaration;
 	public int alignment_for_parameters_in_method_declaration;

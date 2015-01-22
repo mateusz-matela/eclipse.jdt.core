@@ -508,7 +508,7 @@ public class WrapPreparator extends ASTVisitor {
 				this.wrapIndexes.add(this.tm.firstIndexIn(fragments.get(i), -1));
 			this.wrapParentIndex = this.tm.firstIndexIn(fragments.get(0), -1);
 			this.wrapGroupEnd = this.tm.lastIndexIn(fragments.get(fragments.size() - 1), -1);
-			handleWrap(Alignment.M_COMPACT_SPLIT);
+			handleWrap(this.options.alignment_for_multiple_fields);
 		}
 	}
 
