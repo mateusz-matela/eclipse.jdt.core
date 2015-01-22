@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BlockComment;
@@ -1074,7 +1073,6 @@ public class CommentsPreparator extends ASTVisitor {
 							- COMMENT_LINE_SEPARATOR_LENGTH));
 			options2.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT,
 					String.valueOf(this.options.page_width - this.commentIndent - COMMENT_LINE_SEPARATOR_LENGTH));
-			options2.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, JavaCore.SPACE);
 			options2.put(CompilerOptions.OPTION_Source, this.sourceLevel);
 			this.commentCodeFormatter = new DefaultCodeFormatter(options2);
 		}
