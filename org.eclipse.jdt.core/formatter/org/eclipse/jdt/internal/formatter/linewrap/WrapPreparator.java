@@ -177,7 +177,8 @@ public class WrapPreparator extends ASTVisitor {
 				this.wrapIndexes.add(this.tm.firstIndexIn(receiverType, -1));
 			int wrappingOption = node.isConstructor() ? this.options.alignment_for_parameters_in_constructor_declaration
 					: this.options.alignment_for_parameters_in_method_declaration;
-			this.wrapGroupEnd = this.tm.lastIndexIn(node.getBody() != null ? node.getBody() : node, -1);
+			this.wrapGroupEnd = this.tm.lastIndexIn(
+					parameters.isEmpty() ? receiverType : parameters.get(parameters.size() - 1), -1);
 			handleArguments(parameters, wrappingOption);
 		}
 
