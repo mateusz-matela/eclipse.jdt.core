@@ -5740,7 +5740,7 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 		assertEquals(DefaultCodeFormatterConstants.WRAP_NEXT_PER_LINE, DefaultCodeFormatterConstants.getWrappingStyle((String) options.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION)));
 		assertEquals(DefaultCodeFormatterConstants.INDENT_ON_COLUMN, DefaultCodeFormatterConstants.getIndentStyle((String) options.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION)));
 		DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
-		preferences.tab_size = 3;
+		preferences.indentation_size = 3;
 		preferences.tab_char = DefaultCodeFormatterOptions.SPACE;
 		preferences.insert_space_after_opening_paren_in_method_invocation = true;
 		preferences.insert_space_before_closing_paren_in_method_invocation = true;
@@ -8871,7 +8871,6 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 	public void test611() {
 		{
 			// only tabs, indentation size = 4, tab size = 4
-			// indentation size is ignored
 			Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 			DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 			preferences.tab_char = DefaultCodeFormatterOptions.TAB;
@@ -8883,33 +8882,32 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 			assertEquals("Wrong indentation string", "\t\t\t", codeFormatter.createIndentationString(3));
 		}
 		{
-			// only tabs, indentation size = 4, tab size = 8
-			// indentation size is ignored
+			// only tabs, indentation size = 8, tab size = 8
 			Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 			DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 			preferences.tab_char = DefaultCodeFormatterOptions.TAB;
 			preferences.tab_size = 8;
-			preferences.indentation_size = 4;
+			preferences.indentation_size = 8;
 			DefaultCodeFormatter codeFormatter = new DefaultCodeFormatter(preferences);
 			assertEquals("Wrong indentation string", "\t", codeFormatter.createIndentationString(1));
 			assertEquals("Wrong indentation string", "\t\t", codeFormatter.createIndentationString(2));
 			assertEquals("Wrong indentation string", "\t\t\t", codeFormatter.createIndentationString(3));
 		}
 		{
-			// only spaces, indentation size = 4, tab size = 2
-			// indentation size is ignored
+			// only spaces, indentation size = 2, tab size = 4
+			// tab size is ignored
 			Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 			DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 			preferences.tab_char = DefaultCodeFormatterOptions.SPACE;
-			preferences.tab_size = 2;
-			preferences.indentation_size = 4;
+			preferences.tab_size = 4;
+			preferences.indentation_size = 2;
 			DefaultCodeFormatter codeFormatter = new DefaultCodeFormatter(preferences);
 			assertEquals("Wrong indentation string", "  ", codeFormatter.createIndentationString(1));
 			assertEquals("Wrong indentation string", "    ", codeFormatter.createIndentationString(2));
 			assertEquals("Wrong indentation string", "      ", codeFormatter.createIndentationString(3));
 		}
 		{
-			// mixed, indentation size = 4, tab size = 2
+			// mixed, indentation size = 4 tab size = 2
 			Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 			DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 			preferences.tab_char = DefaultCodeFormatterOptions.MIXED;
@@ -8921,7 +8919,6 @@ public class FormatterRegressionTests extends AbstractJavaModelTests {
 		}
 		{
 			// mixed, indentation size = 2, tab size = 4
-			// indentation size is ignored
 			Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
 			DefaultCodeFormatterOptions preferences = new DefaultCodeFormatterOptions(options);
 			preferences.tab_char = DefaultCodeFormatterOptions.MIXED;
