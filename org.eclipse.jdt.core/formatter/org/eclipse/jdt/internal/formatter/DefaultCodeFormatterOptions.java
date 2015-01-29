@@ -502,7 +502,7 @@ public class DefaultCodeFormatterOptions {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, this.indent_empty_lines ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_CASES, this.indent_switchstatements_compare_to_cases ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_SWITCH, this.indent_switchstatements_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, Integer.toString(this.indentation_size));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, Integer.toString(this.tab_char == MIXED ? this.indentation_size : this.tab_size)); // reverse values swapping performed by IndentationTabPage
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_ANNOTATION_ON_TYPE, this.insert_new_line_after_annotation_on_type ? JavaCore.INSERT : JavaCore.DO_NOT_INSERT);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_TYPE_ANNOTATION, this.insert_new_line_after_type_annotation ? JavaCore.INSERT : JavaCore.DO_NOT_INSERT);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_ANNOTATION_ON_FIELD, this.insert_new_line_after_annotation_on_field ? JavaCore.INSERT : JavaCore.DO_NOT_INSERT);
@@ -710,7 +710,7 @@ public class DefaultCodeFormatterOptions {
 				options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, DefaultCodeFormatterConstants.MIXED);
 				break;
 		}
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(this.tab_size));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(this.tab_char == MIXED ? this.tab_size : this.indentation_size)); // reverse values swapping performed by IndentationTabPage
 		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, this.use_tabs_only_for_leading_indentations ?  DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_WRAP_BEFORE_BINARY_OPERATOR, this.wrap_before_binary_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_WRAP_BEFORE_OR_OPERATOR_MULTICATCH, this.wrap_before_or_operator_multicatch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -1315,13 +1315,19 @@ public class DefaultCodeFormatterOptions {
 		}
 		final Object indentationSizeOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE);
 		if (indentationSizeOption != null) {
+			int indentationSize = 4;
 			try {
-				this.indentation_size = Integer.parseInt((String) indentationSizeOption);
+				indentationSize = Integer.parseInt((String) indentationSizeOption);
 			} catch (NumberFormatException e) {
-				this.indentation_size = 4;
+				// keep default
 			} catch(ClassCastException e) {
-				this.indentation_size = 4;
+				// keep default
 			}
+			// reverse values swapping performed by IndentationTabPage
+			if (DefaultCodeFormatterConstants.MIXED.equals(settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR)))
+				this.indentation_size = indentationSize;
+			else
+				this.tab_size = indentationSize;
 		}
 		final Object insertNewLineAfterOpeningBraceInArrayInitializerOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_OPENING_BRACE_IN_ARRAY_INITIALIZER);
 		if (insertNewLineAfterOpeningBraceInArrayInitializerOption != null) {
@@ -2083,13 +2089,19 @@ public class DefaultCodeFormatterOptions {
 		}
 		final Object tabSizeOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE);
 		if (tabSizeOption != null) {
+			int tabSize = 4;
 			try {
-				this.tab_size = Integer.parseInt((String) tabSizeOption);
+				tabSize = Integer.parseInt((String) tabSizeOption);
 			} catch (NumberFormatException e) {
-				this.tab_size = 4;
+				// keep default
 			} catch(ClassCastException e) {
-				this.tab_size = 4;
+				// keep default
 			}
+			// reverse values swapping performed by IndentationTabPage
+			if (DefaultCodeFormatterConstants.MIXED.equals(settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR)))
+				this.tab_size = tabSize;
+			else
+				this.indentation_size = tabSize;
 		}
 		final Object useTabsOnlyForLeadingIndentationsOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS);
 		if (useTabsOnlyForLeadingIndentationsOption != null) {
